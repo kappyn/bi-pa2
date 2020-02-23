@@ -2,6 +2,5 @@
 
 inotifywait -q -m -e close_write "$1" |
 while read -r filename event; do
-	printf "\nUpdate at %s (contents of \"$1\")\n" $( date +"%T" );
-	cat "$1"
+	cat "$1ů
 done

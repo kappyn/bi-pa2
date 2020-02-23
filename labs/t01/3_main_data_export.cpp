@@ -25,16 +25,15 @@ struct array_t {
 
 bool array_scan ( array_t & arr );
 
-void array_print ( const array_t & arr );
+void array_print ( const array_t & arr, ostream & out = cout );
 
-bool array_save( const array_t & arr, const char * filename );
+bool array_save ( const array_t & arr, const char * filename );
 
 void array_sort ( array_t & arr );
 
 void array_free ( array_t & arr );
 
-int main ( void )
-{
+int main ( void ) {
     array_t ar = { 0, nullptr };
 
     if ( ! array_scan( ar ) ) {
@@ -47,9 +46,6 @@ int main ( void )
         cout << UNSUCCESSFUL_WRITE << endl;
         return 2;
     }
-
-    array_free( ar );
-	return 0;
 }
 
 /*****************************************************************************/
@@ -70,12 +66,12 @@ bool array_scan ( array_t & arr ) {
     return true;
 }
 
-void array_print ( const array_t & arr )
+void array_print ( const array_t & arr, ostream & out )
 {
     for ( size_t i = 0; i < arr.n; ++i ) {
         if ( i != 0 )
-            cout << " ";
-        cout << arr.data[ i ];
+            out << " ";
+        out << arr.data[ i ];
     }
 }
 
@@ -85,17 +81,10 @@ bool array_save ( const array_t & arr, const char * filename )
     if ( ! os )
         return false;
 
-    if ( !( os << arr.n << endl ) )
+    if ( ! ( os << arr.n << endl ) )
         return false;
 
-    for ( size_t i = 0; i < arr.n; ++i ) {
-        if ( i != 0 )
-            if ( ! ( os << " " ) )
-                return false;
-
-        if ( ! ( os << arr.data[ i ] ) )
-            return false;
-    }
+    array_print( arr, os );
 
     if ( ! ( os << endl ) )
         return false;
