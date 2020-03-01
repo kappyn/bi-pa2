@@ -1,8 +1,0 @@
-#!/bin/bash
-
-inotifywait -q -m -e close_write "$1" |
-while read -r filename event; do
-	clear;
-	printf "\nUpdate at %s\n" $( date +"%T" );
-	g++ -Wall -pedantic -g -o "$2" "$1" && ./"$2" < "$3";
-done
