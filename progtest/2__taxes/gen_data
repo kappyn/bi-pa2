@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for i in $(seq "$1")
+do
+	printf "assert ( b1.Birth( \"%s\", \"%s\", \"%s\" ) );\n" "$( head /dev/urandom | tr -dc A-Za-z0-9 | head -c 15 )" "$( head /dev/urandom | tr -dc A-Za-z0-9 | head -c 15 )" "$( head /dev/urandom | tr -dc A-Za-z0-9 | head -c 15 )"
+done

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+g++ -Wall -pedantic -g *.cpp -o "$1" && ./"$1";
+
+inotifywait -q -m -e close_write "main.cpp" "operators.cpp" "operators.hpp" |
+while read -r filename event; do
+	clear;
+	printf "\nUpdate at %s\n" $( date +"%T" );
+	g++ -Wall -pedantic -g *.cpp -o "$1" && ./"$1";
+done

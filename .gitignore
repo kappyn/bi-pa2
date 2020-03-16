@@ -1,8 +1,9 @@
 cmake-build-debug/
-# CMakeLists.txt
+CMakeLists.txt
 .idea/
 .vscode/
 .DS_Store
 *.out
 img/
 labs/
+handouts/
