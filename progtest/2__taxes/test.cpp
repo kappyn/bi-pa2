@@ -32,12 +32,12 @@ public:
 class CWallet {
 public:
     string code;
-    int32_t bilance;
-    int32_t expenses;
+    int32_t income;
+    int32_t expense;
 
     explicit CWallet ( string code = "", int32_t bilance = 0, int32_t expenses = 0 ) : code( std::move( code ) ),
-                                                                                       bilance( bilance ),
-                                                                                       expenses( expenses ) {
+                                                                                       income( bilance ),
+                                                                                       expense( expenses ) {
     }
 };
 
@@ -56,8 +56,8 @@ public:
                         << usr.name << " " << setw( universal_width )
                         << usr.addr << " " << setw( universal_width )
                         << usr.account.code << setw( universal_width )
-                        << usr.account.bilance << setw( universal_width )
-                        << usr.account.expenses )
+                        << usr.account.income << setw( universal_width )
+                        << usr.account.expense )
                 )
             ost.setstate( std::ios_base::failbit );
         return ost;
@@ -95,35 +95,43 @@ public:
     }
 
     bool manage_wallet ( const CCitizen & tmp, bool by_name, int amount, bool expense = false ) {
-        if ( amount <= 0 )
+        if ( amount <= 0 || db.empty( ) )
             return false;
 
         // re-sort only if current sorted representation is by different order
-//        if ( ( !sorted_by_name && by_name ) || ( sorted_by_name && !by_name ) ) {
-//            sorted_by_name = by_name;
-//        }
+        if ( ( !sorted_by_name && by_name ) || ( sorted_by_name && !by_name ) ) {
+            if ( by_name )
+                sort_by_name( );
+            else
+                sort_by_account( );
+        }
 
-        std::sort( db.begin( ), db.end( ), ( by_name ? CCitizen::cmp_addr : CCitizen::cmp_acc ) );
+//        // find element with binary search
+        auto i = lower_bound( db.begin( ), db.end( ), tmp,
+                              ( by_name ? CCitizen::cmp_addr : CCitizen::cmp_acc ) );
 
-        // find element with binary search
-        auto i = lower_bound( db.begin( ), db.end( ), tmp, ( by_name ? CCitizen::cmp_addr : CCitizen::cmp_acc ) );
-
-        if ( db.empty( ) )
+        if ( i == db.end( ) ) {
+            if ( !sorted_by_name )
+                sort_by_name( );
             return false;
-
-        if ( i == db.end( ) )
-            return false;
+        }
 
         // verify data of the wallet holder
         if ( by_name ) {
             if ( i->name != tmp.name || i->addr != tmp.addr )
                 return false;
         } else {
-            if ( i->account.code != tmp.account.code )
+            if ( i->account.code != tmp.account.code ) {
+                sort_by_name( );
                 return false;
+            }
         }
 
-        expense ? db[ i - db.begin( ) ].account.expenses += amount : db[ i - db.begin( ) ].account.bilance += amount;
+        expense ? db[ i - db.begin( ) ].account.expense += amount : db[ i - db.begin( ) ].account.income += amount;
+
+        if ( !by_name )
+            sort_by_name( );
+
         return true;
     }
 
@@ -137,7 +145,7 @@ public:
         sorted_by_name = true;
     };
 
-    bool validate_citizen ( const CCitizen & tmp ) {
+    bool validate_citizen ( const CCitizen & tmp, bool birth = true ) {
         // empty database - nothing search for
         if ( db.empty( ) ) {
             db.push_back( tmp );
@@ -145,15 +153,21 @@ public:
         }
 
         // sort by accounts, search for duplicates
-        sort_by_account( );
+        if ( sorted_by_name )
+            sort_by_account( );
+
         tmp_it = lower_bound( db.begin( ), db.end( ), tmp, CCitizen::cmp_acc );
         if ( tmp_it != db.end( ) &&
              ( ( tmp_it->account.code == tmp.account.code ) ||
-               ( tmp_it->name == tmp.name && tmp_it->addr == tmp.addr ) ) )
+               ( tmp_it->name == tmp.name && tmp_it->addr == tmp.addr ) ) ) {
+            sort_by_name( );
             return false;
+        }
 
         // sort by names/addresses, search for duplicates
-        sort_by_name( );
+        if ( !sorted_by_name )
+            sort_by_name( );
+
         tmp_it = lower_bound( db.begin( ), db.end( ), tmp, CCitizen::cmp_addr );
         if ( tmp_it != db.end( ) &&
              ( ( tmp_it->account.code == tmp.account.code ) ||
@@ -174,16 +188,24 @@ public:
 
     // required part
     bool Birth ( const string & name, const string & addr, const string & account ) {
-        CCitizen tmp( name, addr, CWallet( account, 0 ) );
-
-        if ( name.empty( ) || addr.empty( ) || account.empty( ) )
+        if ( name.empty( ) || addr.empty( ) || account.empty( ) ) {
             return false;
-
+        }
+        CCitizen tmp( name, addr, CWallet( account, 0 ) );
         return validate_citizen( tmp );
     }
 
     bool Death ( const string & name, const string & addr ) {
-        return false;
+        if ( db.empty( ) || name.empty( ) || addr.empty( ) )
+            return false;
+
+        CCitizen tmp( name, addr, CWallet( ) );
+        auto it = lower_bound( db.begin( ), db.end( ), tmp, CCitizen::cmp_addr );
+        if ( it == db.end( ) || ( ( it->name != tmp.name ) || ( it->addr != tmp.addr ) ) )
+            return false;
+
+
+        return validate_citizen( tmp );
     }
 
     bool Income ( const string & account, int amount ) {
@@ -223,29 +245,21 @@ public:
     }
 
     bool Audit ( const string & name, const string & addr, string & account, int & sumIncome, int & sumExpense ) const {
-//        // find element with binary search
-//
-//        auto i = lower_bound( db.begin( ), db.end( ), CCitizen( name, addr, CWallet( ) ), CCitizen::cmp_addr );
-//
-//        if ( db.empty( ) )
-//            return false;
-//
-//        if ( i == db.end( ) )
-//            return false;
-//
-//        // verify data of the wallet holder
-//        if ( by_name ) {
-//            if ( i->name != tmp.name || i->addr != tmp.addr )
-//                return false;
-//        } else {
-//            if ( i->account.code != tmp.account.code )
-//                return false;
-//        }
-//
-//        expense ? db[ i - db.begin( ) ].account.expenses += amount : db[ i - db.begin( ) ].account.bilance += amount;
-//        return true;
-    }
+        if ( db.empty( ) || name.empty( ) || addr.empty( ) )
+            return false;
 
+        CCitizen tmp( name, addr, CWallet( account ) );
+        auto it = lower_bound( db.begin( ), db.end( ), tmp, CCitizen::cmp_addr );
+
+        if ( it == db.end( ) || ( ( it->name != tmp.name ) || ( it->addr != tmp.addr ) ) )
+            return false;
+
+        account = it->account.code;
+        sumIncome = it->account.income;
+        sumExpense = it->account.expense;
+
+        return true;
+    }
 //    CIterator ListByName ( void ) const;
 };
 #ifndef __PROGTEST__
@@ -256,71 +270,50 @@ int main ( void ) {
 
     CTaxRegister b1;
 
-    assert ( b1.Birth( "AAAA", "Main Street 17", "634oddzzz" ) );
-    assert ( b1.Birth( "John Smith", "Main Street 17", "Z343rwZ" ) );
     assert ( b1.Birth( "John Smith", "Oak Road 23", "123/456/789" ) );
-
-
-    assert ( b1.Birth( "John Smitho", "Main Street 17", "Z343rwZy" ) );
     assert ( b1.Birth( "Jane Hacker", "Main Street 17", "Xuj5#94" ) );
-    assert ( b1.Birth( "Riemann Zeta", "Main Street 17", "634oddTx" ) );
     assert ( b1.Birth( "Peter Hacker", "Main Street 17", "634oddT" ) );
-    assert ( b1.Birth( "John Smith", "Main Streety 17", "Z343rwZwww" ) );
-    assert ( b1.Birth( "John Smith", "Oak Road", "123/456/789y" ) );
+    assert ( b1.Birth( "John Smith", "Main Street 17", "Z343rwZ" ) );
+    assert ( ! b1.Birth( "John Smith", "Main Street 17", "Z343rwZz" ) );
 
-    // unique bank account tests
-    assert ( !b1.Birth( "John Smith", "Main Street 17", "Z343rwZ" ) );
-    assert ( !b1.Birth( "John Smithos", "Main Street 17", "Z343rwZy" ) );
-    assert ( !b1.Birth( "John Smithos", "Main Street 17", "Xuj5#94" ) );
-    assert ( !b1.Birth( "John Smith", "Main Street 17", "Z343rwZy" ) );
-    assert ( !b1.Birth( "John Smith", "Main Street 17", "Z343rwZ" ) );
+    assert ( b1.Income( "Xuj5#94", 1000 ) );
+    assert ( b1.Income( "634oddT", 2000 ) );
+    assert ( b1.Income( "123/456/789", 3000 ) );
+    assert ( b1.Income( "634oddT", 4000 ) );
+    assert ( b1.Income( "Peter Hacker", "Main Street 17", 2000 ) );
+    assert ( b1.Expense( "Jane Hacker", "Main Street 17", 2000 ) );
+    assert ( b1.Expense( "John Smith", "Main Street 17", 500 ) );
+    assert ( b1.Expense( "Jane Hacker", "Main Street 17", 1000 ) );
+    assert ( b1.Expense( "Xuj5#94", 1300 ) );
 
-    assert ( b1.Birth( "Arnost Hlavacek", "Main Street 17", "XFX" ) );
-    assert ( b1.Birth( "Arnost Hlavka", "Main Street 17", "Z343rwZye2" ) );
-    assert ( b1.Birth( "Arnost Blavka", "Main Street 17", "Z343rwZye2q" ) );
-    assert ( b1.Birth( "Arnost Blavka", "Main Street 18", "ahoj" ) );
-    assert ( b1.Birth( "Zandej Zle", "Main Street 17", "Z343rwZye2qy" ) );
+    cout << ( b1.get_sorted_state( ) ? "Sorted by name" : "Sorted by code" ) << endl;
 
-//    cout << (b1.get_sorted_state( ) ? "Sorted by name" : "Sorted by code") << endl;
+    assert ( b1.Audit( "John Smith", "Oak Road 23", acct, sumIncome, sumExpense ) );
+    assert ( acct == "123/456/789" );
+    assert ( sumIncome == 3000 );
+    assert ( sumExpense == 0 );
+//
+    assert ( b1.Audit( "Jane Hacker", "Main Street 17", acct, sumIncome, sumExpense ) );
+    assert ( acct == "Xuj5#94" );
+    assert ( sumIncome == 1000 );
+    assert ( sumExpense == 4300 );
+
+    assert ( b1.Audit( "Peter Hacker", "Main Street 17", acct, sumIncome, sumExpense ) );
+    assert ( acct == "634oddT" );
+    assert ( sumIncome == 8000 );
+    assert ( sumExpense == 0 );
+
+    assert ( b1.Audit( "John Smith", "Main Street 17", acct, sumIncome, sumExpense ) );
+    assert ( acct == "Z343rwZ" );
+    assert ( sumIncome == 0 );
+    assert ( sumExpense == 500 );
+
+//    CIterator it = b1.ListByName( );
+
+
 
     b1.print_citizens( );
 
-    //    assert ( b1.Income( "Xuj5#94", 1000 ) );
-//    assert ( b1.Income( "634oddT", 2000 ) );
-//    assert ( b1.Income( "123/456/789", 3000 ) );
-//    assert ( b1.Income( "634oddT", 4000 ) );
-//    assert ( !b1.Income( "634oddT___", -300 ) );
-//    assert ( !b1.Income( "634oddT___", 4000 ) );
-//
-//    assert ( b1.Income( "Peter Hacker", "Main Street 17", 20000 ) );
-//    assert ( b1.Expense( "Peter Hacker", "Main Street 17", 2000 ) );
-//    assert ( b1.Expense( "John Smith", "Main Street 17", 500 ) );
-//    assert ( b1.Expense( "Jane Hacker", "Main Street 17", 1000 ) );
-//    assert ( b1.Expense( "Xuj5#94", 1300 ) );
-//    assert ( ! b1.Expense( "__Xuj5#94", 1300 ) );
-
-//    cout << endl;
-//    b1.print_citizens( );
-
-
-
-//    assert ( b1.Audit( "John Smith", "Oak Road 23", acct, sumIncome, sumExpense ) );
-//    assert ( acct == "123/456/789" );
-//    assert ( sumIncome == 3000 );
-//    assert ( sumExpense == 0 );
-//    assert ( b1.Audit( "Jane Hacker", "Main Street 17", acct, sumIncome, sumExpense ) );
-//    assert ( acct == "Xuj5#94" );
-//    assert ( sumIncome == 1000 );
-//    assert ( sumExpense == 4300 );
-//    assert ( b1.Audit( "Peter Hacker", "Main Street 17", acct, sumIncome, sumExpense ) );
-//    assert ( acct == "634oddT" );
-//    assert ( sumIncome == 8000 );
-//    assert ( sumExpense == 0 );
-//    assert ( b1.Audit( "John Smith", "Main Street 17", acct, sumIncome, sumExpense ) );
-//    assert ( acct == "Z343rwZ" );
-//    assert ( sumIncome == 0 );
-//    assert ( sumExpense == 500 );
-//    CIterator it = b1.ListByName( );
 //    assert ( !it.AtEnd( )
 //             && it.Name( ) == "Jane Hacker"
 //             && it.Addr( ) == "Main Street 17"
