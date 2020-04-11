@@ -15,8 +15,8 @@ using namespace std;
 
 class CTransaction {
 public:
-    char * credit;
     char * debit;
+    char * credit;
     char * sign;
     unsigned amount;
 
@@ -24,7 +24,7 @@ public:
         credit = debit = sign = nullptr;
         amount = 0;
     }
-    CTransaction ( char * credit, char * debit, const char * sign, unsigned amount ) : credit( credit ), debit( debit ),
+    CTransaction ( char * debit, char * credit, const char * sign, unsigned amount ) : debit( debit ), credit( credit ),
                                                                                        amount( amount ) {
         this->amount = amount;
         int strl = strlen( sign );
@@ -34,18 +34,16 @@ public:
         }
         this->sign[ strl ] = '\0';
     }
-
-    void FreeResources ( ) {
+    ~CTransaction ( ) {
         delete[] sign;
     }
 
     void operator ~ ( ) {
-        std::cout << credit << setw( 20 ) << debit << setw( 20 ) << sign << setw( 20 ) << amount << endl;
+        std::cout << debit << setw( 20 ) << credit << setw( 20 ) << sign << setw( 20 ) << amount << endl;
     }
-
     friend ostream & operator << ( ostream & ost, const CTransaction & transaction ) {
         if (
-                !( cout << transaction.credit << setw( 20 ) << transaction.debit << setw( 20 ) << transaction.sign
+                !( cout << transaction.debit << setw( 20 ) << transaction.credit << setw( 20 ) << transaction.sign
                         << setw( 20 ) << transaction.amount << endl
                 )
                 )
@@ -53,23 +51,34 @@ public:
         return ost;
     }
 };
+typedef CTransaction * CTransactionRef;
 
 class CAccount {
 public:
     char * code;
-    int balance;
+    int64_t balance;
+
+    CTransactionRef * transaction;
+    int ts_size = 4;
+    int ts_cnt = 0;
 
     CAccount ( ) {
         code = new char[2];
         code[ 0 ] = '\0';
     }
     CAccount ( const char * id, int bal ) {
-        balance = bal;
         int strl = strlen( id );
         code = new char[strl + 2];
         for ( int i = 0; i < strl; ++i )
             code[ i ] = id[ i ];
         code[ strl ] = '\0';
+
+        transaction = new CTransactionRef[ts_size];
+        balance = bal;
+    }
+    ~CAccount ( ) {
+        delete[] code;
+        delete[] transaction;
     }
 
     CAccount & operator = ( const CAccount & x ) {
@@ -81,38 +90,84 @@ public:
         balance = x.balance;
         return * this;
     }
-
-    void FreeResources ( ) {
-        delete[] code;
-    }
-
     friend ostream & operator << ( ostream & ost, const CAccount & acc ) {
-        int universal_width = 20;
-        if (
-                !( cout << left << setw( 20 )
-                        //                        << acc.code << " " << setw( universal_width )
-                        << acc.balance << " " << setw( universal_width ) << endl
-                        << acc.code << " " << setw( universal_width ) << endl
-                )
-                )
+        if ( !( ost << acc.code << ":\n" << "   " << acc.balance << endl ) )
             ost.setstate( ios_base::failbit );
+
+        int64_t result = acc.balance;
+        for ( int i = 0; i < acc.ts_cnt; ++i ) {
+            CTransaction * curr_t = acc.transaction[ i ];
+            if ( curr_t->debit == acc.code ) {
+                if ( !( ost << " - " << curr_t->amount << ", to: " << curr_t->credit << ", sign: " << curr_t->sign << endl ) )
+                    ost.setstate( ios_base::failbit );
+                result -= ( curr_t->amount );
+            } else {
+                if ( !( ost << " + " << curr_t->amount << ", from: " << curr_t->debit << ", sign: " << curr_t->sign << endl ) )
+                    ost.setstate( ios_base::failbit );
+                result += ( curr_t->amount );
+            }
+        }
+        if ( !( ost << " = " << result << endl ) )
+            ost.setstate( ios_base::failbit );
+
         return ost;
     }
+
+    void PrintTransactions ( ) {
+        for ( int i = 0; i < ts_cnt; ++i )
+            cout << ( * transaction[ i ] );
+    }
+
+    void PushTransaction ( const CTransactionRef & transactionRef ) {
+        if ( ts_cnt >= ts_size ) {
+            ts_size *= 1.5;
+            CTransactionRef * tmp = new CTransactionRef[ts_size];
+            for ( int i = 0; i < ts_cnt; ++i )
+                tmp[ i ] = transaction[ i ];
+            delete[] transaction;
+            transaction = tmp;
+        }
+        transaction[ ( ts_cnt++ ) ] = transactionRef;
+    }
+
+    void WipeTransactions ( ) {
+        balance = Balance( );
+        delete [ ] transaction;
+
+        ts_cnt = 0;
+        ts_size = 4;
+        transaction = new CTransactionRef[ ts_size ];
+    }
+
+    long Balance ( ) {
+//        PrintTransactions();
+
+        int64_t result = 0;
+        for ( int i = 0; i < ts_cnt; ++i ) {
+            if ( transaction[ i ]->debit == code )
+                result -= ( transaction[ i ]->amount );
+            else
+                result += ( transaction[ i ]->amount );
+        }
+
+        return balance + result;
+    }
 };
+typedef CAccount * CAccountRef;
 
 class CBank {
 private:
-    CAccount * accounts;
+    CAccountRef * accounts;
     int acc_size = 4;
     int acc_cnt = 0;
 
-    CTransaction * transactions;
+    CTransactionRef * transactions;
     int ts_size = 4;
     int ts_cnt = 0;
 
-    int UserExists ( const char * accID ) {
+    int UserExists ( const char * accID ) const {
         for ( int i = 0; i < acc_cnt; ++i ) {
-            const char * cp = accounts[ i ].code;
+            const char * cp = ( * accounts[ i ] ).code;
             if ( strcmp( cp, accID ) == 0 )
                 return i;
         }
@@ -122,20 +177,20 @@ private:
 public:
     // default constructor
     CBank ( ) {
-        accounts = new CAccount[acc_size];
-        transactions = new CTransaction[ts_size];
+        accounts = new CAccountRef[acc_size];
+        transactions = new CTransactionRef[ts_size];
     }
 
     // copy constructor
 
     // destructor
     ~CBank ( ) {
-        for ( int i = 0; i < acc_size; ++i )
-            accounts[ i ].FreeResources( );
+        for ( int i = 0; i < acc_cnt; ++i )
+            delete accounts[ i ];
         delete[] accounts;
 
         for ( int i = 0; i < ts_cnt; ++i )
-            transactions[ i ].FreeResources( );
+            delete transactions[ i ];
         delete[] transactions;
     }
 
@@ -145,12 +200,11 @@ public:
 
     void operator ~ ( ) {
         for ( int i = 0; i < acc_cnt; ++i )
-            std::cout << accounts[ i ] << endl;
+            std::cout << ( * accounts[ i ] ) << endl;
     }
-
     void operator ! ( ) {
         for ( int i = 0; i < ts_cnt; ++i )
-            std::cout << transactions[ i ] << endl;
+            std::cout << ( * transactions[ i ] ) << endl;
     }
 
     bool NewAccount ( const char * accID, int initialBalance ) {
@@ -159,46 +213,71 @@ public:
 
         if ( acc_cnt >= acc_size ) {
             acc_size *= 1.5;
-            CAccount * tmp = new CAccount[acc_size];
+            CAccountRef * tmp = new CAccountRef[acc_size];
             for ( int i = 0; i < acc_cnt; ++i )
                 tmp[ i ] = accounts[ i ];
             delete[] accounts;
             accounts = tmp;
         }
 
-        accounts[ ( acc_cnt++ ) ] = CAccount( accID, initialBalance );
+        accounts[ ( acc_cnt++ ) ] = new CAccount( accID, initialBalance );
         return true;
     }
 
     bool Transaction ( const char * debAccID, const char * credAccID, unsigned int amount, const char * signature ) {
-        if ( debAccID == credAccID || amount < 0 )
+        if ( strcmp( debAccID, credAccID ) == 0 || amount < 0 )
             return false;
 
         int d_i = 0, c_i = 0;
-        if ( ( d_i = UserExists( debAccID ) == -1 ) || ( c_i = UserExists( credAccID ) == -1 ) )
+        if ( ( ( d_i = UserExists( debAccID ) ) == -1 ) || ( ( c_i = UserExists( credAccID ) ) == -1 ) )
             return false;
 
         if ( ts_cnt >= ts_size ) {
             ts_size *= 1.5;
-            CTransaction * tmp = new CTransaction[ts_size];
-            for ( int i = 0; i < ts_cnt; ++i )
+            CTransactionRef * tmp = new CTransactionRef[ts_size];
+            for ( int i = 0; i < ts_cnt; ++i ) {
                 tmp[ i ] = transactions[ i ];
+            }
             delete[] transactions;
             transactions = tmp;
         }
 
-        transactions[ ( ts_cnt++ ) ] = CTransaction( accounts[ d_i ].code, accounts[ c_i ].code, signature, amount );
+        transactions[ ts_cnt ] =
+                new CTransaction(
+                        ( * accounts[ d_i ] ).code,
+                        ( * accounts[ c_i ] ).code,
+                        signature,
+                        amount
+                );
+
+        accounts[ d_i ]->PushTransaction( transactions[ ts_cnt ] );
+        accounts[ c_i ]->PushTransaction( transactions[ ts_cnt ] );
+        ts_cnt++;
+
         return true;
     }
 
-//    bool TrimAccount ( const char * accID );
-    // Account ( accID )
+    bool TrimAccount ( const char * accID ) {
+        int i = -1;
+        if ( ( i = UserExists( accID ) ) == -1 )
+            return false;
+
+        accounts[ i ]->WipeTransactions();
+        return true;
+    }
+
+    CAccount & Account ( const char * accID ) const {
+        int i = UserExists( accID );
+        if ( i == -1 )
+            throw "Account( ) method: Account not found.";
+        return ( * accounts[ i ] );
+    }
 };
 
 #ifndef __PROGTEST__
 int main ( ) {
     ostringstream os;
-//    char accCpy[100], debCpy[100], credCpy[100], signCpy[100];
+    char accCpy[100], debCpy[100], credCpy[100], signCpy[100];
 
     CBank x0;
     assert ( x0.NewAccount( "123456", 1000 ) );
@@ -207,39 +286,45 @@ int main ( ) {
     assert ( x0.Transaction( "123456", "987654", 300, "XAbG5uKz6E=" ) );
     assert ( x0.Transaction( "123456", "987654", 2890, "AbG5uKz6E=" ) );
 
-//    assert ( x0.NewAccount( "111111", 5000 ) );
-//    assert ( x0.Transaction( "111111", "987654", 290, "Okh6e+8rAiuT5=" ) );
+    assert ( x0.NewAccount( "111111", 5000 ) );
+    assert ( x0.Transaction( "111111", "987654", 290, "Okh6e+8rAiuT5=" ) );
 
-//    assert ( x0.Account( "123456" ).Balance( ) == -2190 );
-//    assert ( x0.Account( "987654" ).Balance( ) == 2980 );
-//    assert ( x0.Account( "111111" ).Balance( ) == 4710 );
-//
-//    os.str( "" );
-//    os << x0.Account( "123456" );
+    assert ( x0.Account( "123456" ).Balance( ) == -2190 );
+    assert ( x0.Account( "987654" ).Balance( ) == 2980 );
+    assert ( x0.Account( "111111" ).Balance( ) == 4710 );
 
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "123456:\n   1000\n - 300, to: 987654, sign: XAbG5uKz6E=\n - 2890, to: 987654, sign: AbG5uKz6E=\n = -2190\n" ) );
-//    os.str( "" );
-//    os << x0.Account( "987654" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 290, from: 111111, sign: Okh6e+8rAiuT5=\n = 2980\n" ) );
-//    os.str( "" );
-//    os << x0.Account( "111111" );
-//    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   5000\n - 290, to: 987654, sign: Okh6e+8rAiuT5=\n = 4710\n" ) );
-//
-//    assert ( x0.TrimAccount( "987654" ) );
-//    assert ( x0.Transaction( "111111", "987654", 123, "asdf78wrnASDT3W" ) );
-//
-//    os.str( "" );
-//    os << x0.Account( "987654" );
-//    assert (
-//            !strcmp( os.str( ).c_str( ), "987654:\n   2980\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 3103\n" ) );
+    os.str( "" );
+    os << x0.Account( "123456" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "123456:\n   1000\n - 300, to: 987654, sign: XAbG5uKz6E=\n - 2890, to: 987654, sign: AbG5uKz6E=\n = -2190\n" ) );
 
-//    CBank x2;
-//    strncpy( accCpy, "123456", sizeof( accCpy ) );
-//    assert ( x2.NewAccount( accCpy, 1000 ) );
-//    strncpy( accCpy, "987654", sizeof( accCpy ) );
-//    assert ( x2.NewAccount( accCpy, -500 ) );
+    os.str( "" );
+    os << x0.Account( "987654" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 290, from: 111111, sign: Okh6e+8rAiuT5=\n = 2980\n" ) );
+
+    os.str( "" );
+    os << x0.Account( "111111" );
+    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   5000\n - 290, to: 987654, sign: Okh6e+8rAiuT5=\n = 4710\n" ) );
+
+    assert ( x0.TrimAccount( "987654" ) );
+    assert ( x0.Transaction( "111111", "987654", 123, "asdf78wrnASDT3W" ) );
+
+    os.str( "" );
+    os << x0.Account( "987654" );
+    assert (
+            !strcmp( os.str( ).c_str( ), "987654:\n   2980\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 3103\n" ) );
+
+    cout << x0.Account( "987654" ).balance;
+    // OK
+
+
+    CBank x2;
+    strncpy( accCpy, "123456", sizeof( accCpy ) );
+    assert ( x2.NewAccount( accCpy, 1000 ) );
+    strncpy( accCpy, "987654", sizeof( accCpy ) );
+    assert ( x2.NewAccount( accCpy, -500 ) );
+
 //    strncpy( debCpy, "123456", sizeof( debCpy ) );
 //    strncpy( credCpy, "987654", sizeof( credCpy ) );
 //    strncpy( signCpy, "XAbG5uKz6E=", sizeof( signCpy ) );
