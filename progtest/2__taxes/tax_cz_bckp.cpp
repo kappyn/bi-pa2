@@ -17,19 +17,23 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
-/*
- * Verze k 1/5/2020:
- * Preklad dokumentace do anglictiny, jak code-review hodnoceni doporucuje.
- * Odstraneni zbytecnych komentaru.
- * Odstraneni debugovacich nastroju, "produkcni" verze.
-*/
+/**
+ * Poznamky k formatovani:
+ * 1. Nektere if statementy, konstruktory, rozhrani metod rozdeluji na vice radek v zajmu lepsi citelnosti.
+ * 2. Funkce jsou camelcase a "nafouknute mezerami"; jejich volani nema mezeru pred (), narozdil od deklaraci.
+ * 3. Tam kde to jde se snazim kod odprostit od zbytecnych zavorek { } (if, for,..).
+**/
 
 struct CWallet {
     string code;
+
+    // Konzistence se zadanim (rozhrani metody income/expense).
+    // Jinak by tu mohl byt nezaporny int, protoze zaporne hodnoty jsou vzdy osetreny.
     int income;
     int expense;
-    explicit CWallet ( string code = "", int income = 0, int expenses = 0 )
-    : code( std::move( code ) ), income( income ), expense( expenses ) { };
+    explicit CWallet ( string code = "", int income = 0, int expenses = 0 ) : code( std::move( code ) ),
+                                                                                        income( income ),
+                                                                                        expense( expenses ) { };
 };
 
 struct CCitizen {
@@ -37,19 +41,44 @@ struct CCitizen {
     string addr;
     CWallet acc;
 
-    explicit CCitizen ( string name, string addr, CWallet acc )
-    : name( std::move( name ) ), addr( std::move( addr ) ), acc( std::move( acc ) ) { };
+    explicit CCitizen ( string name, string addr, CWallet acc ) : name( std::move( name ) ), addr( std::move( addr ) ),
+                                                                  acc( std::move( acc ) ) { };
 
-    /* Citizen comparator based on account codes. */
+    /**
+    * Metoda porovna dva obcany x,y na zaklade kodu jejich bankovniho uctu.
+    * @return true pokud x je abecedne pred y.
+    **/
     static bool CmpAcc ( const CCitizen * x, const CCitizen * y ) {
         return x->acc.code > y->acc.code;
     }
 
-    /* Citizen comparator based on names, addresses if names match. */
+    /**
+    * Metoda porovna dva obcany x,y na zaklade jmena/prijmeni, popr. adresy.
+    * @return true pokud x je abecedne pred y.
+    **/
     static bool CmpNameAddr ( const CCitizen * x, const CCitizen * y ) {
         if ( x->name == y->name )
             return x->addr < y->addr;
         return x->name < y->name;
+    }
+
+    /**
+    * Pretizeny operator pro snadnejsi debugovani.
+    * @param[in] usr: Reference na obcana, ktery bude printovan.
+    * @param[in,out] ost: Reference na vystupni stream.
+    **/
+    friend ostream & operator<< ( ostream & ost, const CCitizen & usr ) {
+        int universal_width = 20;
+        if (
+                !( cout << left << setw( 20 )
+                        << usr.name << " " << setw( universal_width )
+                        << usr.addr << " " << setw( universal_width )
+                        << usr.acc.code << setw( universal_width )
+                        << usr.acc.income << setw( universal_width )
+                        << usr.acc.expense )
+                )
+            ost.setstate( std::ios_base::failbit );
+        return ost;
     }
 };
 
@@ -59,14 +88,18 @@ private:
     const vector<CCitizen *> & origin_ref;
 
 public:
+    /**
+    * Konstruktor kopiruje odkaz na existujici vektor pointeru a na zaklade neho vytvari iterator.
+    **/
     explicit CIterator ( const vector<CCitizen *> & ref ) : origin_ref( ref ) {
-		/*
-		 * The constructor saves the reference to the original vector of pointers.
-		 * The iterator is then constructed based on it.
-		*/
         it = origin_ref.begin( );
     }
 
+    /**
+    * Funkcionalita nasledujicich metod plyne ze zadani domaci ulohy.
+    * Poznamka - bylo by nejspise na miste jeste pridat vyjimku, pokud se pokusime cist z konce iteratoru.
+    * V zadani ulohy ale toto neni uvedeno - vracim prazdny retezec.
+    **/
     bool AtEnd ( ) const {
         return it == origin_ref.end( );
     }
@@ -84,15 +117,16 @@ public:
     }
 };
 
-/*
- * Each instance of this object contains following vectors pointing at the same set of registered citizens:
- * db_code - pointers sorted by bank accounts.
- * db_name - pointers sorted by name/surname, or addresses.
- * This approach gives us ability to binary search trough our register based on current criterion.
- * Example:
- * Income( "Pepa" ) => object knows to search in sorted-by-name container db_name, because we're searching for a name.
-*/
 class CTaxRegister {
+/**
+ * Kazda instance tohoto objektu obsahuje nasledujici vektory ukazujici na stejnou mnozinu registrovanych obcanu.
+ * db_code - udrzuje ukazatele na obcany, serazeny podle bankovnich uctu.
+ * db_name - udrzuje ukazatele na obcany, serazeny podle jmena/prijmeni, popr. adresy.
+ *
+ * Diky temto konzistentne udrzovanym vektorum muzeme obsah registru prochazet efektivneji (binarnim vyhledavanim).
+ * Napriklad:
+ * Income( "Pepa" ) => hledame ve vektoru serazeny jmenovite.. a tak dale.
+**/
 private:
     vector<CCitizen *> db_code;
     vector<CCitizen *> db_name;
@@ -100,16 +134,25 @@ private:
 
 public:
     ~CTaxRegister ( ) {
-        /* Same objects, two vectors referencing them -> freeing up only one is enough. */
+        // Staci uvolnit pouze z jednoho vektoru - kontejnery odkazuji na stejne objekty.
         for ( const CCitizen * i : db_code )
             delete i;
     }
 
-    /*
-     * Method checks the user input and adds new references to the containers.
-     * @param[in] tmp: User input.
-     * @return: true if user input was correct and successfully added into containers.
-    */
+    /**
+     * Metoda vypise vsechny registrovane obcany.
+     * @param[in] code_order: Serazeni. Implicitne vypise serazene podle jmen/prijmeni (false).
+    **/
+    void PrintCitizens ( bool code_order = false ) const {
+        for ( const CCitizen * i : ( code_order ? db_code : db_name ) )
+            cout << * i << endl;
+    }
+
+    /**
+     * Metoda zkontroluje uzivateluv vstup a prida jej do patricnych kontejneru.
+     * @param[in] tmp: Serazeni. Defaultne vypise serazene podle jmen/prijmeni, popr. adres.
+     * @return true, pokud byl vstup korektni a pridani obcana probehla uspesne.
+    **/
     bool ValidateCitizen ( CCitizen * tmp ) {
         if ( db_code.empty( ) && db_name.empty( ) ) {
             db_code.push_back( tmp );
@@ -117,7 +160,7 @@ public:
             return true;
         }
 
-        /* Bank account duplicate check */
+        // Kontrola duplikatu bankovniho uctu.
         auto tmp_it_acc = lower_bound( db_code.begin( ), db_code.end( ), tmp, CCitizen::CmpAcc );
         if (
             tmp_it_acc != db_code.end( ) &&
@@ -128,7 +171,7 @@ public:
             return false;
         }
 
-        /* Name/address duplicate check */
+        // Kontrola duplikatu jmena + adresy:
         auto tmp_it_name = lower_bound( db_name.begin( ), db_name.end( ), tmp, CCitizen::CmpNameAddr );
         if (
             tmp_it_name != db_name.end( ) &&
@@ -139,7 +182,7 @@ public:
             return false;
         }
 
-        /* Searching for the positions to insert to */
+        // Zjisteni pozic na vlozeni do jednotliych vektoru.
         if ( tmp_it_acc != db_code.end( ) )
             db_code.insert( tmp_it_acc, tmp );
         else
@@ -153,20 +196,18 @@ public:
         return true;
     }
 
-	/*
-	 * Method manages the expense/income on the citizen account.
-	 * Many methods bellow  use this one, each one with its own configuration, hence there are more parameters.
-	 *
-	 * Configuration:
-	 * @param[in] code_input: Transaction is based on bank account code (true), name/address (false).
-	 * @param[in]    expense: Transaction is of type expense (true), income (false).
-	 *
-	 * Inputs:
-	 * @param[in] name, addr: Citizen name/address.
-	 * @param[in]       code: Bank account code of the citizen.
-	 * @param[in]     amount: Amount.
-	 * @return true, if user input was corrent and transaction was successful.
-	*/
+    /**
+     * Metoda se stara o zapis prijmu/vydaju na ucet obcana.
+     * Tuto metodu vyuzivaji dalsi metody (Income, Expense), kazda z nich v trosku jine konfiguraci, proto ma vice parametru.
+     * Konfigurace:
+     * @param[in] code_input: Rozhoduje, zda pripisujeme pomoci kodu bankovniho uctu (true), nebo jmena/adresy (false).
+     * @param[in] expense: Rozhoduje, zda pripisujeme vydaj (true), nebo prijem (false).
+     * Vstupy:
+     * @param[in] name, addr: Jmeno/adresa obcana.
+     * @param[in] code: Kod bankovniho uctu obcana.
+     * @param[in] amount: Castka.
+     * @return true, pokud byl vstup korektni a zapis probehl uspesne.
+    **/
     bool ManageWallet ( const bool code_input, const bool expense,
                         const string & name, const string & addr,
                         const string & code,
@@ -175,11 +216,13 @@ public:
         if ( amount <= 0 || db_code.empty( ) )
             return false;
 
-        /* Citizen searching */
+        // Hledani obcana v registru.
         tmp_cit = new CCitizen( name, addr, CWallet( code ) );
         vector<CCitizen *>::iterator tmp_it;
         if ( code_input ) {
             tmp_it = lower_bound( db_code.begin( ), db_code.end( ), tmp_cit, CCitizen::CmpAcc );
+
+            // Jmeno a kod se musi shodovat.
             if ( tmp_it == db_code.end( ) || ( ( * tmp_it )->acc.code != tmp_cit->acc.code ) ) {
                 delete tmp_cit;
                 return false;
@@ -200,6 +243,14 @@ public:
         return true;
     }
 
+    /**
+     * Funkcionalita nasledujicich metod plyne ze zadani domaci ulohy.
+     * Strucne poznamky:
+     * Birth( ) - vyuziva ValidateCitizen(), popsano vyse.
+     * Income( name,.. ) , Income( account ), Expense( name,..), .. - vyuziva ManageWallet() popsano vyse.
+     * Audit( ) - vyhledavani ve vektoru db_name - serazeny podle jmen.
+     * ListByName( ) - Vytvori novy objekt na zaklade reference db_name. Popsano dale v CIterator.
+    **/
     bool Birth ( const string & name, const string & addr, const string & account ) {
         if ( name.empty( ) || addr.empty( ) || account.empty( ) )
             return false;

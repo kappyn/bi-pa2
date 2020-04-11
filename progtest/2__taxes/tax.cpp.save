@@ -161,11 +161,11 @@ public:
 	 * @param[in] code_input: Transaction is based on bank account code (true), name/address (false).
 	 * @param[in]    expense: Transaction is of type expense (true), income (false).
 	 *
-	 * Inputs:
-	 * @param[in] name, addr: Citizen name/address.
-	 * @param[in]       code: Bank account code of the citizen.
-	 * @param[in]     amount: Amount.
-	 * @return true, if user input was corrent and transaction was successful.
+ * Inputs:
+ * @param[in] name, addr: Citizen name/address.
+ * @param[in]       code: Bank account code of the citizen.
+ * @param[in]     amount: Amount.
+ * @return true, if user input was corrent and transaction was successful.
 	*/
     bool ManageWallet ( const bool code_input, const bool expense,
                         const string & name, const string & addr,
