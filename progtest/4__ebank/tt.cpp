@@ -13,6 +13,17 @@
 using namespace std;
 #endif /* __PROGTEST__ */
 
+struct CPair {
+    int x, y;
+    void set ( int a, int b ) {
+        x = a;
+        y = b;
+    }
+    void operator ~ ( ) {
+        cout << "( d_i: " << x << " " << "; c_i: " << y << " )\n";
+    }
+};
+
 class CTransaction {
 public:
     char * debit;
@@ -50,6 +61,7 @@ public:
             ost.setstate( ios_base::failbit );
         return ost;
     }
+
 };
 typedef CTransaction * CTransactionRef;
 
@@ -58,14 +70,11 @@ public:
     char * code;
     int64_t balance;
 
-    CTransactionRef * transaction;
+    CTransactionRef * transactions;
+    int * refs;
     int ts_size = 4;
     int ts_cnt = 0;
 
-    CAccount ( ) {
-        code = new char[2];
-        code[ 0 ] = '\0';
-    }
     CAccount ( const char * id, int bal ) {
         int strl = strlen( id );
         code = new char[strl + 2];
@@ -73,12 +82,14 @@ public:
             code[ i ] = id[ i ];
         code[ strl ] = '\0';
 
-        transaction = new CTransactionRef[ts_size];
+        transactions = new CTransactionRef[ts_size];
+        refs = new int[ts_size];
         balance = bal;
     }
     ~CAccount ( ) {
         delete[] code;
-        delete[] transaction;
+        delete[] transactions;
+        delete[] refs;
     }
 
     CAccount & operator = ( const CAccount & x ) {
@@ -96,13 +107,15 @@ public:
 
         int64_t result = acc.balance;
         for ( int i = 0; i < acc.ts_cnt; ++i ) {
-            CTransaction * curr_t = acc.transaction[ i ];
+            CTransaction * curr_t = acc.transactions[ i ];
             if ( curr_t->debit == acc.code ) {
-                if ( !( ost << " - " << curr_t->amount << ", to: " << curr_t->credit << ", sign: " << curr_t->sign << endl ) )
+                if ( !( ost << " - " << curr_t->amount << ", to: " << curr_t->credit << ", sign: " << curr_t->sign
+                            << endl ) )
                     ost.setstate( ios_base::failbit );
                 result -= ( curr_t->amount );
             } else {
-                if ( !( ost << " + " << curr_t->amount << ", from: " << curr_t->debit << ", sign: " << curr_t->sign << endl ) )
+                if ( !( ost << " + " << curr_t->amount << ", from: " << curr_t->debit << ", sign: " << curr_t->sign
+                            << endl ) )
                     ost.setstate( ios_base::failbit );
                 result += ( curr_t->amount );
             }
@@ -113,41 +126,40 @@ public:
         return ost;
     }
 
-    void PrintTransactions ( ) {
-        for ( int i = 0; i < ts_cnt; ++i )
-            cout << ( * transaction[ i ] );
-    }
-
-    void PushTransaction ( const CTransactionRef & transactionRef ) {
+    void PushTransaction ( const CTransactionRef & transactionRef, int ref ) {
         if ( ts_cnt >= ts_size ) {
             ts_size *= 1.5;
             CTransactionRef * tmp = new CTransactionRef[ts_size];
-            for ( int i = 0; i < ts_cnt; ++i )
-                tmp[ i ] = transaction[ i ];
-            delete[] transaction;
-            transaction = tmp;
+            int * tmp_i = new int[ts_size];
+            for ( int i = 0; i < ts_cnt; ++i ) {
+                tmp[ i ] = transactions[ i ];
+                tmp_i[ i ] = refs[ i ];
+            }
+            delete[] transactions;
+            delete[] refs;
+            transactions = tmp;
+            refs = tmp_i;
         }
-        transaction[ ( ts_cnt++ ) ] = transactionRef;
+        refs[ ts_cnt ] = ref;
+        transactions[ ( ts_cnt++ ) ] = transactionRef;
     }
 
     void WipeTransactions ( ) {
         balance = Balance( );
-        delete [ ] transaction;
+        delete[] transactions;
 
         ts_cnt = 0;
         ts_size = 4;
-        transaction = new CTransactionRef[ ts_size ];
+        transactions = new CTransactionRef[ts_size];
     }
 
     long Balance ( ) {
-//        PrintTransactions();
-
         int64_t result = 0;
         for ( int i = 0; i < ts_cnt; ++i ) {
-            if ( transaction[ i ]->debit == code )
-                result -= ( transaction[ i ]->amount );
+            if ( transactions[ i ]->debit == code )
+                result -= ( transactions[ i ]->amount );
             else
-                result += ( transaction[ i ]->amount );
+                result += ( transactions[ i ]->amount );
         }
 
         return balance + result;
@@ -155,14 +167,15 @@ public:
 };
 typedef CAccount * CAccountRef;
 
+
 class CBank {
 private:
     CAccountRef * accounts;
-    int acc_size = 4;
+    int acc_size = 8;
     int acc_cnt = 0;
 
     CTransactionRef * transactions;
-    int ts_size = 4;
+    int ts_size = 8;
     int ts_cnt = 0;
 
     int UserExists ( const char * accID ) const {
@@ -174,14 +187,65 @@ private:
         return -1;
     }
 
+    CPair * ts_log;
+
 public:
     // default constructor
     CBank ( ) {
         accounts = new CAccountRef[acc_size];
         transactions = new CTransactionRef[ts_size];
+        ts_log = new CPair[ts_size];
     }
 
     // copy constructor
+    CBank ( const CBank & orig ) {
+        acc_size = orig.acc_size;
+        acc_cnt = orig.acc_cnt;
+        ts_size = orig.ts_size;
+        ts_cnt = orig.ts_cnt;
+
+        accounts = new CAccountRef[acc_size];
+        transactions = new CTransactionRef[ts_size];
+        ts_log = orig.ts_log;
+
+        // rebuild accounts
+        for ( int i = 0; i < acc_cnt; ++i ) {
+            accounts[ i ] = new CAccount( orig.accounts[ i ]->code, orig.accounts[ i ]->balance );
+        }
+
+        // rebuild transactions
+        for ( int i = 0; i < ts_cnt; ++i ) {
+            int d_i = ts_log[ i ].x;
+            int c_i = ts_log[ i ].y;
+
+            transactions[ i ] = new CTransaction(
+                    accounts[ d_i ]->code,
+                    accounts[ c_i ]->code,
+                    orig.transactions[ i ]->sign,
+                    orig.transactions[ i ]->amount
+            );
+        }
+
+        // allocate independent transaction log
+        ts_log = new CPair[ts_size];
+        for ( int j = 0; j < ts_cnt; ++j ) {
+            ts_log[ j ] = orig.ts_log[ j ];
+        }
+
+        // rebuild current state of all accounts and their transactions
+        for ( int k = 0; k < acc_cnt; ++k ) {
+            CAccount * x = orig.accounts[ k ];
+            int acc_trans_cnt = x->ts_cnt;
+            if ( !acc_trans_cnt )
+                continue;
+
+            for ( int i = 0; i < acc_trans_cnt; ++i ) {
+                int transaction_index = x->refs[ i ];
+                CTransaction * ts = transactions[ transaction_index ];
+                accounts[ k ]->PushTransaction( ts, transaction_index );
+            }
+        }
+    }
 
     // destructor
     ~CBank ( ) {
@@ -189,9 +253,12 @@ public:
             delete accounts[ i ];
         delete[] accounts;
 
-        for ( int i = 0; i < ts_cnt; ++i )
+        for ( int i = 0; i < ts_cnt; ++i ) {
             delete transactions[ i ];
+        }
+
         delete[] transactions;
+        delete[] ts_log;
     }
 
     // operator =
@@ -235,11 +302,15 @@ public:
         if ( ts_cnt >= ts_size ) {
             ts_size *= 1.5;
             CTransactionRef * tmp = new CTransactionRef[ts_size];
+            CPair * tmp_log = new CPair[ts_size];
             for ( int i = 0; i < ts_cnt; ++i ) {
                 tmp[ i ] = transactions[ i ];
+                tmp_log[ i ] = ts_log[ i ];
             }
             delete[] transactions;
+            delete[] ts_log;
             transactions = tmp;
+            ts_log = tmp_log;
         }
 
         transactions[ ts_cnt ] =
@@ -250,8 +321,10 @@ public:
                         amount
                 );
 
-        accounts[ d_i ]->PushTransaction( transactions[ ts_cnt ] );
-        accounts[ c_i ]->PushTransaction( transactions[ ts_cnt ] );
+        accounts[ d_i ]->PushTransaction( transactions[ ts_cnt ], ts_cnt );
+        accounts[ c_i ]->PushTransaction( transactions[ ts_cnt ], ts_cnt );
+
+        ts_log[ ts_cnt ].set( d_i, c_i );
         ts_cnt++;
 
         return true;
@@ -262,7 +335,7 @@ public:
         if ( ( i = UserExists( accID ) ) == -1 )
             return false;
 
-        accounts[ i ]->WipeTransactions();
+        accounts[ i ]->WipeTransactions( );
         return true;
     }
 
@@ -271,6 +344,17 @@ public:
         if ( i == -1 )
             throw "Account( ) method: Account not found.";
         return ( * accounts[ i ] );
+    }
+
+    void PrintLog ( ) {
+        for ( int i = 0; i < ts_cnt; ++i ) {
+            ~ts_log[ i ];
+        }
+    }
+
+    void PrintTransactions ( ) {
+        for ( int i = 0; i < ts_cnt; ++i )
+            cout << ( * transactions[ i ] );
     }
 };
 
@@ -315,115 +399,131 @@ int main ( ) {
     assert (
             !strcmp( os.str( ).c_str( ), "987654:\n   2980\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 3103\n" ) );
 
-    cout << x0.Account( "987654" ).balance;
-    // OK
-
 
     CBank x2;
     strncpy( accCpy, "123456", sizeof( accCpy ) );
     assert ( x2.NewAccount( accCpy, 1000 ) );
+
     strncpy( accCpy, "987654", sizeof( accCpy ) );
     assert ( x2.NewAccount( accCpy, -500 ) );
 
-//    strncpy( debCpy, "123456", sizeof( debCpy ) );
-//    strncpy( credCpy, "987654", sizeof( credCpy ) );
-//    strncpy( signCpy, "XAbG5uKz6E=", sizeof( signCpy ) );
-//    assert ( x2.Transaction( debCpy, credCpy, 300, signCpy ) );
-//    strncpy( debCpy, "123456", sizeof( debCpy ) );
-//    strncpy( credCpy, "987654", sizeof( credCpy ) );
-//    strncpy( signCpy, "AbG5uKz6E=", sizeof( signCpy ) );
-//    assert ( x2.Transaction( debCpy, credCpy, 2890, signCpy ) );
-//    strncpy( accCpy, "111111", sizeof( accCpy ) );
-//    assert ( x2.NewAccount( accCpy, 5000 ) );
-//    strncpy( debCpy, "111111", sizeof( debCpy ) );
-//    strncpy( credCpy, "987654", sizeof( credCpy ) );
-//    strncpy( signCpy, "Okh6e+8rAiuT5=", sizeof( signCpy ) );
-//    assert ( x2.Transaction( debCpy, credCpy, 2890, signCpy ) );
-//    assert ( x2.Account( "123456" ).Balance( ) == -2190 );
-//    assert ( x2.Account( "987654" ).Balance( ) == 5580 );
-//    assert ( x2.Account( "111111" ).Balance( ) == 2110 );
-//    os.str( "" );
-//    os << x2.Account( "123456" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "123456:\n   1000\n - 300, to: 987654, sign: XAbG5uKz6E=\n - 2890, to: 987654, sign: AbG5uKz6E=\n = -2190\n" ) );
-//    os.str( "" );
-//    os << x2.Account( "987654" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n = 5580\n" ) );
-//    os.str( "" );
-//    os << x2.Account( "111111" );
-//    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   5000\n - 2890, to: 987654, sign: Okh6e+8rAiuT5=\n = 2110\n" ) );
-//    assert ( x2.TrimAccount( "987654" ) );
-//    strncpy( debCpy, "111111", sizeof( debCpy ) );
-//    strncpy( credCpy, "987654", sizeof( credCpy ) );
-//    strncpy( signCpy, "asdf78wrnASDT3W", sizeof( signCpy ) );
-//    assert ( x2.Transaction( debCpy, credCpy, 123, signCpy ) );
-//    os.str( "" );
-//    os << x2.Account( "987654" );
-//    assert (
-//            !strcmp( os.str( ).c_str( ), "987654:\n   5580\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 5703\n" ) );
-//
-//    CBank x4;
-//    assert ( x4.NewAccount( "123456", 1000 ) );
-//    assert ( x4.NewAccount( "987654", -500 ) );
-//    assert ( !x4.NewAccount( "123456", 3000 ) );
-//    assert ( !x4.Transaction( "123456", "666", 100, "123nr6dfqkwbv5" ) );
-//    assert ( !x4.Transaction( "666", "123456", 100, "34dGD74JsdfKGH" ) );
-//    assert ( !x4.Transaction( "123456", "123456", 100, "Juaw7Jasdkjb5" ) );
-//    try {
-//        x4.Account( "666" ).Balance( );
-//        assert ( "Missing exception !!" == NULL );
-//    }
-//    catch ( ... ) {
-//    }
-//    try {
-//        os << x4.Account( "666" ).Balance( );
-//        assert ( "Missing exception !!" == NULL );
-//    }
-//    catch ( ... ) {
-//    }
-//    assert ( !x4.TrimAccount( "666" ) );
-//
-//    CBank x6;
-//    assert ( x6.NewAccount( "123456", 1000 ) );
-//    assert ( x6.NewAccount( "987654", -500 ) );
-//    assert ( x6.Transaction( "123456", "987654", 300, "XAbG5uKz6E=" ) );
-//    assert ( x6.Transaction( "123456", "987654", 2890, "AbG5uKz6E=" ) );
-//    assert ( x6.NewAccount( "111111", 5000 ) );
-//    assert ( x6.Transaction( "111111", "987654", 2890, "Okh6e+8rAiuT5=" ) );
-//    CBank x7( x6 );
-//    assert ( x6.Transaction( "111111", "987654", 123, "asdf78wrnASDT3W" ) );
-//    assert ( x7.Transaction( "111111", "987654", 789, "SGDFTYE3sdfsd3W" ) );
-//    assert ( x6.NewAccount( "99999999", 7000 ) );
-//    assert ( x6.Transaction( "111111", "99999999", 3789, "aher5asdVsAD" ) );
-//    assert ( x6.TrimAccount( "111111" ) );
-//    assert ( x6.Transaction( "123456", "111111", 221, "Q23wr234ER==" ) );
-//    os.str( "" );
-//    os << x6.Account( "111111" );
-//    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   -1802\n + 221, from: 123456, sign: Q23wr234ER==\n = -1581\n" ) );
-//    os.str( "" );
-//    os << x6.Account( "99999999" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "99999999:\n   7000\n + 3789, from: 111111, sign: aher5asdVsAD\n = 10789\n" ) );
-//    os.str( "" );
-//    os << x6.Account( "987654" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 5703\n" ) );
-//    os.str( "" );
-//    os << x7.Account( "111111" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "111111:\n   5000\n - 2890, to: 987654, sign: Okh6e+8rAiuT5=\n - 789, to: 987654, sign: SGDFTYE3sdfsd3W\n = 1321\n" ) );
-//    try {
-//        os << x7.Account( "99999999" ).Balance( );
-//        assert ( "Missing exception !!" == NULL );
-//    }
-//    catch ( ... ) {
-//    }
-//    os.str( "" );
-//    os << x7.Account( "987654" );
-//    assert ( !strcmp( os.str( ).c_str( ),
-//                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n + 789, from: 111111, sign: SGDFTYE3sdfsd3W\n = 6369\n" ) );
-//
+    strncpy( debCpy, "123456", sizeof( debCpy ) );
+    strncpy( credCpy, "987654", sizeof( credCpy ) );
+    strncpy( signCpy, "XAbG5uKz6E=", sizeof( signCpy ) );
+    assert ( x2.Transaction( debCpy, credCpy, 300, signCpy ) );
+
+    strncpy( debCpy, "123456", sizeof( debCpy ) );
+    strncpy( credCpy, "987654", sizeof( credCpy ) );
+    strncpy( signCpy, "AbG5uKz6E=", sizeof( signCpy ) );
+    assert ( x2.Transaction( debCpy, credCpy, 2890, signCpy ) );
+
+    strncpy( accCpy, "111111", sizeof( accCpy ) );
+    assert ( x2.NewAccount( accCpy, 5000 ) );
+
+    strncpy( debCpy, "111111", sizeof( debCpy ) );
+    strncpy( credCpy, "987654", sizeof( credCpy ) );
+    strncpy( signCpy, "Okh6e+8rAiuT5=", sizeof( signCpy ) );
+    assert ( x2.Transaction( debCpy, credCpy, 2890, signCpy ) );
+
+    assert ( x2.Account( "123456" ).Balance( ) == -2190 );
+    assert ( x2.Account( "987654" ).Balance( ) == 5580 );
+    assert ( x2.Account( "111111" ).Balance( ) == 2110 );
+
+    os.str( "" );
+    os << x2.Account( "123456" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "123456:\n   1000\n - 300, to: 987654, sign: XAbG5uKz6E=\n - 2890, to: 987654, sign: AbG5uKz6E=\n = -2190\n" ) );
+
+    os.str( "" );
+    os << x2.Account( "987654" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n = 5580\n" ) );
+
+    os.str( "" );
+    os << x2.Account( "111111" );
+    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   5000\n - 2890, to: 987654, sign: Okh6e+8rAiuT5=\n = 2110\n" ) );
+
+    assert ( x2.TrimAccount( "987654" ) );
+    strncpy( debCpy, "111111", sizeof( debCpy ) );
+    strncpy( credCpy, "987654", sizeof( credCpy ) );
+    strncpy( signCpy, "asdf78wrnASDT3W", sizeof( signCpy ) );
+    assert ( x2.Transaction( debCpy, credCpy, 123, signCpy ) );
+    os.str( "" );
+    os << x2.Account( "987654" );
+    assert (
+            !strcmp( os.str( ).c_str( ), "987654:\n   5580\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 5703\n" ) );
+
+
+    CBank x4;
+    assert ( x4.NewAccount( "123456", 1000 ) );
+    assert ( x4.NewAccount( "987654", -500 ) );
+    assert ( !x4.NewAccount( "123456", 3000 ) );
+    assert ( !x4.Transaction( "123456", "666", 100, "123nr6dfqkwbv5" ) );
+    assert ( !x4.Transaction( "666", "123456", 100, "34dGD74JsdfKGH" ) );
+    assert ( !x4.Transaction( "123456", "123456", 100, "Juaw7Jasdkjb5" ) );
+    try {
+        x4.Account( "666" ).Balance( );
+        assert ( "Missing exception !!" == NULL );
+    }
+    catch ( ... ) {
+    }
+    try {
+        os << x4.Account( "666" ).Balance( );
+        assert ( "Missing exception !!" == NULL );
+    }
+    catch ( ... ) {
+    }
+    assert ( !x4.TrimAccount( "666" ) );
+    // OK
+
+    CBank x6;
+    assert ( x6.NewAccount( "123456", 1000 ) );
+    assert ( x6.NewAccount( "987654", -500 ) );
+    assert ( x6.Transaction( "123456", "987654", 300, "XAbG5uKz6E=" ) );
+    assert ( x6.Transaction( "123456", "987654", 2890, "AbG5uKz6E=" ) );
+    assert ( x6.NewAccount( "111111", 5000 ) );
+    assert ( x6.Transaction( "111111", "987654", 2890, "Okh6e+8rAiuT5=" ) );
+
+    CBank x7( x6 );
+    assert ( x6.Transaction( "111111", "987654", 123, "asdf78wrnASDT3W" ) );
+    assert ( x7.Transaction( "111111", "987654", 789, "SGDFTYE3sdfsd3W" ) );
+    assert ( x6.NewAccount( "99999999", 7000 ) );
+    assert ( x6.Transaction( "111111", "99999999", 3789, "aher5asdVsAD" ) );
+    assert ( x6.TrimAccount( "111111" ) );
+    assert ( x6.Transaction( "123456", "111111", 221, "Q23wr234ER==" ) );
+
+    os.str( "" );
+    os << x6.Account( "111111" );
+    assert ( !strcmp( os.str( ).c_str( ), "111111:\n   -1802\n + 221, from: 123456, sign: Q23wr234ER==\n = -1581\n" ) );
+
+    os.str( "" );
+    os << x6.Account( "99999999" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "99999999:\n   7000\n + 3789, from: 111111, sign: aher5asdVsAD\n = 10789\n" ) );
+
+    os.str( "" );
+    os << x6.Account( "987654" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n + 123, from: 111111, sign: asdf78wrnASDT3W\n = 5703\n" ) );
+
+    os.str( "" );
+    os << x7.Account( "111111" );
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "111111:\n   5000\n - 2890, to: 987654, sign: Okh6e+8rAiuT5=\n - 789, to: 987654, sign: SGDFTYE3sdfsd3W\n = 1321\n" ) );
+
+    try {
+        os << x7.Account( "99999999" ).Balance( );
+        assert ( "Missing exception !!" == NULL );
+    }
+    catch ( ... ) {
+    }
+    os.str( "" );
+    os << x7.Account( "987654" );
+
+    assert ( !strcmp( os.str( ).c_str( ),
+                      "987654:\n   -500\n + 300, from: 123456, sign: XAbG5uKz6E=\n + 2890, from: 123456, sign: AbG5uKz6E=\n + 2890, from: 111111, sign: Okh6e+8rAiuT5=\n + 789, from: 111111, sign: SGDFTYE3sdfsd3W\n = 6369\n" ) );
+
+    
 //    CBank x8;
 //    CBank x9;
 //    assert ( x8.NewAccount( "123456", 1000 ) );
