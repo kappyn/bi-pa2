@@ -27,11 +27,14 @@ https://en.wikipedia.org/wiki/Relational_algebra
 
 ## 2. Vlastní návrh implementace
 ### **Import a export**
-Program bude implementován ve formě konzolové aplikace, ve které si uživatel po jejím spuštění navolí tabulky, se kterými bude pracovat. Aplikace bude umět práci s tabulkami formátů csv/json. 
+Program bude implementován ve formě konzolové aplikace. Konfigurace databázových souborů bude fungovat následovně:
+- V kořenové složce je soubor **sources.cfg** obsahující odkaz na existující **.csv** soubory. Tyto soubory program naimportuje, pokud existují. Pokud existovat nebudou, program je zaregistruje jako vadné, ale program neukončí.
+- Po dokončení importu program informuje o tom, které tabulky byly úspěšně naimportovány. Pouze se správně naimportovanými tabulkami lze nadále pracovat.
 
 Program nebude tolerovat prázdné buňky - pokud se jedná o řetězce, musí být náležitě označeny uvozovkami bez obsahu. Při detekování takovéto buňky program automaticky vyhodí chybovou hlášku. Jméno tabulky je vždy název importovaného souboru, pokud nezvolí uživatel jinak.
 
-### **Dotazování**
+
+### **Relační operátory a operace s množinami**
 Po úspěšném importu tabulek může uživatel zadávat následující dotazy:
 - selekce
 - projekce
