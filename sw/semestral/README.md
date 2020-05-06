@@ -27,22 +27,45 @@ https://en.wikipedia.org/wiki/Relational_algebra
 
 ## 2. Vlastní návrh implementace
 ### **Import a export**
+###### Moduly: CFileManager, CDataParser, CDatabase, CLog
 Program bude implementován ve formě konzolové aplikace. Konfigurace databázových souborů bude fungovat následovně:
-- V kořenové složce je soubor **sources.cfg** obsahující odkaz na existující **.csv** soubory. Tyto soubory program naimportuje, pokud existují. Pokud existovat nebudou, program je zaregistruje jako vadné, ale program neukončí.
+- V kořenové složce je soubor **sources.cfg** obsahující odkaz na existující soubory (musí podporovat CSV formátování).  Tyto soubory program naimportuje, pokud existují. Pokud existovat nebudou, program je zaregistruje jako vadné, ale neukončí se.
 - Po dokončení importu program informuje o tom, které tabulky byly úspěšně naimportovány. Pouze se správně naimportovanými tabulkami lze nadále pracovat.
 
-Program nebude tolerovat prázdné buňky - pokud se jedná o řetězce, musí být náležitě označeny uvozovkami bez obsahu. Při detekování takovéto buňky program automaticky vyhodí chybovou hlášku. Jméno tabulky je vždy název importovaného souboru, pokud nezvolí uživatel jinak.
+Pro správné fungování např. projekce bude nutné specifikovat i datové typy jednotlivých sloupců. K tomu slouží první řádek každého importované tabulky. Podporované datové typy budou  **int**, **string**, **double**. Právě podle těchto sloupců se program rozhoduje, jestli je zbytek záznamů ve správném formátu (jak datovým typem sloupců, tak i jejich součtem).
 
+Druhý řádek tabulky je vždy považován jako hlavička a definice sloupců. Tabulka musí mít alespoň jeden záznam.
+
+**Ukázka**
+
+**`sources.cfg`** obsahuje **`data/uzivatele.csv`**
+
+**`data/uzivatele.csv`**
+
+| string        | string              | int     |
+| ------------- |---------------------|---------|
+| **jmeno**     | **email**           | **vek** |
+| Jan           | novajan@fit.cvut.cz | 20      |
+| Petr          | novpet@fit.cvut.cz  | 24      |
 
 ### **Relační operátory a operace s množinami**
-Po úspěšném importu tabulek může uživatel zadávat následující dotazy:
-- selekce
-- projekce
-- přirozené spojení
-- obecné spojení
+###### Moduly: CConsole, CDatabase, CTable
+Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy.
+
+- ##### selekce
+sfapofsapofas
+
+- ##### projekce
+sdpaodpsa
+
+- ##### přirozené spojení
+dadasdsad
+
+- ##### obecné spojení
+dsadsad
 
 Každý z těchto dotazů musí být ukončen středníkem.
-K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **help**. Při volání těchto operací program nebude case sensitive.
+K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **help**.
 
 ### **Využití polymorfismu**
 

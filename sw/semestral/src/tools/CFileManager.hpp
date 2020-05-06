@@ -4,8 +4,9 @@
 #include <fstream>
 #include <vector>
 
-#include "CDatabase.hpp"
+#include "../database/CDatabase.hpp"
 #include "CDataParser.hpp"
+#include "../console/CLog.hpp"
 
 using namespace std;
 

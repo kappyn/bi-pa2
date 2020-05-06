@@ -1,11 +1,11 @@
 #!/bin/bash
 
 clear;
-g++ -Wall -pedantic -g src/*.cpp -o main && ./main;
+g++ -Wall -pedantic -g main.cpp src/*/*.cpp -o bin/main && ./bin/main;
 
-inotifywait -q -m -e close_write src/*.cpp data/* |
+inotifywait -q -m -e close_write main.cpp src/*/*.cpp data/* sources.cfg |
 while read -r filename event; do
 	clear;
 	printf "\nUpdate at %s\n" $( date +"%T" );
-	g++ -Wall -pedantic -g src/*.cpp -o main && ./main;
+	g++ -Wall -pedantic -g main.cpp src/*/*.cpp -o bin/main && ./bin/main;
 done
