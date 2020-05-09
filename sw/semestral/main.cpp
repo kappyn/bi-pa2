@@ -9,6 +9,6 @@ int main ( ) {
 	CFileManager FileManager { "sources.cfg", Database };
 	FileManager.LoadTables( );
 	Database.PrintTables( );
-	CConsole::Start( );
+//	CConsole::Start( );
 	return 0;
 }

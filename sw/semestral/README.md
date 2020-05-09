@@ -42,14 +42,14 @@ Druhý řádek tabulky je vždy považován jako hlavička a definice sloupců. 
 
 **`data/uzivatele.csv`**
 
-| string        | string              | int     |
-| ------------- |---------------------|---------|
-| **jmeno**     | **email**           | **vek** |
-| Jan           | novajan@fit.cvut.cz | 20      |
-| Petr          | novpet@fit.cvut.cz  | 24      |
+| string          | string                | int       |
+| :-------------: |:---------------------:|:---------:|
+| **jmeno**       | **email**             | **vek**   |
+| Jan             | novajan@fit.cvut.cz   | 20        |
+| Petr            | novpet@fit.cvut.cz    | 24        |
 
 ### **Relační operátory a operace s množinami**
-###### Moduly: CConsole, CDatabase, CTable
+###### Moduly: CConsole, CDatabase, CTable, CCell
 Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy.
 
 - ##### selekce
@@ -68,8 +68,9 @@ Každý z těchto dotazů musí být ukončen středníkem.
 K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **help**.
 
 ### **Využití polymorfismu**
+###### Moduly: CCell, CString, CDouble, CInt
+Polymorfismus bude využíván ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky zapouzdrující string, int a double, které z CCell dědí.   
 
-### **Testování**
-
-Ve složce test budou uloženy základní testy.
-
+### **Testy**
+Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých funkcionalit.
+Pro spuštění testu stačí konkrétní test přidat do **sources.cfg** a spustit přes zkompilovanou verzi programu.
