@@ -20,6 +20,9 @@ const string CLog::CON_INVALID_QUERY  = "\u001b[31m command not recognized..\u00
 const string CLog::CON_EOF_DETECTED   = "EOF detected. Exiting application.";
 const char   CLog::CON_PROMPT_CHAR    = '>';
 
+const string CLog::TAB_NO_BODY        = "Unable to render - table body is missing.";
+const string CLog::TAB_INVALID_INDEX  = "Invalid index.";
+
 void CLog::Msg ( const string & branch, const string & message, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << message << endl;
 }

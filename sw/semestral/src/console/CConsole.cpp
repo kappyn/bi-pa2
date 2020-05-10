@@ -32,6 +32,8 @@ void CConsole::Start ( ) {
 	}
 }
 
-bool CConsole::ParseQuery ( string basicString ) {
+bool CConsole::ParseQuery ( const string & basicString ) {
+	string tmp = basicString;
+
 	return false;
 }

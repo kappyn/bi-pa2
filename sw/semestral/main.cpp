@@ -5,10 +5,13 @@
 using namespace std;
 
 int main ( ) {
-	CDatabase Database { "Mock database" };
+	// basic program configuration
+	CDatabase Database { "Mock DB" };
 	CFileManager FileManager { "sources.cfg", Database };
+
+	// program itself
 	FileManager.LoadTables( );
 	Database.PrintTables( );
-//	CConsole::Start( );
+	CConsole::Start( );
 	return 0;
 }

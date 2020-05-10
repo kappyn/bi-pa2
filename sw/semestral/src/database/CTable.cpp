@@ -1,8 +1,10 @@
 #include "CTable.hpp"
 
-CTable::CTable ( vector<CCell *> header ) {
-	m_Columns = header.size( );
-	m_Data.push_back( std::move( header ) );
+CTable::CTable ( const vector<CCell *> & header ) {
+	m_Data.reserve( header.size( ) );
+	for ( const auto & i : header ) {
+		m_Data.push_back( vector<CCell *> { i } );
+	}
 }
 
 CTable::~CTable ( ) {
@@ -11,95 +13,87 @@ CTable::~CTable ( ) {
 			delete j;
 }
 
-void CTable::InsertRow ( vector<CCell *> row ) {
-	m_Data.push_back( std::move( row ) );
+bool CTable::InsertRow ( const vector<CCell *> & row ) {
+	if ( m_Data.size( ) != row.size( ) )
+		return false;
+	auto d = m_Data.begin( );
+	auto r = row.begin( );
+	while ( d != m_Data.end( ) ) {
+		d->push_back( * r );
+		++ d;
+		++ r;
+	}
+	return true;
 }
 
 size_t CTable::GetColumnCount ( ) const {
-	return m_Columns;
+	return m_Data.size( );
 }
 
 vector<size_t> CTable::GetCellPadding ( ) const {
-	vector<size_t> result( GetColumnCount( ), 0 );
+	vector<size_t> result( m_Data.size( ), 0 );
 	int counter = 0;
 	for ( const auto & j : m_Data ) {
 		for ( const CCell * k : j ) {
 			size_t k_len = k->GetLength( );
-			if ( k_len > result[ counter ] )
-				result[ counter ] = k_len;
-			counter ++;
+			if ( k_len > result.at( counter ) )
+				result.at( counter ) = k_len;
 		}
-		counter = 0;
+		counter ++;
 	}
 	return result;
 }
 
-const vector<CCell *> * CTable::GetRow ( const size_t & index ) const {
-	if ( index < 0 || index >= m_Data.size( ) )
-		throw std::out_of_range( "Index is out of bounds." );
-	return & m_Data.at( index );
-}
-
 void CTable::Render ( ostream & ost ) const {
+	if ( m_Data.begin( )->size( ) == 1 )
+		throw logic_error( CLog::TAB_NO_BODY );
+
 	vector<size_t> paddings = GetCellPadding( );
-
-	char rowCharacter = '-';
-	char columnCharacter = '|';
-	string frontPadding = "  ";
-	string spacePadding;
-	spacePadding.append( "  " );
-	spacePadding += columnCharacter;
-	spacePadding.append( "  " );
-
-	size_t rowLen = ( GetColumnCount( ) * spacePadding.size( ) ) + 1; // 5 is the length of colspace
+	size_t rowLen = ( GetColumnCount( ) * CRenderSett::m_SpacePad.size( ) ) + 1;
 	for ( const size_t & i : paddings )
 		rowLen += i;
 	size_t tmp = rowLen;
 
-	RenderSeparator( rowLen, rowCharacter, frontPadding, tmp );
+	RenderSeparator( rowLen, tmp );
 
 	// header
 	int currentColumn = 0;
-	auto j = m_Data.begin( );
-
-	ost << spacePadding;
-	for ( const CCell * columnName : * j ) {
-		ost << setw( paddings[ currentColumn ++ ] ) << left;
-		columnName->Print( ) << spacePadding;
+	ost << CRenderSett::m_SpacePad;
+	for ( const auto & columnName : m_Data ) {
+		ost << setw( paddings.at( currentColumn ++ ) ) << left;
+		columnName.at( 0 )->Print( ) << CRenderSett::m_SpacePad;
 	}
 	ost << endl;
 
-	// separator
-	RenderSeparator( rowLen, rowCharacter, frontPadding, tmp );
+	RenderSeparator( rowLen, tmp );
 
 	// body
 	currentColumn = 0;
-	j ++;
-	for ( ; j != m_Data.end( ); ++ j ) {
-		ost << spacePadding;
-		for ( const CCell * k : * j ) {
+	size_t colSize = m_Data.begin( )->size( );
+	for ( size_t i = 1; i < colSize; ++ i ) {
+		ost << CRenderSett::m_SpacePad;
+		for ( const auto & j : m_Data ) {
 			ost << setw( paddings[ currentColumn ++ ] ) << left;
-			k->Print( ) << spacePadding;
+			j.at( i )->Print( ) << CRenderSett::m_SpacePad;
 		}
 		currentColumn = 0;
 		ost << endl;
 	}
 
-	// end separator
-	RenderSeparator( rowLen, rowCharacter, frontPadding, tmp );
+	RenderSeparator( rowLen, tmp );
 }
 
-void CTable::RenderRow ( ostream & ost ) const {
-	for ( const auto & i : m_Data[ 0 ] )
-		i->Print( ) << " ";
-	ost << endl;
+vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const {
+	if ( index < 0 || index > m_Data.size( ) )
+		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
+	return m_Data.at( index );
 }
 
-void CTable::RenderSeparator ( const size_t & length, const char & rowchar, const string & pad, size_t & tmp, ostream & ost ) {
-	ost << pad;
+void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost ) {
+	ost << CRenderSett::m_FrontPad;
 	tmp = length;
 	while ( tmp -- )
-		ost << rowchar;
+		ost << CRenderSett::m_RowChar;
 	ost << endl;
 	tmp = 0;
 }

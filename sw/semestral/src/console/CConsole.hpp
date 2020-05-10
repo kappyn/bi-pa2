@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CLog.hpp"
+#include "../tools/CDataParser.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -9,5 +10,5 @@
 class CConsole {
 public:
 	static void Start ( );
-	static bool ParseQuery ( string basicString );
+	static bool ParseQuery ( const string & basicString );
 };

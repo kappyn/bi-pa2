@@ -151,7 +151,9 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 				newTypedRow.push_back( new CDouble( stod( i ) ) );
 			++ cnt;
 		}
-		parsedResult->InsertRow( std::move( newTypedRow ) );
+
+		if ( ! parsedResult->InsertRow( newTypedRow ) )
+			return false;
 	}
 	db.InsertTable( filePath, parsedResult );
 	return true;

@@ -1,3 +1,4 @@
+int, int, int, string, string
 "Index", "Year", "Age", "Name", "Movie"
  1, 1928, 22, "Janet Gaynor", "Seventh Heaven, Street Angel and Sunrise: A Song of Two Humans"
  2, 1929, 37, "Mary Pickford", "Coquette"

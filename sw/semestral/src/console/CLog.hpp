@@ -36,4 +36,7 @@ public:
 	static const string CON_INVALID_QUERY;
 	static const string CON_EOF_DETECTED;
 	static const char   CON_PROMPT_CHAR;
+
+	static const string TAB_NO_BODY;
+	static const string TAB_INVALID_INDEX;
 };

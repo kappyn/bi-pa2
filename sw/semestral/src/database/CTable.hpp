@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CCell.hpp"
+#include "CRenderSett.hpp"
+#include "../console/CLog.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -13,17 +15,17 @@ using namespace std;
 class CTable {
 private:
 	vector<vector<CCell *>> m_Data;
-	size_t m_Columns;
 
 public:
-	explicit CTable ( vector<CCell *> header );
+	explicit CTable ( const vector<CCell *> & header );
 	~CTable ( );
-	void InsertRow ( vector<CCell *> row );
+
+	bool InsertRow ( const vector<CCell *> & row );
 	size_t GetColumnCount ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
-	const vector<CCell *> * GetRow ( const size_t & index ) const;
+
 	void Render ( ostream & ost = cout ) const;
-	void RenderRow ( ostream & ost = cout ) const;
-	static void RenderSeparator ( const size_t & length, const char & rowchar, const string & pad, size_t & tmp, ostream & ost = cout ) ;
+	vector<CCell *> RenderCol ( const size_t & index, ostream & ost = cout ) const;
+	static void RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost = cout );
 	friend ostream & operator << ( ostream & ost, const CTable & table );
 };
