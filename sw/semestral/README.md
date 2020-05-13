@@ -1,4 +1,5 @@
-###**Semestrální práce z BI-PA2, LS 2020** 
+###**Semestrální práce z BI-PA2, LS 2020**
+
 #**Dotazování v relační algebře**
 
 ## 1. Úvodní zadání práce
@@ -65,7 +66,7 @@ Použití: ``SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );``
 ##### Projekce
 Popis operace: Vybere záznamy tabulky na základě kritérií.\
 Použití: ``PRO[ podminka ]( "jmeno_tabulky" );``\
-Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>,<=,=>``. Operandy nelze zaměnit.
+Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
 
 ---
 
