@@ -1,6 +1,6 @@
-###**Semestrální práce z BI-PA2, LS 2020**
+### **Semestrální práce z BI-PA2, LS 2020**
 
-#**Dotazování v relační algebře**
+# **Dotazování v relační algebře**
 
 ## 1. Úvodní zadání práce
 Dotazování pomocí SQL dotazů je dnes běžnou praxí, ale relační algebra příliš podporovaná není. A přitom určité typy dotazů jsou snáze realizovatelné v RA než v SQL. A proto je vhodné mít k dispozici program, který tyto dotazy podporuje.
