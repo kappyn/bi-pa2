@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../database/CDatabase.hpp"
-#include "../tools/CFileManager.hpp"
+#include "../tool/CFileManager.hpp"
 #include "CConsole.hpp"
 
 class CApplication {

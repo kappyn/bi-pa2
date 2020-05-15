@@ -2,7 +2,7 @@
 
 #include "CLog.hpp"
 #include "CQueryParser.hpp"
-#include "../tools/CDataParser.hpp"
+#include "../tool/CDataParser.hpp"
 
 #include <iostream>
 #include <iomanip>

@@ -117,13 +117,14 @@ Každý z těchto dotazů musí být ukončen středníkem.
 K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **HELP**.
 
 ### **Využití polymorfismu**
-###### Moduly: CCell, CString, CDouble, CInt, CTable
+###### Moduly: CCell, CString, CDouble, CInt, CTable, CTableQuery, CBinaryOperator, CUnaryOperator
 
-- První využití polymorfismu bude ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky (využíváme dynamické vazbu) zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla). Tyto třídy jsou tedy připraveny na jakoukoliv další nástavbu.
+- První využití polymorfismu bude ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky (využíváme dynamické vazbu) zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla). Tyto třídy jsou tedy připraveny na jakoukoliv další nástavbu (například úplně vlastní objekt).
 
-- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná hotová, protože je velmi závislá na ostatních částech programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování)._
- 
-- Každý dotaz má jiné chování a výsledek. A protože bude nutné dotazy ukládat, je důležité, aby každý z nich vycházel z nějaké abstraktní třídy (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje.
+---
+
+- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná, protože se hodně odvíjí od ostatních částí programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování). Proto tuto část považuji hlavně jako úvahu, jak by to mohlo v budoucnu vypadat:_\
+ Každý dotaz má jiné chování a výsledek. Může být například unární/binární, a je nutné, aby byl program schopen všechny dotazy ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje. Hrubá představa hierarchie tříd je ve složce **src/query**.
    
 ### **Testy**
 Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
