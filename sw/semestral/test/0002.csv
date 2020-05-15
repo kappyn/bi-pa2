@@ -1,8 +1,11 @@
-string, string, string, int, int, double
-"Name", "Team", "Position", "Height", "Weight", "Age"
+int,string,string,string,string,string
+id,first_name,last_name,email,gender,ip_address
 
-"Adam Donachie", "BAL", "Catcher", 74, 180, 22.99
-"Paul Bako", "BAL", "Catcher", 74, 215, 34.69
-"Ramon Hernandez", "BAL", "Catcher", 72, 210, 30.78
-"Chris Gomez", "BAL", "First Baseman", 73, 188, 35.71
-"Kevin Millar", "BAL", "First Baseman", 72, 210, 35.43
+993,Zach,Thirlaway,zthirlawayrk@google.fr,Male,230.151.185.199
+994,Fifine,Mulholland,fmulhollandrl@mashable.com,Female,212.55.93.11
+995,Roana,Mallender,rmallenderrm@livejournal.com,Female,194.57.220.148
+996,Allys,Nice,anicern@nydailynews.com,Female,135.55.105.83
+997,Loydie,Mancktelow,lmancktelowro@samsung.com,Male,107.244.138.229
+998,Pat,Mallan,pmallanrp@diigo.com,Female,109.24.59.85
+999,Kip,Harbor,kharborrq@blogspot.com,Male,90.222.89.93
+1000,Curtice,Thulborn,cthulbornrr@nydailynews.com,Male,124.125.168.108

@@ -1,17 +1,6 @@
-#include "src/database/CDatabase.hpp"
-#include "src/tools/CFileManager.hpp"
-#include "src/console/CConsole.hpp"
-
-using namespace std;
+#include "src/console/CApplication.hpp"
 
 int main ( ) {
-	// basic program configuration
-	CDatabase Database { "Mock DB" };
-	CFileManager FileManager { "sources.cfg", Database };
-
-	// program itself
-	FileManager.LoadTables( );
-	Database.PrintTables( );
-	CConsole::Start( );
-	return 0;
+	 CApplication App { "MOCK DB", "sources.cfg" };
+	 return App.Run( );
 }

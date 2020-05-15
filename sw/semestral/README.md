@@ -42,6 +42,7 @@ Druhý řádek tabulky bude považován jako hlavička a definice sloupců. Tabu
 
 **`data/uzivatele.csv`** obsahuje:
 
+
 ```
 int, string, string, string, string, double, int
 id, first_name, last_name, email, gender, ratio, overall_score
@@ -100,21 +101,29 @@ Použití: ``MINUS( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
-##### Kartézský součin
+##### Kartézský součin (Cartesian product)
 Popis operace: Spojení dvou tabulek se všemi sloupci, záznamy jsou množinou všech možných n-tic záznamů tabulky A se záznamy z tabulky B.\
-Použití: ``XJOIN( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``CP( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
+##### Ukládání dotazu do proměnné
+Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné.\
+Použití: ``SEL[ vek >= 18 ]( uzivatele ) === dospeli``
+
+---
 
 Každý z těchto dotazů musí být ukončen středníkem.
-K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **help**.
+K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **HELP**.
 
 ### **Využití polymorfismu**
-###### Moduly: CCell, CString, CDouble, CInt
+###### Moduly: CCell, CString, CDouble, CInt, CTable
 
-1. Polymorfismus bude využíván ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla).
-2. 
+- První využití polymorfismu bude ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky (využíváme dynamické vazbu) zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla). Tyto třídy jsou tedy připraveny na jakoukoliv další nástavbu.
+
+- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná hotová, protože je velmi závislá na ostatních částech programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování)._
+ 
+- Každý dotaz má jiné chování a výsledek. A protože bude nutné dotazy ukládat, je důležité, aby každý z nich vycházel z nějaké abstraktní třídy (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje.
    
 ### **Testy**
 Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
