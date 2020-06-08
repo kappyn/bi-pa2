@@ -119,8 +119,6 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 	auto * parsedResult = new CTable { header };
 
-	//
-
 	int lines = 2;
 
 	// table rows

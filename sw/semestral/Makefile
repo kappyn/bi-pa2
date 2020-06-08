@@ -61,4 +61,4 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/**/%.cpp
 	$(MKDIR) $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-#-include Makefile.d
+-include Makefile.d

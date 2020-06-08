@@ -3,6 +3,9 @@
 #include "CTableQuery.hpp"
 
 class CBinaryOperator : public CTableQuery {
+
+
+
 };
 
 class CNJoin : public CBinaryOperator {};
