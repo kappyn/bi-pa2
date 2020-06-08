@@ -59,56 +59,66 @@ Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotaz
 ---
 
 #### Selekce
-Popis operace: Vybere konkrétní sloupce z tabulky.\
+Popis operace: Vybere konkrétní sloupce z tabulky.
+
 Použití: ``SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );`` 
 
 ---
 
 #### Projekce
-Popis operace: Vybere záznamy tabulky na základě kritérií.\
-Použití: ``PRO[ podminka ]( "jmeno_tabulky" );``\
+Popis operace: Vybere záznamy tabulky na základě kritérií.
+
+Použití: ``PRO[ podminka ]( "jmeno_tabulky" );``
+
 Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
 
 ---
 
 #### Přirozené spojení
-Popis operace: Hledá společný sloupec dvou tabulek, pokud jej najde, výsledkem je tabulka se sloupci z obou těchto tabulek se záznamy, které mají stejnou hodnotu ve společném sloupci.\
+Popis operace: Hledá společný sloupec dvou tabulek, pokud jej najde, výsledkem je tabulka se sloupci z obou těchto tabulek se záznamy, které mají stejnou hodnotu ve společném sloupci.
+
 Použití: ``NJOIN( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Obecné spojení
-Popis operace: Spojení dvou tabulek na základě sloupce, který uživatel definuje.\
+Popis operace: Spojení dvou tabulek na základě sloupce, který uživatel definuje.
+
 Použití: ``JOIN[ "jmeno_sloupce" ]( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Sjednocení
-Popis operace: Množinové sloučení všech záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.\
+Popis operace: Množinové sloučení všech záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.
+
 Použití: ``UNION( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Průnik
-Popis operace: Množinový průnik záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.\
+Popis operace: Množinový průnik záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.
+
 Použití: ``INTERSECT( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Rozdíl
-Popis operace: Množinový rozdíl záznamů tabulky A s tabulkou B. Obě tabulky musí mít stejné sloupce.\
+Popis operace: Množinový rozdíl záznamů tabulky A s tabulkou B. Obě tabulky musí mít stejné sloupce.
+
 Použití: ``MINUS( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Kartézský součin (Cartesian product)
-Popis operace: Spojení dvou tabulek se všemi sloupci, záznamy jsou množinou všech možných n-tic záznamů tabulky A se záznamy z tabulky B.\
+Popis operace: Spojení dvou tabulek se všemi sloupci, záznamy jsou množinou všech možných n-tic záznamů tabulky A se záznamy z tabulky B.
+
 Použití: ``CP( "jmeno_tabulky", "jmeno_tabulky" );``
 
 ---
 
 #### Ukládání dotazu do proměnné
-Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné.\
+Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné.
+
 Použití: ``SEL[ vek >= 18 ]( uzivatele ) === dospeli``
 
 ---
@@ -124,20 +134,25 @@ K této základní sadě příkazů této aplikace se bude uživatel kdykoli sch
 
 ---
 
-- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná, protože se hodně odvíjí od ostatních částí programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování). Proto tuto část považuji hlavně jako úvahu, jak by to mohlo v budoucnu vypadat:_\
- Každý dotaz má jiné chování a výsledek. Může být například unární/binární, a je nutné, aby byl program schopen všechny dotazy ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje. Hrubá představa hierarchie tříd je ve složce **src/query**.
-   
+- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná, protože se hodně odvíjí od ostatních částí programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování). Proto tuto část považuji hlavně jako úvahu, jak by to mohlo v budoucnu vypadat:_ 
+ 
+     Každý dotaz má jiné chování a výsledek. Může být například unární/binární, a je nutné, aby byl program schopen všechny dotazy ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje. Hrubá představa hierarchie tříd je ve složce **src/query**.
+       
 ## Testy
 Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
 Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ## Nástroje a instalace
-``make`` vygeneruje dokumentaci, vytvoří spustitelnou aplikaci\
+``make`` vygeneruje dokumentaci, vytvoří spustitelnou aplikaci
 
-``make run`` spustí aplikaci\
-``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind)\
-``make dev`` spustí skript, který sleduje změnu souborů (live filewatch)\
+``make run`` spustí aplikaci
 
-``make doc`` vygeneruje dokumentaci\
-``make dep`` vygeneruje veškeré makefile dependencies na základě výstupu z g++ -MM.\
-``make clean`` smaže veškeré předchozí vygenerované instalace\
+``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind)
+
+``make dev`` spustí skript, který sleduje změnu souborů (live filewatch)
+
+``make doc`` vygeneruje dokumentaci
+
+``make dep`` vygeneruje veškeré makefile dependencies na základě výstupu z g++ -MM.
+
+``make clean`` smaže veškeré předchozí vygenerované instalace

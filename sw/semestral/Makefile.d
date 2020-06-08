@@ -5,6 +5,7 @@ build/CRenderSett.o: src/database/CRenderSett.cpp src/database/CRenderSett.hpp
 build/CTable.o: src/database/CTable.cpp src/database/CTable.hpp \
  src/database/CCell.hpp src/database/CRenderSett.hpp \
  src/database/../console/CLog.hpp
+build/CCell.o: src/database/CCell.cpp src/database/CCell.hpp
 build/CLog.o: src/console/CLog.cpp src/console/CLog.hpp
 build/CConsole.o: src/console/CConsole.cpp src/console/CConsole.hpp \
  src/console/CLog.hpp src/console/CQueryParser.hpp \
