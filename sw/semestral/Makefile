@@ -1,5 +1,5 @@
-.PHONY            = all compile run memcheck dev clean
-.DEFAULT_GOAL     = all
+.PHONY            = all compile run memcheck fwatch clean dev
+.DEFAULT_GOAL     = dev
 
 # sources
 TARGET     		  = kroupkev
@@ -29,6 +29,9 @@ CHECKFLAGS 		  = --leak-check=full --tool=memcheck
 all: clean dep compile doc
 	@echo "$(COLOR_MSG)Makefile routine completed.$(COLOR_DEF)"
 
+dev: clean dep compile fwatch
+	@echo "$(COLOR_MSG)Development makefile routine completed.$(COLOR_DEF)"
+
 compile: $(TARGET)
 	@echo "$(COLOR_MSG)Source files have been compiled.$(COLOR_DEF)"
 
@@ -40,7 +43,7 @@ memcheck: $(TARGET)
 	@echo "$(COLOR_MSG)Starting memory check..$(COLOR_DEF)"
 	$(CHECK) $(CHECKFLAGS) ./$(TARGET)
 
-dev:
+fwatch:
 	@echo "$(COLOR_MSG)Starting dev filewatcher..$(COLOR_DEF)"
 	./filewatch
 
@@ -50,6 +53,7 @@ clean:
 
 dep:
 	find src/ -name *.cpp | xargs $(CXX) -MM > Makefile.d
+	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' Makefile.d
 	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
 doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)

@@ -10,12 +10,6 @@ private:
 	CFileManager m_FileManager;
 
 public:
-	CApplication ( const string & dbName, const string & srcName ) : m_Database( CDatabase{ dbName } ), m_FileManager( srcName, m_Database ) {
-		m_FileManager.LoadTables( );
-		m_Database.PrintTables( );
-	}
-
-	int Run ( ) {
-		return CConsole::Start( );
-	}
+	CApplication ( const string & dbName, const string & srcName );
+	int Run ( );
 };
