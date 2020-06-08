@@ -118,6 +118,9 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		header.push_back( new CString( std::move( i ) ) );
 
 	auto * parsedResult = new CTable { header };
+
+	//
+
 	int lines = 2;
 
 	// table rows
