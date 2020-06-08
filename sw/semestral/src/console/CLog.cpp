@@ -23,16 +23,34 @@ const char   CLog::CON_PROMPT_CHAR    = '>';
 const string CLog::TAB_NO_BODY        = "Unable to render - table body is missing.";
 const string CLog::TAB_INVALID_INDEX  = "Invalid index.";
 
+/**
+ * Standart message.
+ * @param[in] branch module from where the message is originated
+ * @param[in] message log message string
+ * @param[in, out] ost output stream to log to.
+ */
 void CLog::Msg ( const string & branch, const string & message, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << message << endl;
 }
 
+/**
+ * Highlighted message
+ * @param[in] branch module from where the message is originated
+ * @param[in] highlighted highlighted part of the message
+ * @param[in] message log message string
+ * @param[in, out] ost output stream to log to.
+ */
 void
 CLog::HighlightedMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << "\u001b[1m"
 	<< string( "\"\u001b[1m" ).append( highlighted ).append( "\u001b[0m\"" ) << message << endl;
 }
 
+/**
+ * Prints a CLI prompt.
+ * @param[in] promptChar prompt character to be printed
+ * @param[in, out] ost output stream to log to.
+ */
 void CLog::CmdPromp ( const char & promptChar, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING + 1 ) << right << promptChar << " ";
 }

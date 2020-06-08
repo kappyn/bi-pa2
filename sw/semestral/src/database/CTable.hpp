@@ -12,6 +12,9 @@
 
 using namespace std;
 
+/**
+ * This module is the most essential part for the database. Forms tables with their respective cells.
+ */
 class CTable {
 private:
 	vector<vector<CCell *>> m_Data;

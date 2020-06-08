@@ -1,5 +1,8 @@
 #include "CTable.hpp"
 
+/**
+ * Constructor which initializes the component with pre-defined header. This header contains column names.
+ */
 CTable::CTable ( const vector<CCell *> & header ) {
 	m_Data.reserve( header.size( ) );
 	for ( const auto & i : header ) {
@@ -7,12 +10,20 @@ CTable::CTable ( const vector<CCell *> & header ) {
 	}
 }
 
+/**
+ * Destructor for each cell. Each cell also has its own destructor.
+ */
 CTable::~CTable ( ) {
 	for ( auto & i : m_Data )
 		for ( auto & j : i )
 			delete j;
 }
 
+/**
+ * Table row insertion.
+ * @param[in] row Row to be inserted
+ * @return true if row was inserted without errors
+ */
 bool CTable::InsertRow ( const vector<CCell *> & row ) {
 	if ( m_Data.size( ) != row.size( ) )
 		return false;
@@ -30,6 +41,10 @@ size_t CTable::GetColumnCount ( ) const {
 	return m_Data.size( );
 }
 
+/**
+ * Calculates the widest cell for each column (needed for rendering)
+ * @return vector of cell sizes for each column
+ */
 vector<size_t> CTable::GetCellPadding ( ) const {
 	vector<size_t> result( m_Data.size( ), 0 );
 	int counter = 0;
@@ -44,6 +59,10 @@ vector<size_t> CTable::GetCellPadding ( ) const {
 	return result;
 }
 
+/**
+ * Renders the table data into output stream.
+ * @param[in,out] ost output stream.
+ */
 void CTable::Render ( ostream & ost ) const {
 	if ( m_Data.begin( )->size( ) == 1 )
 		throw logic_error( CLog::TAB_NO_BODY );
@@ -83,12 +102,9 @@ void CTable::Render ( ostream & ost ) const {
 	RenderSeparator( rowLen, tmp );
 }
 
-vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const {
-	if ( index < 0 || index > m_Data.size( ) )
-		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
-	return m_Data.at( index );
-}
-
+/**
+ * Creates character separators for the table rendering.
+ */
 void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost ) {
 	ost << CRenderSett::m_FrontPad;
 	tmp = length;
@@ -96,6 +112,18 @@ void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & os
 		ost << CRenderSett::m_RowChar;
 	ost << endl;
 	tmp = 0;
+}
+
+/**
+ * Renders a specified column of the table.
+ * @param[in] index index of the column in the table
+ * @param[in,out] ost output stream.
+ * TODO: not fully functional yet.
+ */
+vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const {
+	if ( index < 0 || index > m_Data.size( ) )
+		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
+	return m_Data.at( index );
 }
 
 ostream & operator << ( ostream & ost, const CTable & table ) {

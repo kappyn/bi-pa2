@@ -1,5 +1,10 @@
 #include "CFileManager.hpp"
 
+/**
+ * Constructor that creates a stream based on the config file path.
+ * @param[in, out] configFile path to the configuration file
+ * @param[in, out] database reference to the database we're going to load to
+ */
 CFileManager::CFileManager ( const string & configFile, CDatabase & database ) : m_Database( database ) {
 	m_ConfigStream.open( configFile, ios::in );
 	if ( ! m_ConfigStream )
@@ -11,6 +16,9 @@ CFileManager::CFileManager ( const string & configFile, CDatabase & database ) :
 	CLog::Msg( CLog::FM, CLog::FM_CFG_FOUND );
 }
 
+/**
+ * This method serves tasks to the parser module, validates correct number of imported tables.
+ */
 void CFileManager::LoadTables ( ) {
 	CLog::Msg( CLog::FM, CLog::FM_LOADING );
 	string tableFilePath;

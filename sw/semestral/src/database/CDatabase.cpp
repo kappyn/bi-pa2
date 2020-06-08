@@ -1,20 +1,37 @@
 #include "CDatabase.hpp"
 
-CDatabase::CDatabase ( const string & name ) : m_Name( name ) {
+/**
+ * Constructor that initializes a database with a name.
+ * @param[in] name name of the database.
+ */
+CDatabase::CDatabase ( string name ) : m_Name( std::move( name ) ) {
 	transform( m_Name.begin( ), m_Name.end( ), m_Name.begin( ), ::toupper );
 }
 
+/**
+ * Destructor that frees up all the tables. The tables themselves also have their own destructor.
+ */
 CDatabase::~CDatabase ( ) {
 	for ( const auto & i : m_Data )
 		delete i.second;
 }
 
-bool CDatabase::TableExists ( const string & tableName ) const {
-	return m_Data.find( tableName ) != m_Data.end( );
-}
-
+/**
+ * Table insertion.
+ * @param[in] tableName name of the new table
+ * @param[in] tableRef reference to the table itself
+ * @return true if table was inserted into database without any errors.
+ */
 bool CDatabase::InsertTable ( const string & tableName, CTable * tableRef ) {
 	return m_Data.insert( pair<string, CTable *>( tableName, tableRef ) ).second;
+}
+
+/**
+ * Table existence check.
+ * @return true if table with given name is present in the database
+ */
+bool CDatabase::TableExists ( const string & tableName ) const {
+	return m_Data.find( tableName ) != m_Data.end( );
 }
 
 void CDatabase::ListTables ( ) const {

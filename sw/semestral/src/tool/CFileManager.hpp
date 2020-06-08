@@ -10,6 +10,10 @@
 
 using namespace std;
 
+/**
+ * The purpose of this module is to save loaded data into memory.
+ * The procedure details are delegated to the lower level modules.
+ */
 class CFileManager {
 private:
 	CDatabase & m_Database;
@@ -18,5 +22,6 @@ private:
 public:
 	explicit CFileManager ( const string & configFile, CDatabase & database );
 
+	// void, since the program throws an exception if any error occurs.
 	void LoadTables( );
 };

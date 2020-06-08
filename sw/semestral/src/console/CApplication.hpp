@@ -4,6 +4,9 @@
 #include "../tool/CFileManager.hpp"
 #include "CConsole.hpp"
 
+/**
+ * This module is the main driver for the whole application.
+ */
 class CApplication {
 private:
 	CDatabase m_Database;

@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * This module works as an application logger, storing messages to print, providing better user experience.
+ */
 class CLog {
 public:
 	static const int APP_PADDING;
