@@ -2,7 +2,7 @@
 
 # Dotazování v relační algebře
 
-## 1. Úvodní zadání práce
+## Úvodní zadání práce
 Dotazování pomocí SQL dotazů je dnes běžnou praxí, ale relační algebra příliš podporovaná není. A přitom určité typy dotazů jsou snáze realizovatelné v RA než v SQL. A proto je vhodné mít k dispozici program, který tyto dotazy podporuje.
 
 ### Implementujte následující funkcionalitu
@@ -25,9 +25,9 @@ Dotazování pomocí SQL dotazů je dnes běžnou praxí, ale relační algebra 
 Vzhledem k nutnosti vytvoření překladu z RA do SQL je vhodné vytvořit napojení přímo na databázi.
 https://en.wikipedia.org/wiki/Relational_algebra
 
-## 2. Vlastní návrh implementace
+## Vlastní návrh implementace
 ### Import a export
-###### Moduly: CFileManager, CDataParser, CDatabase, CLog
+#### Moduly: CFileManager, CDataParser, CDatabase, CLog
 Program bude implementován ve formě konzolové aplikace. Konfigurace databázových souborů bude fungovat následovně:
 - V kořenové složce je soubor **sources.cfg** obsahující odkaz na existující soubory (musí podporovat CSV formátování).  Tyto soubory program naimportuje, pokud existují. Pokud existovat nebudou, program je zaregistruje jako vadné, ale neukončí se.
 - Po dokončení importu program informuje o tom, které tabulky byly úspěšně naimportovány. Pouze se správně naimportovanými tabulkami lze nadále pracovat.
@@ -36,7 +36,7 @@ Pro správné fungování např. projekce bude nutné specifikovat i datové typ
 
 Druhý řádek tabulky bude považován jako hlavička a definice sloupců. Tabulka musí mít alespoň jeden záznam.
 
-**Ukázka**
+#### Ukázka
 
 **`sources.cfg`** obsahuje **`data/uzivatele.csv`**
 
@@ -130,3 +130,14 @@ K této základní sadě příkazů této aplikace se bude uživatel kdykoli sch
 ## Testy
 Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
 Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
+
+## Nástroje a instalace
+``make`` vygeneruje dokumentaci, vytvoří spustitelnou aplikaci\
+
+``make run`` spustí aplikaci\
+``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind)\
+``make dev`` spustí skript, který sleduje změnu souborů (live filewatch)\
+
+``make doc`` vygeneruje dokumentaci\
+``make dep`` vygeneruje veškeré makefile dependencies na základě výstupu z g++ -MM.\
+``make clean`` smaže veškeré předchozí vygenerované instalace\
