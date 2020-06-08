@@ -1,3 +1,6 @@
+.PHONY            = all compile run memcheck dev clean
+.DEFAULT_GOAL     = all
+
 # sources
 TARGET     		  = kroupkev
 BUILD_DIR  		  = build
@@ -14,44 +17,51 @@ CXX        		  = g++
 CXX_FLAGS  		  = -std=c++14 -Werror -Wall -pedantic -Wno-long-long
 MKDIR      		  = mkdir -p
 
+# colors
+COLOR_DEF = \033[0m
+COLOR_MSG = \033[1;36m
+
 # memory management settings
 CHECK      		  = valgrind
 CHECKFLAGS 		  = --leak-check=full --tool=memcheck
 
 # tasks
-.PHONY: all
-all: compile run
-	@echo "Finished.."
+all: clean dep compile doc
+	@echo "$(COLOR_MSG)Makefile routine completed.$(COLOR_DEF)"
 
-.PHONY: compile
 compile: $(TARGET)
-	@echo "Compiled.."
+	@echo "$(COLOR_MSG)Source files have been compiled.$(COLOR_DEF)"
 
-.PHONY: run
 run: $(TARGET)
+	@echo "$(COLOR_MSG)Starting executable..$(COLOR_DEF)"
 	./$(TARGET)
 
-.PHONY: memcheck
 memcheck: $(TARGET)
+	@echo "$(COLOR_MSG)Starting memory check..$(COLOR_DEF)"
 	$(CHECK) $(CHECKFLAGS) ./$(TARGET)
 
-.PHONY: clean
+dev:
+	@echo "$(COLOR_MSG)Starting dev filewatcher..$(COLOR_DEF)"
+	./filewatch
+
 clean:
-	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o tmp.txt 2>/dev/null
+	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o 2>/dev/null
+	@echo "$(COLOR_MSG)Previous builds and object files have been cleaned.$(COLOR_DEF)"
 
 dep:
 	find src/ -name *.cpp | xargs $(CXX) -MM > Makefile.d
-	@echo "Dependencies updated."
+	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
 doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
 	rm -rf $(DOC_DIR)
 	$(MKDIR) $(DOC_DIR)
 	doxygen Doxyfile
-	@echo "Documentation updated."
+	@echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
 	google-chrome doc/index.html
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
+	@echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	$(MKDIR) $(BUILD_DIR)
