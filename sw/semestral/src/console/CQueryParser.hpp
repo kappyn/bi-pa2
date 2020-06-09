@@ -6,6 +6,9 @@
 
 using namespace std;
 
+/**
+ * This module's responsibility is to parse string queries entered by the user.
+ */
 class CQueryParser {
 public:
 	static const string SELECTION;

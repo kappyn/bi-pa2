@@ -133,7 +133,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 	if ( db.TableExists( filePath ) )
 		return false;
 
-	// table column data types
+	// first row - table column data types
 	getline( ifs, tmp );
 	if ( * ( tmp.end( ) - 1 ) == ',' )
 		return false;
@@ -151,7 +151,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		return false;
 	tmp.clear( );
 
-	// table column names
+	// second row - table column data types
 	size_t requiredColumns = columnTypes.size( );
 
 	getline( ifs, tmp );

@@ -1,4 +1,4 @@
-.PHONY            = all compile run memcheck fwatch clean dev
+.PHONY            = all compile run memcheck fwatch clean dev linecnt
 .DEFAULT_GOAL     = dev
 
 # sources
@@ -46,6 +46,10 @@ memcheck: $(TARGET)
 fwatch:
 	@echo "$(COLOR_MSG)Starting dev filewatcher..$(COLOR_DEF)"
 	./filewatch
+
+linecnt:
+	@echo "$(COLOR_MSG)Counting lines..$(COLOR_DEF)"
+	find "./src/" -type f -name "*.cpp" -o -name "*.hpp" | xargs wc -l
 
 clean:
 	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o 2>/dev/null

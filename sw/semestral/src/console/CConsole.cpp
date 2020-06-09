@@ -27,7 +27,7 @@ int CConsole::Start ( ) {
 					           .append( "\u001b[0m" )
 			);
 		else {
-			cout << "End of command!\nEntered command: " << buffer << endl;
+			cout << "Command recognized dude. Nice." << endl;
 		}
 	}
 	return 1;

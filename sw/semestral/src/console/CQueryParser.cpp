@@ -15,6 +15,7 @@ bool CQueryParser::ParseQuery ( const string & basicString ) {
 			tmp += i;
 
 	if ( tmp == CQueryParser::SELECTION && CQueryParser::ValidateSelection( basicString.substr( 3 ) )) {
+		//
 		// ....
 		return true;
 	}

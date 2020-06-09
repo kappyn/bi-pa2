@@ -27,7 +27,6 @@ https://en.wikipedia.org/wiki/Relational_algebra
 
 ## Vlastní návrh implementace
 ### Import a export
-#### Moduly: CFileManager, CDataParser, CDatabase, CLog
 Program bude implementován ve formě konzolové aplikace. Konfigurace databázových souborů bude fungovat následovně:
 - V kořenové složce je soubor **sources.cfg** obsahující odkaz na existující soubory (musí podporovat CSV formátování).  Tyto soubory program naimportuje, pokud existují. Pokud existovat nebudou, program je zaregistruje jako vadné, ale neukončí se.
 - Po dokončení importu program informuje o tom, které tabulky byly úspěšně naimportovány. Pouze se správně naimportovanými tabulkami lze nadále pracovat.
@@ -53,7 +52,6 @@ id, first_name, last_name, email, gender, ratio, overall_score
 ```
 
 ### Relační operátory a operace s množinami
-#### Moduly: CConsole, CDatabase, CTable, CCell
 Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy.
 
 ---
@@ -127,8 +125,6 @@ Každý z těchto dotazů musí být ukončen středníkem.
 K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **HELP**.
 
 ## Využití polymorfismu
-
-#### Moduly: CCell, CString, CDouble, CInt, CTable, CTableQuery, CBinaryOperator, CUnaryOperator
 
 - První využití polymorfismu bude ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky (využíváme dynamické vazbu) zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla). Tyto třídy jsou tedy připraveny na jakoukoliv další nástavbu (například úplně vlastní objekt).
 
