@@ -4,5 +4,5 @@ inotifywait -q -m -e close_write src/*.*pp src/*/*.*pp examples/* sources.cfg |
 while read -r filename event; do
 	clear;
 	printf "\nUpdate at %s\n" $( date +"%T" );
-	make kroupkev
+	make compile run
 done

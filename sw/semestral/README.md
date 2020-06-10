@@ -52,21 +52,21 @@ id, first_name, last_name, email, gender, ratio, overall_score
 ```
 
 ### Relační operátory a operace s množinami
-Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy.
+Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy. Na mezerách v dotazech nezáleží, musí ale dodržovat správné závorkování, které je definováno níže.
 
 ---
 
 #### Selekce
 Popis operace: Vybere konkrétní sloupce z tabulky.
 
-Použití: ``SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );`` 
+Použití: ``SEL[ jmeno_sloupce_1, jmeno_sloupce_2, .. ]( jmeno_tabulky );`` 
 
 ---
 
 #### Projekce
 Popis operace: Vybere záznamy tabulky na základě kritérií.
 
-Použití: ``PRO[ podminka ]( "jmeno_tabulky" );``
+Použití: ``PRO[ podminka ]( jmeno_tabulky );``
 
 Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
 
@@ -75,54 +75,53 @@ Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>
 #### Přirozené spojení
 Popis operace: Hledá společný sloupec dvou tabulek, pokud jej najde, výsledkem je tabulka se sloupci z obou těchto tabulek se záznamy, které mají stejnou hodnotu ve společném sloupci.
 
-Použití: ``NJOIN( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``NJOIN( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Obecné spojení
 Popis operace: Spojení dvou tabulek na základě sloupce, který uživatel definuje.
 
-Použití: ``JOIN[ "jmeno_sloupce" ]( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``JOIN[ jmeno_sloupce ]( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Sjednocení
 Popis operace: Množinové sloučení všech záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.
 
-Použití: ``UNION( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``UNION( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Průnik
 Popis operace: Množinový průnik záznamů ze dvou tabulek. Obě tabulky musí mít stejné sloupce.
 
-Použití: ``INTERSECT( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``INTERSECT( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Rozdíl
 Popis operace: Množinový rozdíl záznamů tabulky A s tabulkou B. Obě tabulky musí mít stejné sloupce.
 
-Použití: ``MINUS( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``MINUS( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Kartézský součin (Cartesian product)
 Popis operace: Spojení dvou tabulek se všemi sloupci, záznamy jsou množinou všech možných n-tic záznamů tabulky A se záznamy z tabulky B.
 
-Použití: ``CP( "jmeno_tabulky", "jmeno_tabulky" );``
+Použití: ``CP( jmeno_tabulky, jmeno_tabulky );``
 
 ---
 
 #### Ukládání dotazu do proměnné
 Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné.
 
-Použití: ``SEL[ vek >= 18 ]( uzivatele ) === dospeli``
+Příkladné použití: ``SEL[ vek >= 18 ]( uzivatele ) ~ dospeli``
 
 ---
 
 Každý z těchto dotazů musí být ukončen středníkem.
-K této základní sadě příkazů této aplikace se bude uživatel kdykoli schopen dostat příkazem **HELP**.
 
 ## Využití polymorfismu
 

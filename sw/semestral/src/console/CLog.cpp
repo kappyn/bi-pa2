@@ -1,6 +1,6 @@
 #include "CLog.hpp"
 
-const int    CLog::APP_PADDING       = 18;
+const int    CLog::APP_PADDING       = 10;
 
 const string CLog::FM                = "FILE MANAGER";
 const string CLog::FM_CFG_FOUND      = "Configuration file found.";
