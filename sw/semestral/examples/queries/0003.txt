@@ -1,0 +1,4 @@
+SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );
+SEL[ f ]( ta~ )    ~;
+SEL[ f ]( y )    ~;
+SEL[ f ]( y )~heyThere;

@@ -4,7 +4,9 @@
 #include <map>
 #include <iostream>
 #include <vector>
+
 #include "CLog.hpp"
+#include "../tool/CDataParser.hpp"
 
 using namespace std;
 
@@ -24,8 +26,9 @@ public:
 //	static const string MINUS;
 //	static const string CARTESIAN_PRODUCT;
 
-	static string ReadQueryName ( const string & fullQuery );
-	static string ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd );
+	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
+	static bool ReadQueryName ( const string & fullQuery, string & output );
+	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );
 	static bool ValidateQuerySyntax ( const string & queryName, const string & queryDetails );
 	static bool ParseQuery ( const string & basicString );
 	bool Exists ( );
