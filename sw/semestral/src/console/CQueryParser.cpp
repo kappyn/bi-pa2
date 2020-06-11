@@ -73,8 +73,10 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
 			if ( i == delEnd ) {
 				++ stringPos;
 				return output.length( ) > 0;
-			} else
-				output += i;
+			}
+			if ( i == ';' )
+				return false;
+			output += i;
 		}
 		++ stringPos;
 	}
@@ -146,10 +148,14 @@ int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string &
  */
 int CQueryParser::ParseQuery ( const string & basicString ) {
 	string queryName;
+
 	if ( ! ReadQueryName( basicString, queryName ) )
 		return CConsole::INVALID_QUERY;
 
 	string queryDetails = basicString.substr( queryName.length( ) );
+
+//	cout << queryDetails << endl;
+
 	return ValidateQuerySyntax( queryName, queryDetails );
 }
 

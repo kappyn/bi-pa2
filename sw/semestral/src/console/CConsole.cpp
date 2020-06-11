@@ -20,7 +20,10 @@ int CConsole::Start ( CDatabase & dbRef ) {
 			return - 1;
 		}
 		switch ( cqp.ParseQuery( buffer ) ) {
-			case CConsole::VALID_QUERY: break;
+
+			case CConsole::VALID_QUERY:
+				continue;
+
 			case CConsole::INVALID_QUERY:
 				CLog::Msg( CLog::CON,
 				           string( "\"\u001b[1m" )
@@ -29,10 +32,12 @@ int CConsole::Start ( CDatabase & dbRef ) {
 						           .append( CLog::CON_INVALID_QUERY )
 						           .append( "\u001b[0m" )
 				);
+				continue;
+
 			case CConsole::EXIT_CONSOLE:
 				CLog::Msg( CLog::CON, CLog::CON_EXIT );
 				return 0;
-			default: break;
+
 		}
 	}
 	return 1;

@@ -1,0 +1,10 @@
+SEL();
+SEL[;
+SEL[];
+SEL[]();
+SEL[a]();
+SEL[](a);
+SEL[[a]]();
+SEL[](a);
+SEL[  ](  );
+SEL[                        ]( a );

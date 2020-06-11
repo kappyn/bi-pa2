@@ -17,7 +17,7 @@ const string CLog::DP_EMPTY_LINE      = "\u001b[31m incorrect formatting - empty
 
 const string CLog::CON                = "CONSOLE";
 const string CLog::CON_START          = "Starting console..";
-const string CLog::CON_INVALID_QUERY  = "\u001b[31m an error had occurred during command execution.\u001b[0m";
+const string CLog::CON_INVALID_QUERY  = "\u001b[31m invalid command.\u001b[0m";
 const string CLog::CON_EOF_DETECTED   = "EOF detected. Exiting application.";
 const string CLog::CON_EXIT           = "Exiting application.";
 const char   CLog::CON_PROMPT_CHAR    = '>';

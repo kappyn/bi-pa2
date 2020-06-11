@@ -1,3 +1,0 @@
-SEL[Age](scratch);
-TABLES;
-QUIT;

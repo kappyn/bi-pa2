@@ -1,3 +1,4 @@
+SEL;
 SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );
 SEL[ f ]( t );
 SEL[ f ]( );
