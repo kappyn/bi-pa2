@@ -1,6 +1,6 @@
 #include "console/CApplication.hpp"
 
 int main ( ) {
-	 CApplication App { "MOCK DB", "sources.cfg" };
+	 CApplication App { "DATABASE", "sources.cfg" };
 	 return App.Run( );
 }

@@ -16,12 +16,16 @@ const string CLog::DP_NO_DATATYPES   = "\u001b[31m data types for the columns we
 
 const string CLog::CON                = "CONSOLE";
 const string CLog::CON_START          = "Starting console..";
-const string CLog::CON_INVALID_QUERY  = "\u001b[31m command not recognized..\u001b[0m";
+const string CLog::CON_INVALID_QUERY  = "\u001b[31m an error had occurred during command execution.\u001b[0m";
 const string CLog::CON_EOF_DETECTED   = "EOF detected. Exiting application.";
 const char   CLog::CON_PROMPT_CHAR    = '>';
 
 const string CLog::TAB_NO_BODY        = "Unable to render - table body is missing.";
 const string CLog::TAB_INVALID_INDEX  = "Invalid index.";
+
+const string CLog::QP                 = "QUERY PARSER";
+const string CLog::QP_NO_SUCH         =  "\u001b[31m was not found.\u001b[0m";
+
 
 /**
  * Standart message.
@@ -44,6 +48,19 @@ void
 CLog::HighlightedMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << "\u001b[1m"
 	<< string( "\"\u001b[1m" ).append( highlighted ).append( "\u001b[0m\"" ) << message << endl;
+}
+
+/**
+ * Bold message
+ * @param[in] branch module from where the message is originated
+ * @param[in] highlighted highlighted part of the message
+ * @param[in] message log message string
+ * @param[in, out] ost output stream to log to.
+ */
+void
+CLog::BoldMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost ) {
+	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << "\u001b[1m"
+	<< string( "\u001b[1m" ).append( highlighted ).append( "\u001b[0m" ) << message << endl;
 }
 
 /**

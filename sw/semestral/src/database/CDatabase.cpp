@@ -34,10 +34,35 @@ bool CDatabase::TableExists ( const string & tableName ) const {
 	return m_Data.find( tableName ) != m_Data.end( );
 }
 
+CTable * CDatabase::GetTable ( const string & tableName ) const {
+	auto tmp = m_Data.find( tableName );
+	return tmp == m_Data.end( ) ? nullptr : tmp->second;
+}
+
 void CDatabase::ListTables ( ) const {
 	CLog::Msg( m_Name, "Listing tables..." );
-	for ( const auto & i : m_Data )
-		CLog::HighlightedMsg( m_Name, i.first, "" );
+
+	vector<string> tableColumns;
+	string output;
+	size_t columnCounter = 0, tableCounter = 0;
+
+	for ( const auto & i : m_Data ) {
+		tableColumns = i.second->GetColumnNames( );
+		output = '(';
+
+		for ( const string & j : tableColumns ) {
+			if ( columnCounter ++ != tableColumns.size( ) - 1 )
+				output.append( j + ", " );
+			else
+				output.append( j );
+		}
+		columnCounter = 0;
+
+		output += ')';
+		CLog::BoldMsg( m_Name,
+		               to_string( ++ tableCounter ).append( ". " ).append( i.first ).append( " " ).append( output ),
+		               "" );
+	}
 }
 
 void CDatabase::PrintTables ( ) const {

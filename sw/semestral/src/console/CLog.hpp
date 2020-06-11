@@ -20,6 +20,9 @@ public:
 	HighlightedMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost = cout );
 
 	static void
+	BoldMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost = cout );
+
+	static void
 	CmdPromp ( const char & promptChar = CLog::CON_PROMPT_CHAR, ostream & ost = cout );
 
 	static const string FM;
@@ -28,18 +31,21 @@ public:
 	static const string FM_CFG_FAILED;
 	static const string FM_LOADING;
 	static const string FM_IMPORT_OK;
-	static const string FM_IMPORT_FAIL;
 
+	static const string FM_IMPORT_FAIL;
 	static const string DP;
 	static const string DP_LINE_MISMATCH;
-	static const string DP_NO_DATATYPES;
 
+	static const string DP_NO_DATATYPES;
 	static const string CON;
 	static const string CON_START;
 	static const string CON_INVALID_QUERY;
 	static const string CON_EOF_DETECTED;
-	static const char   CON_PROMPT_CHAR;
 
+	static const char CON_PROMPT_CHAR;
 	static const string TAB_NO_BODY;
+
 	static const string TAB_INVALID_INDEX;
+	static const string QP;
+	static const string QP_NO_SUCH;
 };

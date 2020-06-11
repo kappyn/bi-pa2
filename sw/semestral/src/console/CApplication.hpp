@@ -14,5 +14,5 @@ private:
 
 public:
 	CApplication ( const string & dbName, const string & srcName );
-	static int Run ( );
+	int Run ( );
 };

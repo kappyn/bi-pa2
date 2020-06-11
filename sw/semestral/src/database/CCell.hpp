@@ -16,6 +16,7 @@ class CCell {
 public:
 	virtual size_t GetLength ( ) const = 0;
 	virtual ostream & Print ( ostream & ost = cout ) const = 0;
+	virtual string RetrieveMVal ( ) const = 0;
 	virtual ~CCell ( ) = default;
 };
 
@@ -25,6 +26,7 @@ public:
 	explicit CString ( string data ) : m_Val( std::move( data ) ) { }
 	~CString ( ) override = default;
 	virtual size_t GetLength ( ) const override;
+	virtual string RetrieveMVal ( ) const override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 };
 
@@ -34,6 +36,7 @@ public:
 	explicit CDouble ( const double & data ) : m_Val( data ) { }
 	~ CDouble ( ) override = default;
 	virtual size_t GetLength ( ) const override;
+	virtual string RetrieveMVal ( ) const override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 };
 
@@ -43,5 +46,6 @@ public:
 	explicit CInt ( const int & data ) : m_Val( data ) { }
 	~CInt ( ) = default;
 	virtual size_t GetLength ( ) const override;
+	virtual string RetrieveMVal ( ) const override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 };

@@ -13,5 +13,5 @@
  */
 class CConsole {
 public:
-	static int Start ( );
+	static int Start ( CDatabase & dbRef );
 };

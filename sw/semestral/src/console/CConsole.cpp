@@ -1,8 +1,9 @@
 #include "CConsole.hpp"
 
-int CConsole::Start ( ) {
+int CConsole::Start ( CDatabase & dbRef ) {
 	string buffer;
 	char in;
+	CQueryParser cqp { dbRef };
 
 	CLog::Msg( CLog::CON, CLog::CON_START );
 	while ( ! cin.eof( ) ) {
@@ -18,7 +19,7 @@ int CConsole::Start ( ) {
 			CLog::Msg( CLog::CON, CLog::CON_EOF_DETECTED );
 			return - 1;
 		}
-		if ( ! CQueryParser::ParseQuery( buffer ) )
+		if ( ! cqp.ParseQuery( buffer ) )
 			CLog::Msg( CLog::CON,
 			           string( "\"\u001b[1m" )
 					           .append( buffer )
@@ -27,7 +28,7 @@ int CConsole::Start ( ) {
 					           .append( "\u001b[0m" )
 			);
 		else {
-			cout << "Command recognized dude. Nice." << endl;
+//			cout << "Command recognized dude. Nice." << endl;
 		}
 	}
 	return 1;

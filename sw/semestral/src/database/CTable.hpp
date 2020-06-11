@@ -23,6 +23,8 @@ public:
 	explicit CTable ( const vector<CCell *> & header );
 	~CTable ( );
 
+	vector<string> GetColumnNames ( );
+
 	bool InsertRow ( const vector<CCell *> & row );
 	size_t GetColumnCount ( ) const;
 	vector<size_t> GetCellPadding ( ) const;

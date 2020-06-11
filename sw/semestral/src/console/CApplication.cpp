@@ -7,5 +7,5 @@ CApplication::CApplication ( const string & dbName, const string & srcName ) : m
 }
 
 int CApplication::Run ( ) {
-	return CConsole::Start( );
+	return CConsole::Start( m_Database );
 }

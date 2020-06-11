@@ -20,6 +20,16 @@ CTable::~CTable ( ) {
 }
 
 /**
+ * Returns all column names.
+ */
+vector<string> CTable::GetColumnNames ( ) {
+	vector<string> res;
+	for ( const auto & i : m_Data )
+		res.push_back( i.at( 0 )->RetrieveMVal( ) );
+	return res;
+}
+
+/**
  * Table row insertion.
  * @param[in] row Row to be inserted
  * @return true if row was inserted without errors
@@ -125,7 +135,6 @@ vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const 
 		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
 	return m_Data.at( index );
 }
-
 ostream & operator << ( ostream & ost, const CTable & table ) {
 	table.Render( ost );
 	return ost;
