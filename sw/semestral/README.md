@@ -147,7 +147,7 @@ Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 ##### nástroje definované podle stránky předmětu
 ``make`` vytvoří veškeré výstupy ze zdrojového kódu (dokumentace, závislosti, binární podoba semestrální práce).
 
-``make compile`` zkompiluje a nalinkuje veškeré zdrojové soubory - binární podoba semestrální práce bude uložena pod názvem **kroupkev**.
+``make compile`` zkompiluje a nalinkuje zdrojové soubory - spustitelná binární podoba práce se uloží pod názvem kroupkev.
 
 ``make run`` spustí binární podobu semestrální práce. 
 
