@@ -22,7 +22,7 @@ bool CSelection::Evaluate ( ) const {
 		return false;
 
 	// 3. save the result
-	m_QueryResult = new CTable ( m_SelectedCols );
+//	m_QueryResult = new CTable ( m_SelectedCols );
 
 
 

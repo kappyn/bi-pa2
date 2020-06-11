@@ -56,6 +56,12 @@ Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotaz
 
 ---
 
+#### Základní rozhraní (vlastní feature):
+
+``TABLES;`` vypíše tabulky, které jsou momentálně v databázi.
+
+---
+
 #### Selekce
 Popis operace: Vybere konkrétní sloupce z tabulky.
 
@@ -133,21 +139,26 @@ Každý z těchto dotazů musí být ukončen středníkem.
  
      Každý dotaz má jiné chování a výsledek. Může být například unární/binární, a je nutné, aby byl program schopen všechny dotazy ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje. Hrubá představa hierarchie tříd je ve složce **src/query**.
        
-## Testy
-Ve složce **test** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
+## Testování
+Ve složce **examples** budou uloženy tabulky/asserty sloužící k testování různých částí programu.
 Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ## Nástroje a instalace
-``make`` vygeneruje dokumentaci, vytvoří spustitelnou aplikaci
+##### nástroje definované podle stránky předmětu
+``make`` vytvoří veškeré výstupy ze zdrojového kódu (dokumentace, závislosti, binární podoba semestrální práce).
 
-``make run`` spustí aplikaci
+``make compile`` zkompiluje a nalinkuje veškeré zdrojové soubory - binární podoba semestrální práce bude uložena pod názvem **kroupkev**.
 
+``make run`` spustí binární podobu semestrální práce. 
+
+``make clean`` smaže veškeré předchozí vygenerované instalace
+
+``make doc`` vygeneruje dokumentaci
+
+##### vlastní dodatečné nástroje
 ``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind)
 
 ``make dev`` spustí skript, který sleduje změnu souborů (live filewatch)
 
-``make doc`` vygeneruje dokumentaci
+``make dep`` vygeneruje veškeré závislosti na základě výstupu z g++ -MM.
 
-``make dep`` vygeneruje veškeré makefile dependencies na základě výstupu z g++ -MM.
-
-``make clean`` smaže veškeré předchozí vygenerované instalace

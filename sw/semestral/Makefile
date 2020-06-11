@@ -27,13 +27,14 @@ CHECKFLAGS 		  = --leak-check=full --tool=memcheck
 
 # tasks
 all: clean dep compile doc
-	@echo "$(COLOR_MSG)Makefile routine completed.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Makefile routine completed (dependency update, compilation, documentation).$(COLOR_DEF)"
+	ls -l
 
 dev: clean dep compile fwatch
 	@echo "$(COLOR_MSG)Development makefile routine completed.$(COLOR_DEF)"
 
 compile: $(TARGET)
-	@echo "$(COLOR_MSG)Source files have been compiled.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Source files have been compiled.\nBinary executable \"$(TARGET)\" created.$(COLOR_DEF)"
 
 run: $(TARGET)
 	@echo "$(COLOR_MSG)Starting executable..$(COLOR_DEF)"
