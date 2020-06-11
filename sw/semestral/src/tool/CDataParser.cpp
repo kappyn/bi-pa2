@@ -177,18 +177,28 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 	// table rows
 	while ( getline( ifs, tmp ) ) {
-		if ( * ( tmp.end( ) - 1 ) == ',' || tmp.empty( ) ) {
-			CLog::HighlightedMsg( CLog::DP, filePath,
+		++ lines;
+
+		// empty lines..
+		if ( tmp.empty( ) ) {
+			CLog::BoldMsg( CLog::DP, filePath,
+			                      string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append(
+					                      ".\u001b[0m" ) );
+			return false;
+		}
+
+		// wrong formatting
+		if ( * ( tmp.end( ) - 1 ) == ',' ) {
+			CLog::BoldMsg( CLog::DP, filePath,
 			                      string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
 					                      ".\u001b[0m" ) );
 			return false;
 		}
-		++ lines;
 
 		// checks for number of columns to insert
 		vector<string> newRow = Split( tmp, false, true );
 		if ( newRow.size( ) != requiredColumns ) {
-			CLog::HighlightedMsg( CLog::DP, filePath,
+			CLog::BoldMsg( CLog::DP, filePath,
 			                      string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
 					                      ".\u001b[0m" ) );
 			return false;
@@ -207,7 +217,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			++ cnt;
 		}
 
-		if ( ! parsedResult->InsertRow( newTypedRow ) )
+		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )
 			return false;
 	}
 	db.InsertTable( filePath, parsedResult );

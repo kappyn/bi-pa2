@@ -13,6 +13,10 @@ string CString::RetrieveMVal ( ) const {
 	return m_Val;
 }
 
+CString * CString::Clone ( ) {
+	return new CString( * this );
+}
+
 size_t CDouble::GetLength ( ) const {
 	return ::to_string( m_Val ).length( );
 }
@@ -27,6 +31,10 @@ string CDouble::RetrieveMVal ( ) const {
 	return to_string( m_Val );
 }
 
+CDouble * CDouble::Clone ( ) {
+	return new CDouble( * this );
+}
+
 size_t CInt::GetLength ( ) const {
 	return ::to_string( m_Val ).length( );
 }
@@ -38,4 +46,7 @@ ostream & CInt::Print ( ostream & ost ) const {
 
 string CInt::RetrieveMVal ( ) const {
 	return to_string( m_Val );
+}
+CInt * CInt::Clone ( ) {
+	return new CInt( * this );
 }

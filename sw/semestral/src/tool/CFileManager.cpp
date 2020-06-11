@@ -29,10 +29,10 @@ void CFileManager::LoadTables ( ) {
 		tableFileStream.open( tableFilePath, ios::in );
 
 		if ( tableFileStream && CDataParser::ParseTable( m_Database, tableFileStream, tableFilePath ) ) {
-			CLog::HighlightedMsg( CLog::FM, tableFilePath, CLog::FM_IMPORT_OK );
+			CLog::BoldMsg( CLog::FM, tableFilePath, CLog::FM_IMPORT_OK );
 			++ loadedTablesCnt;
 		} else
-			CLog::HighlightedMsg( CLog::FM, tableFilePath, CLog::FM_IMPORT_FAIL );
+			CLog::BoldMsg( CLog::FM, tableFilePath, CLog::FM_IMPORT_FAIL );
 		tableFileStream.close( );
 	}
 

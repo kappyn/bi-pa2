@@ -10,6 +10,13 @@ CTable::CTable ( const vector<CCell *> & header ) {
 	}
 }
 
+CTable::CTable ( const vector<string> & header ) {
+	m_Data.reserve( header.size( ) );
+	for ( const string & i : header ) {
+		m_Data.push_back( vector<CCell *> { new CString( i ) } );
+	}
+}
+
 /**
  * Destructor for each cell. Each cell also has its own destructor.
  */
@@ -17,16 +24,6 @@ CTable::~CTable ( ) {
 	for ( auto & i : m_Data )
 		for ( auto & j : i )
 			delete j;
-}
-
-/**
- * Returns all column names.
- */
-vector<string> CTable::GetColumnNames ( ) const {
-	vector<string> res;
-	for ( const auto & i : m_Data )
-		res.push_back( i.at( 0 )->RetrieveMVal( ) );
-	return res;
 }
 
 /**
@@ -44,11 +41,11 @@ bool CTable::VerifyColumns ( const vector<string> & cols ) const {
 }
 
 /**
- * Table row insertion.
+ * Table row insertion. References are copied, not reallocated!
  * @param[in] row Row to be inserted
  * @return true if row was inserted without errors
  */
-bool CTable::InsertRow ( const vector<CCell *> & row ) {
+bool CTable::InsertShallowRow ( const vector<CCell *> & row ) {
 	if ( m_Data.size( ) != row.size( ) )
 		return false;
 	auto d = m_Data.begin( );
@@ -61,8 +58,74 @@ bool CTable::InsertRow ( const vector<CCell *> & row ) {
 	return true;
 }
 
+/**
+ * Table column insertion ~ deep copy is made (for queries).
+ * @param[in] col Column to be inserted
+ * @return true if col was inserted without errors and column name is not taken.
+ */
+bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
+	size_t elementCount = 0;
+	if ( ! m_Data.empty( ) ) {
+		for ( const auto & i : m_Data.at( 0 ) )
+			++ elementCount;
+		if ( elementCount != col.size( ) || * col.begin( ) == * m_Data.at( 0 ).begin( ) )
+			return false;
+	}
+
+	vector<CCell *> newColumn;
+	newColumn.reserve( elementCount );
+	for ( const auto & i : col )
+		newColumn.push_back( i->Clone() );
+
+	m_Data.push_back( std::move( newColumn ) );
+	return true;
+}
+
+/**
+ * Returns a table clone with origin data, but only with some columns.
+ * @param[in] cols columns to create new table with
+ * @param[in] outPtr pointer to a new table to save
+ * @return true if columns provided were correct, and table was generated
+ */
+bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const {
+	vector<int> columnIndexes;
+	vector<string> correctColumns = GetColumnNames( );
+
+	// get the column indexes to copy them
+	for ( const auto & i : cols ) {
+		auto el = find( correctColumns.begin( ), correctColumns.end( ), i );
+		if ( el == correctColumns.end( ) ) {
+			CLog::HighlightedMsg( CLog::QP, i, CLog::QP_NO_SUCH_COL );
+			return false;
+		} else {
+			columnIndexes.push_back( el - correctColumns.begin( ) );
+		}
+	}
+
+	// create a deep copy of all those columns
+	for ( const int & i : columnIndexes )
+		if ( ! outPtr->InsertDeepCol( m_Data.at( i ) ) )
+			return false;
+
+	return true;
+}
+
 size_t CTable::GetColumnCount ( ) const {
 	return m_Data.size( );
+}
+
+/**
+ * Returns all column names.
+ */
+vector<string> CTable::GetColumnNames ( ) const {
+	vector<string> res;
+
+	if ( m_Data.empty ( ) )
+		throw logic_error( CLog::TAB_NO_DATA );
+
+	for ( const auto & i : m_Data )
+		res.push_back( i.at( 0 )->RetrieveMVal( ) );
+	return res;
 }
 
 /**
@@ -84,11 +147,17 @@ vector<size_t> CTable::GetCellPadding ( ) const {
 }
 
 /**
+ * Wipes table's content. Use with caution.
+ */
+void CTable::DeleteData ( ) {
+	m_Data.clear( );
+}
+/**
  * Renders the table data into output stream.
  * @param[in,out] ost output stream.
  */
 void CTable::Render ( ostream & ost ) const {
-	if ( m_Data.begin( )->size( ) == 1 )
+	if ( m_Data.empty( ) || m_Data.begin( )->size( ) == 1 )
 		throw logic_error( CLog::TAB_NO_BODY );
 
 	vector<size_t> paddings = GetCellPadding( );
@@ -137,6 +206,8 @@ void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & os
 	ost << endl;
 	tmp = 0;
 }
+
+
 /**
  * Renders a specified column of the table.
  * @param[in] index index of the column in the table

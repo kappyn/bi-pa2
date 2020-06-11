@@ -13,5 +13,8 @@
  */
 class CConsole {
 public:
+	static const int VALID_QUERY   = 0;
+	static const int INVALID_QUERY = 1;
+	static const int EXIT_CONSOLE  = 2;
 	static int Start ( CDatabase & dbRef );
 };

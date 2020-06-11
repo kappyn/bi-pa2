@@ -22,14 +22,20 @@ private:
 
 public:
 	explicit CTable ( const vector<CCell *> & header );
+	explicit CTable ( const vector<string> & header );
+	explicit CTable ( ) = default;
+
 	~CTable ( );
 
-	vector<string> GetColumnNames ( ) const;
 	bool VerifyColumns ( const vector<string> & cols ) const;
+	bool InsertShallowRow ( const vector<CCell *> & row );
+	bool InsertDeepCol ( const vector<CCell *> & col );
 
-	bool InsertRow ( const vector<CCell *> & row );
+	bool GetSubTable ( const vector<string> & row, CTable * outPtr ) const;
 	size_t GetColumnCount ( ) const;
+	vector<string> GetColumnNames ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
+	void DeleteData( );
 
 	void Render ( ostream & ost = cout ) const;
 	vector<CCell *> RenderCol ( const size_t & index, ostream & ost = cout ) const;

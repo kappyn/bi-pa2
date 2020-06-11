@@ -12,6 +12,8 @@ private:
 
 public:
 	CSelection ( CDatabase & ref, vector<string> cols, string tableName );
+	virtual ~CSelection ( ) override;
 
-	virtual bool Evaluate ( ) const override;
+	virtual bool Evaluate ( ) override;
+	virtual CTable * GetQueryResult ( ) override;
 };

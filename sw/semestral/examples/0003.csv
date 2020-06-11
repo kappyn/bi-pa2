@@ -1,6 +1,5 @@
 int,string,string,string,string,string
-first_name,last_name,email,gender,ip_address
-
+id, first_name,last_name,email,gender,ip_address
 993,Zach,Thirlaway,zthirlawayrk@google.fr,Male,230.151.185.199
 994,Fifine,Mulholland,fmulhollandrl@mashable.com,Female,212.55.93.11
 995,Roana,Mallender,rmallenderrm@livejournal.com,Female,194.57.220.148

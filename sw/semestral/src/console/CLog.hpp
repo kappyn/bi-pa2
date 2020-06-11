@@ -31,21 +31,24 @@ public:
 	static const string FM_CFG_FAILED;
 	static const string FM_LOADING;
 	static const string FM_IMPORT_OK;
-
 	static const string FM_IMPORT_FAIL;
+
 	static const string DP;
 	static const string DP_LINE_MISMATCH;
+	static const string DP_EMPTY_LINE;
 
 	static const string DP_NO_DATATYPES;
 	static const string CON;
 	static const string CON_START;
 	static const string CON_INVALID_QUERY;
 	static const string CON_EOF_DETECTED;
-
+	static const string CON_EXIT;
 	static const char CON_PROMPT_CHAR;
-	static const string TAB_NO_BODY;
 
+	static const string TAB_NO_BODY;
+	static const string TAB_NO_DATA;
 	static const string TAB_INVALID_INDEX;
+
 	static const string QP;
 	static const string QP_NO_SUCH_TABLE;
 	static const string QP_NO_SUCH_COL;

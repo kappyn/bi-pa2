@@ -6,5 +6,6 @@
 class CTableQuery {
 public:
 	virtual ~CTableQuery( ) = default;
-	virtual bool Evaluate ( ) const = 0;
+	virtual bool Evaluate ( ) = 0;
+	virtual CTable * GetQueryResult ( ) = 0;
 };

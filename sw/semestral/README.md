@@ -144,7 +144,7 @@ Ve složce **examples** budou uloženy tabulky/asserty sloužící k testování
 Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ## Nástroje a instalace
-##### nástroje definované podle stránky předmětu
+#### nástroje definované podle stránky předmětu
 ``make`` vytvoří veškeré výstupy ze zdrojového kódu (dokumentace, závislosti, binární podoba semestrální práce).
 
 ``make compile`` zkompiluje a nalinkuje zdrojové soubory - spustitelná binární podoba práce se uloží pod názvem kroupkev.
@@ -155,7 +155,7 @@ Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ``make doc`` vygeneruje dokumentaci.
 
-##### vlastní dodatečné nástroje
+#### vlastní dodatečné nástroje
 ``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind).
 
 ``make dev`` spustí skript, který sleduje změnu souborů (live filewatch).

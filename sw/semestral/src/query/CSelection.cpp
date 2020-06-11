@@ -4,11 +4,15 @@ CSelection::CSelection ( CDatabase & ref, vector<string> cols, string tableName 
 		: m_Database( ref ), m_QueryResult( nullptr ), m_SelectedCols( std::move( cols ) ),
 		  m_TableName( std::move( tableName ) ) { }
 
+CSelection::~CSelection ( ) {
+	delete m_QueryResult;
+}
+
 /**
  * Evaluates the query and saves the result.
  * @return true if query was correct and result generated without errors.
  */
-bool CSelection::Evaluate ( ) const {
+bool CSelection::Evaluate ( ) {
 	CTable * tableRef;
 
 	// 1. check, if table exists
@@ -17,14 +21,11 @@ bool CSelection::Evaluate ( ) const {
 		return false;
 	}
 
-	// 2. check, if columns exist
-	if ( ! tableRef->VerifyColumns( m_SelectedCols ) )
-		return false;
+	// check if columns exist => save the result
+	return tableRef->GetSubTable( m_SelectedCols, ( m_QueryResult = new CTable { } ) );
 
-	// 3. save the result
-//	m_QueryResult = new CTable ( m_SelectedCols );
+}
 
-
-
-	return true;
+CTable * CSelection::GetQueryResult ( ) {
+	return m_QueryResult;
 }

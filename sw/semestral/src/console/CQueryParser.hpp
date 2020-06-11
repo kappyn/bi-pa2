@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "CLog.hpp"
+#include "CConsole.hpp"
 #include "../tool/CDataParser.hpp"
 #include "../database/CDatabase.hpp"
 #include "../query/CSelection.hpp"
@@ -23,6 +24,7 @@ public:
 	explicit CQueryParser( CDatabase & ref );
 
 	static const string TABLES;
+	static const string QUIT;
 
 	static const string SELECTION;
 	static const string PROJECTION;
@@ -38,6 +40,6 @@ public:
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
 	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );
-	bool ValidateQuerySyntax ( const string & queryName, const string & queryDetails );
-	bool ParseQuery ( const string & basicString );
+	int ValidateQuerySyntax ( const string & queryName, const string & queryDetails );
+	int ParseQuery ( const string & basicString );
 };

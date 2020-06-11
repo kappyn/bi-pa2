@@ -1,6 +1,7 @@
 #include "CQueryParser.hpp"
 
 const string CQueryParser::TABLES = "TABLES";
+const string CQueryParser::QUIT = "QUIT";
 
 const string CQueryParser::SELECTION = "SEL";
 const string CQueryParser::PROJECTION = "PRO";
@@ -82,19 +83,21 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
 }
 
 /**
- * Validates the syntax of a query
+ * Validates the syntax of a query.
  * @param[in] queryName name of the query
  * @param[in, out] queryDetails details of the query
- * @return true if the query is correctly typed
+ * @return enum value for corresponding application state
  */
-bool CQueryParser::ValidateQuerySyntax ( const string & queryName, const string & queryDetails ) {
+int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string & queryDetails ) {
 	if ( queryDetails.empty( ) ) {
 		if ( queryName == CQueryParser::TABLES ) {
 			m_Database.ListTables( );
-			return true;
+			return CConsole::VALID_QUERY;
 		}
+		else if ( queryName == CQueryParser::QUIT )
+			return CConsole::EXIT_CONSOLE;
 		else
-			return false;
+			return CConsole::INVALID_QUERY;
 	}
 
 	bool saveMode = false;
@@ -104,50 +107,53 @@ bool CQueryParser::ValidateQuerySyntax ( const string & queryName, const string 
 	if ( queryName == CQueryParser::SELECTION ) {
 		string columns, table;
 		if ( ! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns )
-		  || ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) )
+		     || ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) )
 			return false;
 		vector<string> cols = CDataParser::Split( columns, false, false, ',' );
 		userQuery = new CSelection { m_Database, cols, table };
 	} else if ( false ) {
 		// new queries...
 	} else {
-		return false;
+		return CConsole::INVALID_QUERY;
 	}
 
 	if ( ! userQuery->Evaluate( ) ) {
 		delete userQuery;
-		return false;
+		return CConsole::INVALID_QUERY;
 	}
 
-	// save query option
-	string qname;
-	if ( stringProgress == queryDetails.length( ) ) {
-		saveMode = false;
-		delete userQuery;
-	}
-	else
-		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', qname ) )
-			saveMode = true;
+	cout << * userQuery->GetQueryResult( );
 
-	return true;
+	delete userQuery;
+
+//	// save query option
+//	string qname;
+//	if ( stringProgress == queryDetails.length( ) ) {
+//		saveMode = false;
+//		delete userQuery;
+//	}
+//	else
+//		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', qname ) )
+//			saveMode = true;
+
+	return CConsole::VALID_QUERY;
 }
 
 /**
  * Parses the query and returns the appropriate data
  * @param[in] basicString raw input query
- * @return true if the query was successfully processed
+ * @return enum value for corresponding application state
  */
-bool CQueryParser::ParseQuery ( const string & basicString ) {
+int CQueryParser::ParseQuery ( const string & basicString ) {
 	string queryName;
 	if ( ! ReadQueryName( basicString, queryName ) )
-		return false;
+		return CConsole::INVALID_QUERY;
 
 	string queryDetails = basicString.substr( queryName.length( ) );
-
 	return ValidateQuerySyntax( queryName, queryDetails );
 }
 
 /**
  * Constructor with application database reference.
  */
-CQueryParser::CQueryParser ( CDatabase & ref ) : m_Database ( ref ) { }
+CQueryParser::CQueryParser ( CDatabase & ref ) : m_Database( ref ) { }

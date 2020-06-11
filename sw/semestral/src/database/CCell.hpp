@@ -14,6 +14,7 @@ using namespace std;
  */
 class CCell {
 public:
+	virtual CCell * Clone() = 0;
 	virtual size_t GetLength ( ) const = 0;
 	virtual ostream & Print ( ostream & ost = cout ) const = 0;
 	virtual string RetrieveMVal ( ) const = 0;
@@ -23,6 +24,7 @@ public:
 class CString : public CCell {
 public:
 	string m_Val;
+	virtual CString * Clone( ) override;
 	explicit CString ( string data ) : m_Val( std::move( data ) ) { }
 	~CString ( ) override = default;
 	virtual size_t GetLength ( ) const override;
@@ -33,6 +35,7 @@ public:
 class CDouble : public CCell {
 public:
 	double m_Val;
+	virtual CDouble * Clone( ) override;
 	explicit CDouble ( const double & data ) : m_Val( data ) { }
 	~ CDouble ( ) override = default;
 	virtual size_t GetLength ( ) const override;
@@ -43,6 +46,7 @@ public:
 class CInt : public CCell {
 public:
 	int m_Val;
+	virtual CInt * Clone( ) override;
 	explicit CInt ( const int & data ) : m_Val( data ) { }
 	~CInt ( ) = default;
 	virtual size_t GetLength ( ) const override;
