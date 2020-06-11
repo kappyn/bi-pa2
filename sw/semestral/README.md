@@ -149,16 +149,16 @@ Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ``make compile`` zkompiluje a nalinkuje zdrojové soubory - spustitelná binární podoba práce se uloží pod názvem kroupkev.
 
-``make run`` spustí binární podobu semestrální práce. 
+``make run`` spustí binární podobu semestrální práce.
 
-``make clean`` smaže veškeré předchozí vygenerované instalace
+``make clean`` smaže veškeré dříve vygenerované instance.
 
-``make doc`` vygeneruje dokumentaci
+``make doc`` vygeneruje dokumentaci.
 
 ##### vlastní dodatečné nástroje
-``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind)
+``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind).
 
-``make dev`` spustí skript, který sleduje změnu souborů (live filewatch)
+``make dev`` spustí skript, který sleduje změnu souborů (live filewatch).
 
 ``make dep`` vygeneruje veškeré závislosti na základě výstupu z g++ -MM.
 
