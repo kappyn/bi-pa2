@@ -99,7 +99,6 @@ bool CQueryParser::ValidateQuerySyntax ( const string & queryName, const string 
 
 	bool saveMode = false;
 	int stringProgress = 0;
-
 	CTableQuery * userQuery;
 
 	if ( queryName == CQueryParser::SELECTION ) {
@@ -107,18 +106,18 @@ bool CQueryParser::ValidateQuerySyntax ( const string & queryName, const string 
 		if ( ! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns )
 		  || ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) )
 			return false;
-
-		// at this point, we got all the information we needed - we just need to verify it actually exists
-		// user might try to query over empty string result, but we don't care - resulting query search will fail anyway
-
 		vector<string> cols = CDataParser::Split( columns, false, false, ',' );
 		userQuery = new CSelection { m_Database, cols, table };
+	} else if ( false ) {
+		// new queries...
 	} else {
 		return false;
 	}
 
-	if ( ! userQuery->Evaluate( ) )
+	if ( ! userQuery->Evaluate( ) ) {
+		delete userQuery;
 		return false;
+	}
 
 	// save query option
 	string qname;

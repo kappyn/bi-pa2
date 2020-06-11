@@ -5,6 +5,7 @@
 #include "../console/CLog.hpp"
 
 #include <iostream>
+#include <algorithm>
 #include <iomanip>
 #include <string>
 #include <vector>
@@ -23,7 +24,8 @@ public:
 	explicit CTable ( const vector<CCell *> & header );
 	~CTable ( );
 
-	vector<string> GetColumnNames ( );
+	vector<string> GetColumnNames ( ) const;
+	bool VerifyColumns ( const vector<string> & cols ) const;
 
 	bool InsertRow ( const vector<CCell *> & row );
 	size_t GetColumnCount ( ) const;

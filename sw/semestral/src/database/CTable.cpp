@@ -22,11 +22,25 @@ CTable::~CTable ( ) {
 /**
  * Returns all column names.
  */
-vector<string> CTable::GetColumnNames ( ) {
+vector<string> CTable::GetColumnNames ( ) const {
 	vector<string> res;
 	for ( const auto & i : m_Data )
 		res.push_back( i.at( 0 )->RetrieveMVal( ) );
 	return res;
+}
+
+/**
+ * Verifies if given columns are present in the table
+ */
+bool CTable::VerifyColumns ( const vector<string> & cols ) const {
+	vector<string> correctColumns = GetColumnNames( );
+	for ( const auto & i : cols ) {
+		if ( find( correctColumns.begin( ), correctColumns.end( ), i ) == correctColumns.end( ) ) {
+			CLog::HighlightedMsg( CLog::QP, i, CLog::QP_NO_SUCH_COL );
+			return false;
+		}
+	}
+	return true;
 }
 
 /**
@@ -123,7 +137,6 @@ void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & os
 	ost << endl;
 	tmp = 0;
 }
-
 /**
  * Renders a specified column of the table.
  * @param[in] index index of the column in the table
@@ -135,6 +148,7 @@ vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const 
 		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
 	return m_Data.at( index );
 }
+
 ostream & operator << ( ostream & ost, const CTable & table ) {
 	table.Render( ost );
 	return ost;

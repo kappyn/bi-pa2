@@ -47,5 +47,6 @@ public:
 
 	static const string TAB_INVALID_INDEX;
 	static const string QP;
-	static const string QP_NO_SUCH;
+	static const string QP_NO_SUCH_TABLE;
+	static const string QP_NO_SUCH_COL;
 };

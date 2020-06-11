@@ -65,7 +65,6 @@ doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
 	$(MKDIR) $(DOC_DIR)
 	doxygen Doxyfile
 	@echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
-	google-chrome doc/index.html
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $^ -o $@

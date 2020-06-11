@@ -1,0 +1,24 @@
+Dotazování v relační algebře
+
+Dotazování pomocí SQL dotazů je dnes běžnou praxí, ale relační algebra příliš podporovaná není. A přitom určité typy dotazů jsou snáze realizovatelné v RA než v SQL. A proto je vhodné mít k dispozici program, který tyto dotazy podporuje.
+
+Implementujte následující funkcionalitu
+
+Relační operátory: selekce, projekce, přejmenování, přirozené spojení, obecné spojení
+Množinové operace: sjednocení, průnik, rozdíl, kartézský součin
+Položení dotazu v relační algebře a zobrazení výsledku dotazu
+Implementujte možnost uložit dotaz do proměnné a využít jej jako poddotaz v jiném dotazu.
+Převod dotazu v relační algebře na validní SQL
+Nástroj musí dále splňovat alespoň 1 následující funkcionalitu:
+
+Podpora CSV formátu pro import a export dat do tabulek
+Přímé napojení na databázi
+Kde lze využít polymorfismus? (doporučené)
+
+Operátory RA a množinové operace
+Parsování RA výrazu
+Pokud se vám zdá využití polymorfismu málo, přidejte víc podporovaných formátů (xml, json, sql)
+Další informace
+
+Vzhledem k nutnosti vytvoření překladu z RA do SQL je vhodné vytvořit napojení přímo na databázi.
+https://en.wikipedia.org/wiki/Relational_algebra

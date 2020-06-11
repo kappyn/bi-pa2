@@ -1,0 +1,6 @@
+Čestně prohlašuji, že jsem tuto semestrální práci naprogramoval sám, svými silami.
+Dále prohlašuji, že pokud je v některých částech modulů využíván externí kód, je tak řádně označen a je u něj uveden i originální zdroj.
+V neposlední řadě prohlašuji, že tabulky, které jsou obsaženy v testovacích datech, byly vygenerovány za pomocí aplikace http://www.mockaroo.com. Nejedná se o skutečná data - aplikace pouze umožňuje lepší automatizaci při generování.
+
+Kevin Kroupa
+dne 10.6.2020

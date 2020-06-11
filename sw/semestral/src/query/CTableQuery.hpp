@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../console/CLog.hpp"
+#include "../database/CTable.hpp"
 
 class CTableQuery {
 public:

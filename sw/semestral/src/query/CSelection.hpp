@@ -1,13 +1,12 @@
 #pragma once
 
 #include "CTableQuery.hpp"
-#include "../database/CTable.hpp"
 #include "../database/CDatabase.hpp"
 
-// Binary operator category - set operations such as cartesian product, intersection, etc.
 class CSelection : public CTableQuery {
 private:
 	CDatabase & m_Database;
+	CTable * m_QueryResult;
 	vector<string> m_SelectedCols;
 	string m_TableName;
 

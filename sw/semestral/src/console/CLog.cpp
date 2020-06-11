@@ -1,6 +1,6 @@
 #include "CLog.hpp"
 
-const int    CLog::APP_PADDING       = 10;
+const int    CLog::APP_PADDING       = 17;
 
 const string CLog::FM                = "FILE MANAGER";
 const string CLog::FM_CFG_FOUND      = "Configuration file found.";
@@ -24,7 +24,8 @@ const string CLog::TAB_NO_BODY        = "Unable to render - table body is missin
 const string CLog::TAB_INVALID_INDEX  = "Invalid index.";
 
 const string CLog::QP                 = "QUERY PARSER";
-const string CLog::QP_NO_SUCH         =  "\u001b[31m was not found.\u001b[0m";
+const string CLog::QP_NO_SUCH_TABLE   =  "\u001b[31m table was not found.\u001b[0m";
+const string CLog::QP_NO_SUCH_COL     =  "\u001b[31m column was not found.\u001b[0m";
 
 
 /**
