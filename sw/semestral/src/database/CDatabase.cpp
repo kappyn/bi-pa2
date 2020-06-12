@@ -32,18 +32,31 @@ bool CDatabase::InsertTable ( const string & tableName, CTable * tableRef ) {
 /**
  * Query insertion.
  * @param[in] ctqRef reference to the query itself
+ * @param[in] queryName query save name
  * @return true if query was inserted into database without any errors.
  */
 bool CDatabase::InsertQuery ( const string & queryName, CTableQuery * ctqRef ) {
+	if ( TableExists( queryName ) || QueryExists ( queryName ) ) {
+		CLog::BoldMsg( CLog::QP, queryName, CLog::QP_TABLE_EXISTS );
+		return false;
+	}
 	return m_QueryData.insert( pair<string, CTableQuery *>( queryName, ctqRef ) ).second;
 }
 
 /**
  * Table existence check.
- * @return true if table with given name is present in the database
+ * @return true if table with given table is present in the database
  */
 bool CDatabase::TableExists ( const string & tableName ) const {
 	return m_TableData.find( tableName ) != m_TableData.end( );
+}
+
+/**
+ * Query existence check.
+ * @return true if table with given query is present in the database
+ */
+bool CDatabase::QueryExists ( const string & tableName ) const {
+	return m_QueryData.find( tableName ) != m_QueryData.end( );
 }
 
 CTable * CDatabase::GetTable ( const string & tableName ) const {
@@ -52,7 +65,7 @@ CTable * CDatabase::GetTable ( const string & tableName ) const {
 }
 
 void CDatabase::ListTables ( ) const {
-	CLog::Msg( m_Name, "Listing tables..." );
+	CLog::Msg( m_Name, CLog::CON_LISTING_T );
 
 	vector<string> tableColumns;
 	string output;
@@ -76,6 +89,19 @@ void CDatabase::ListTables ( ) const {
 		               "" );
 	}
 }
+
+void CDatabase::ListQueries ( ) const {
+	CLog::Msg( m_Name, CLog::CON_LISTING_Q );
+
+	vector<string> tableColumns;
+	string output;
+	size_t queryCounter = 0;
+
+	for ( const auto & i : m_QueryData ) {
+		CLog::BoldMsg( m_Name, to_string( ++ queryCounter ).append( ". " ).append( i.first ), "" );
+	}
+}
+
 void CDatabase::PrintTables ( ) const {
 	CLog::Msg( m_Name, "Printing tables..." );
 	for ( const auto & i : m_TableData )

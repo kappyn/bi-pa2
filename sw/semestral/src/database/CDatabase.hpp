@@ -24,8 +24,11 @@ public:
 	~CDatabase ( );
 	CTable * GetTable ( const string & tableName ) const;
 	bool TableExists ( const string & tableName ) const;
+	bool QueryExists ( const string & tableName ) const;
 	bool InsertTable ( const string & tableName, CTable * tableRef );
+
 	bool InsertQuery ( const string & queryName, CTableQuery * ctqRef );
 	void ListTables ( ) const;
+	void ListQueries ( ) const;
 	void PrintTables ( ) const;
 };

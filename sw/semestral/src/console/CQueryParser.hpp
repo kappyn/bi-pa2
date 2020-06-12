@@ -24,19 +24,15 @@ public:
 	explicit CQueryParser( CDatabase & ref );
 
 	static const string TABLES;
+	static const string QUERIES;
 	static const string QUIT;
 
 	static const string SELECTION;
 	static const string PROJECTION;
+
 	static const string JOIN;
 
-//	static const string NATURAL_JOIN;
-//	static const string RENAME;
-//	static const string UNION;
-//	static const string INTERSECT;
-//	static const string MINUS;
 //	static const string CARTESIAN_PRODUCT;
-
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
 	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );

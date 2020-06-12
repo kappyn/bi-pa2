@@ -60,6 +60,8 @@ Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotaz
 
 ``TABLES;`` vypíše tabulky, které jsou momentálně v databázi.
 
+``QUERIES;`` vypíše dotazy, které jsou momentálně uloženy v databázi.
+
 ``QUIT;`` ukončí aplikaci.
 
 ---

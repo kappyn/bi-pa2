@@ -1,4 +1,11 @@
-SEL[Username, Surname, Ratio](scratch)~test;
-SEL[Age, Address](scratch)~hey;
-SEL[Age, Address](scratch)~;
+SEL[Username](scratch)~names;
+QUERIES;
+SEL[Age](scratch)~ages;
+TABLES;
+QUERIES;
+SEL[Age](scratch)~ages;
+SEL[Age](scratch)~;
+SEL[Age](scratch)aa~;
+SEL[Age](scratch)~ages2;
+QUERIES;
 QUIT;

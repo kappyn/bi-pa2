@@ -15,7 +15,7 @@ CSelection::~CSelection ( ) {
 bool CSelection::Evaluate ( ) {
 	CTable * tableRef;
 
-	// 1. check, if table exists
+	// check, if table exists
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) == nullptr ) {
 		CLog::HighlightedMsg( CLog::QP, m_TableName, CLog::QP_NO_SUCH_TABLE );
 		return false;

@@ -1,11 +1,11 @@
 #include "CQueryParser.hpp"
 
-const string CQueryParser::TABLES = "TABLES";
-const string CQueryParser::QUIT = "QUIT";
+const string CQueryParser::TABLES       = "TABLES";
+const string CQueryParser::QUERIES      = "QUERIES";
+const string CQueryParser::QUIT         = "QUIT";
 
-const string CQueryParser::SELECTION = "SEL";
-const string CQueryParser::PROJECTION = "PRO";
-const string CQueryParser::JOIN = "JOIN";
+const string CQueryParser::SELECTION    = "SEL";
+const string CQueryParser::PROJECTION   = "PRO";
 
 /**
  * Reads and determines if a user wants the query to be saved into memory.
@@ -91,43 +91,50 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
  * @return enum value for corresponding application state
  */
 int CQueryParser::ProcessQuery ( const string & basicString ) {
+	// basic query recognition
 	string queryName, queryDetails;
-
 	if ( ! ReadQueryName( basicString, queryName ) )
 		return CConsole::INVALID_QUERY;
-
 	queryDetails = basicString.substr( queryName.length( ) );
 
+	// interface commands
 	if ( queryDetails.empty( ) ) {
+
 		if ( queryName == CQueryParser::TABLES ) {
 			m_Database.ListTables( );
 			return CConsole::VALID_QUERY;
 		}
-		else if ( queryName == CQueryParser::QUIT )
+
+		if ( queryName == CQueryParser::QUERIES ) {
+			m_Database.ListQueries( );
+			return CConsole::VALID_QUERY;
+		}
+
+		if ( queryName == CQueryParser::QUIT )
 			return CConsole::EXIT_CONSOLE;
-		else
-			return CConsole::INVALID_QUERY;
+
+		return CConsole::INVALID_QUERY;
 	}
 
-	bool saveMode = false;
 	int stringProgress = 0;
 	CTableQuery * userQuery;
 
+	// relational algebra operations
 	if ( queryName == CQueryParser::SELECTION ) {
+
 		string columns, table;
 		if (
 			! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
 			! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
 		)
 			return CConsole::INVALID_QUERY;
-		vector<string> cols = CDataParser::Split( columns, false, false, ',' );
-		userQuery = new CSelection { m_Database, cols, table };
-	} else if ( false ) {
-		// new queries...
+		userQuery = new CSelection { m_Database, CDataParser::Split( columns, false, false, ',' ), table };
+
 	} else {
 		return CConsole::INVALID_QUERY;
 	}
 
+	// evaluation function for each query
 	if ( ! userQuery->Evaluate( ) ) {
 		delete userQuery;
 		return CConsole::INVALID_QUERY;
@@ -135,10 +142,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 
 	cout << * userQuery->GetQueryResult( );
 
-	// save query option
+	// save query option ?
 	string querySaveName;
-
-	// no tilda at the end
 	if ( stringProgress == queryDetails.length( ) )
 		delete userQuery;
 	else {
@@ -153,6 +158,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 			delete userQuery;
 		}
 	}
+
+	// success
 	return CConsole::VALID_QUERY;
 }
 

@@ -25,6 +25,10 @@ public:
 	static void
 	CmdPromp ( const char & promptChar = CLog::CON_PROMPT_CHAR, ostream & ost = cout );
 
+	static const string APP_COLOR_GOOD;
+	static const string APP_COLOR_BAD;
+	static const string APP_COLOR_RESET;
+
 	static const string FM;
 	static const string FM_CFG_FOUND;
 	static const string FM_CFG_NOT_FOUND;
@@ -36,14 +40,16 @@ public:
 	static const string DP;
 	static const string DP_LINE_MISMATCH;
 	static const string DP_EMPTY_LINE;
-
 	static const string DP_NO_DATATYPES;
+
 	static const string CON;
 	static const string CON_START;
 	static const string CON_INVALID_QUERY;
 	static const string CON_EOF_DETECTED;
 	static const string CON_EXIT;
 	static const char CON_PROMPT_CHAR;
+	static const string CON_LISTING_Q;
+	static const string CON_LISTING_T;
 
 	static const string TAB_NO_BODY;
 	static const string TAB_NO_DATA;
@@ -53,4 +59,5 @@ public:
 	static const string QP_NO_SUCH_TABLE;
 	static const string QP_NO_SUCH_COL;
 	static const string QP_QUERY_ADDED;
+	static const string QP_TABLE_EXISTS;
 };
