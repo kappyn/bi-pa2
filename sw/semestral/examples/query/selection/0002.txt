@@ -1,7 +1,4 @@
-SEL;
-SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );
-SEL[ f ]( t );
-SEL[ f ]( );
-SEL[ ]( a );
-SEL[                        ]( a );
-SEL;
+SEL[Username, Surname, Ratio](scratch);
+SEL[Age, Address](scratch);
+SEL[Ratio](scratch);
+QUIT;

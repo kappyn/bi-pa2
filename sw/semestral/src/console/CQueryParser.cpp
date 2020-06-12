@@ -110,7 +110,7 @@ int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string &
 		string columns, table;
 		if ( ! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns )
 		     || ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) )
-			return false;
+			return CConsole::INVALID_QUERY;
 		vector<string> cols = CDataParser::Split( columns, false, false, ',' );
 		userQuery = new CSelection { m_Database, cols, table };
 	} else if ( false ) {
@@ -153,8 +153,6 @@ int CQueryParser::ParseQuery ( const string & basicString ) {
 		return CConsole::INVALID_QUERY;
 
 	string queryDetails = basicString.substr( queryName.length( ) );
-
-//	cout << queryDetails << endl;
 
 	return ValidateQuerySyntax( queryName, queryDetails );
 }

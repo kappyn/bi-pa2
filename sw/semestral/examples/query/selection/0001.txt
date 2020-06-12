@@ -10,3 +10,5 @@ SEL[[a]]();
 SEL[](a);
 SEL[  ](  );
 SEL[                        ]( a );
+SEL[[]](scratch);
+QUIT;
