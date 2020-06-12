@@ -9,10 +9,13 @@ CDatabase::CDatabase ( string name ) : m_Name( std::move( name ) ) {
 }
 
 /**
- * Destructor that frees up all the tables. The tables themselves also have their own destructor.
+ * Destructor that frees up all the tables. The objects themselves also have their own destructor.
  */
 CDatabase::~CDatabase ( ) {
 	for ( const auto & i : m_TableData )
+		delete i.second;
+
+	for ( const auto & i : m_QueryData )
 		delete i.second;
 }
 
@@ -24,6 +27,15 @@ CDatabase::~CDatabase ( ) {
  */
 bool CDatabase::InsertTable ( const string & tableName, CTable * tableRef ) {
 	return m_TableData.insert( pair<string, CTable *>( tableName, tableRef ) ).second;
+}
+
+/**
+ * Query insertion.
+ * @param[in] ctqRef reference to the query itself
+ * @return true if query was inserted into database without any errors.
+ */
+bool CDatabase::InsertQuery ( const string & queryName, CTableQuery * ctqRef ) {
+	return m_QueryData.insert( pair<string, CTableQuery *>( queryName, ctqRef ) ).second;
 }
 
 /**
@@ -64,7 +76,6 @@ void CDatabase::ListTables ( ) const {
 		               "" );
 	}
 }
-
 void CDatabase::PrintTables ( ) const {
 	CLog::Msg( m_Name, "Printing tables..." );
 	for ( const auto & i : m_TableData )

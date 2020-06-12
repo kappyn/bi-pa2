@@ -25,6 +25,7 @@ public:
 	CTable * GetTable ( const string & tableName ) const;
 	bool TableExists ( const string & tableName ) const;
 	bool InsertTable ( const string & tableName, CTable * tableRef );
+	bool InsertQuery ( const string & queryName, CTableQuery * ctqRef );
 	void ListTables ( ) const;
 	void PrintTables ( ) const;
 };

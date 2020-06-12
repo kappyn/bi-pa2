@@ -29,7 +29,7 @@ bool CQueryParser::ReadQuerySave ( const string & queryDetails, const char & sav
 			output += i;
 	}
 
-	return ( output.length( ) > 0 );
+	return output.length( ) > 0;
 }
 
 /**
@@ -133,19 +133,26 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		return CConsole::INVALID_QUERY;
 	}
 
-//	cout << * userQuery->GetQueryResult( );
+	cout << * userQuery->GetQueryResult( );
 
 	// save query option
 	string querySaveName;
+
+	// no tilda at the end
 	if ( stringProgress == queryDetails.length( ) )
 		delete userQuery;
-	else
+	else {
+		// if user enters tilda (~) without any query save name, the program will ignore it
 		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', querySaveName ) ) {
-			if ( ! userQuery->SetQueryName( querySaveName ) )
-					return CConsole::INVALID_QUERY;
-			else
+			if ( ! m_Database.InsertQuery( querySaveName, userQuery ) ) {
+				delete userQuery;
+				return CConsole::INVALID_QUERY;
+			}
+			CLog::BoldMsg( CLog::QP, querySaveName, CLog::QP_QUERY_ADDED );
+		} else {
+			delete userQuery;
 		}
-
+	}
 	return CConsole::VALID_QUERY;
 }
 

@@ -52,4 +52,5 @@ public:
 	static const string QP;
 	static const string QP_NO_SUCH_TABLE;
 	static const string QP_NO_SUCH_COL;
+	static const string QP_QUERY_ADDED;
 };

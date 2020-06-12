@@ -152,6 +152,7 @@ vector<size_t> CTable::GetCellPadding ( ) const {
 void CTable::DeleteData ( ) {
 	m_Data.clear( );
 }
+
 /**
  * Renders the table data into output stream.
  * @param[in,out] ost output stream.

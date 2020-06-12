@@ -9,7 +9,6 @@ private:
 	CTable * m_QueryResult;
 	vector<string> m_SelectedCols;
 	string m_TableName;
-	string m_QueryResName;
 
 public:
 	CSelection ( CDatabase & ref, vector<string> cols, string tableName );
@@ -17,5 +16,4 @@ public:
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
-	virtual bool SetQueryName ( const string & name ) override;
 };
