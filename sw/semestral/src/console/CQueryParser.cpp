@@ -90,7 +90,14 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
  * @param[in, out] queryDetails details of the query
  * @return enum value for corresponding application state
  */
-int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string & queryDetails ) {
+int CQueryParser::ProcessQuery ( const string & basicString ) {
+	string queryName, queryDetails;
+
+	if ( ! ReadQueryName( basicString, queryName ) )
+		return CConsole::INVALID_QUERY;
+
+	queryDetails = basicString.substr( queryName.length( ) );
+
 	if ( queryDetails.empty( ) ) {
 		if ( queryName == CQueryParser::TABLES ) {
 			m_Database.ListTables( );
@@ -108,8 +115,10 @@ int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string &
 
 	if ( queryName == CQueryParser::SELECTION ) {
 		string columns, table;
-		if ( ! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns )
-		     || ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) )
+		if (
+			! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
+			! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
+		)
 			return CConsole::INVALID_QUERY;
 		vector<string> cols = CDataParser::Split( columns, false, false, ',' );
 		userQuery = new CSelection { m_Database, cols, table };
@@ -124,37 +133,20 @@ int CQueryParser::ValidateQuerySyntax ( const string & queryName, const string &
 		return CConsole::INVALID_QUERY;
 	}
 
-	cout << * userQuery->GetQueryResult( );
+//	cout << * userQuery->GetQueryResult( );
 
-	delete userQuery;
-
-//	// save query option
-//	string qname;
-//	if ( stringProgress == queryDetails.length( ) ) {
-//		saveMode = false;
-//		delete userQuery;
-//	}
-//	else
-//		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', qname ) )
-//			saveMode = true;
+	// save query option
+	string querySaveName;
+	if ( stringProgress == queryDetails.length( ) )
+		delete userQuery;
+	else
+		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', querySaveName ) ) {
+			if ( ! userQuery->SetQueryName( querySaveName ) )
+					return CConsole::INVALID_QUERY;
+			else
+		}
 
 	return CConsole::VALID_QUERY;
-}
-
-/**
- * Parses the query and returns the appropriate data
- * @param[in] basicString raw input query
- * @return enum value for corresponding application state
- */
-int CQueryParser::ParseQuery ( const string & basicString ) {
-	string queryName;
-
-	if ( ! ReadQueryName( basicString, queryName ) )
-		return CConsole::INVALID_QUERY;
-
-	string queryDetails = basicString.substr( queryName.length( ) );
-
-	return ValidateQuerySyntax( queryName, queryDetails );
 }
 
 /**

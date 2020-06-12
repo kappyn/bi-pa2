@@ -29,3 +29,10 @@ bool CSelection::Evaluate ( ) {
 CTable * CSelection::GetQueryResult ( ) {
 	return m_QueryResult;
 }
+
+bool CSelection::SetQueryName ( const string & name ) {
+	if ( name.empty( ) )
+		return false;
+	m_TableName = name;
+	return true;
+}

@@ -19,7 +19,7 @@ int CConsole::Start ( CDatabase & dbRef ) {
 			CLog::Msg( CLog::CON, CLog::CON_EOF_DETECTED );
 			return - 1;
 		}
-		switch ( cqp.ParseQuery( buffer ) ) {
+		switch ( cqp.ProcessQuery( buffer ) ) {
 
 			case CConsole::VALID_QUERY:
 				continue;

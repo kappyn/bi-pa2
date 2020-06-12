@@ -133,13 +133,11 @@ Každý z těchto dotazů musí být ukončen středníkem.
 
 ## Využití polymorfismu
 
+#### Polymorfismus při zapouzdření objektů v buňkách tabulek
 - První využití polymorfismu bude ve třídě **CCell**. Obecně nevíme, jaké datové typy budou dané sloupce mít. Tabulka pouze drží odkazy na tyto buňky, dovnitř vkládáme konkrétní dynamicky alokované potomky (využíváme dynamické vazbu) zapouzdrující podporované datové typy (string, int, double), kteří CCell implementují. Tyto jednotlivé typy buněk se budou lišit například v porovnávání (lexikografické, přesnost na desetinná čísla). Tyto třídy jsou tedy připraveny na jakoukoliv další nástavbu (například úplně vlastní objekt).
 
----
-
-- _Další využitím bude systém dotazování. Implementace této polymorfní části programu ještě není do podrobna jasná, protože se hodně odvíjí od ostatních částí programu, které ji předcházejí (načítání tabulek, rozhraní na dotazování). Proto tuto část považuji hlavně jako úvahu, jak by to mohlo v budoucnu vypadat:_ 
- 
-     Každý dotaz má jiné chování a výsledek. Může být například unární/binární, a je nutné, aby byl program schopen všechny dotazy ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (_doteď pouze dědičnost_). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje. Hrubá představa hierarchie tříd je ve složce **src/query**.
+#### Polymorfismus při dotazování - různé chování, různé výsledky
+- Každý dotaz má jiné chování a výsledek. Může být například unární/binární, má jiné argumenty a strukturu - je přesto nutné, aby byl program schopen dotazy jakéhokoliv typu ukládat. Je tedy na místě, aby každý z dotazů vycházel z nějaké abstraktní třídy a svou zbylou charakteristiku doimplementoval (třída **CTableQuery**). Při volání poddotazu v aktuálním dotazu už se program nebude zajímat o to, s jakým konkrétním dotazem zrovna pracuje.
        
 ## Testování
 Ve složce **examples** budou uloženy tabulky/asserty sloužící k testování různých částí programu.

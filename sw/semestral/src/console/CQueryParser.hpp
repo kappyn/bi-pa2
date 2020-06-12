@@ -40,6 +40,5 @@ public:
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
 	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );
-	int ValidateQuerySyntax ( const string & queryName, const string & queryDetails );
-	int ParseQuery ( const string & basicString );
+	int ProcessQuery ( const string & basicString);
 };

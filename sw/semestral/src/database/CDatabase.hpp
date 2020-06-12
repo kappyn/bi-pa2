@@ -8,6 +8,7 @@
 
 #include "CTable.hpp"
 #include "../console/CLog.hpp"
+#include "../query/CTableQuery.hpp"
 
 /**
  * This module is the upper layer of data storage, containing all the loaded data.
@@ -15,7 +16,8 @@
 class CDatabase {
 private:
 	string m_Name;
-	map<string, CTable *> m_Data;
+	map<string, CTable *> m_TableData;
+	map<string, CTableQuery *> m_QueryData;
 
 public:
 	explicit CDatabase ( string name );

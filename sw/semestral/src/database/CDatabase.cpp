@@ -12,7 +12,7 @@ CDatabase::CDatabase ( string name ) : m_Name( std::move( name ) ) {
  * Destructor that frees up all the tables. The tables themselves also have their own destructor.
  */
 CDatabase::~CDatabase ( ) {
-	for ( const auto & i : m_Data )
+	for ( const auto & i : m_TableData )
 		delete i.second;
 }
 
@@ -23,7 +23,7 @@ CDatabase::~CDatabase ( ) {
  * @return true if table was inserted into database without any errors.
  */
 bool CDatabase::InsertTable ( const string & tableName, CTable * tableRef ) {
-	return m_Data.insert( pair<string, CTable *>( tableName, tableRef ) ).second;
+	return m_TableData.insert( pair<string, CTable *>( tableName, tableRef ) ).second;
 }
 
 /**
@@ -31,12 +31,12 @@ bool CDatabase::InsertTable ( const string & tableName, CTable * tableRef ) {
  * @return true if table with given name is present in the database
  */
 bool CDatabase::TableExists ( const string & tableName ) const {
-	return m_Data.find( tableName ) != m_Data.end( );
+	return m_TableData.find( tableName ) != m_TableData.end( );
 }
 
 CTable * CDatabase::GetTable ( const string & tableName ) const {
-	auto tmp = m_Data.find( tableName );
-	return tmp == m_Data.end( ) ? nullptr : tmp->second;
+	auto tmp = m_TableData.find( tableName );
+	return tmp == m_TableData.end( ) ? nullptr : tmp->second;
 }
 
 void CDatabase::ListTables ( ) const {
@@ -46,7 +46,7 @@ void CDatabase::ListTables ( ) const {
 	string output;
 	size_t columnCounter = 0, tableCounter = 0;
 
-	for ( const auto & i : m_Data ) {
+	for ( const auto & i : m_TableData ) {
 		tableColumns = i.second->GetColumnNames( );
 		output = '(';
 
@@ -67,6 +67,6 @@ void CDatabase::ListTables ( ) const {
 
 void CDatabase::PrintTables ( ) const {
 	CLog::Msg( m_Name, "Printing tables..." );
-	for ( const auto & i : m_Data )
+	for ( const auto & i : m_TableData )
 		cout << * i.second;
 }

@@ -1,4 +1,5 @@
 SEL[Username, Surname, Ratio](scratch);
 SEL[Age, Address](scratch);
 SEL[Ratio](scratch);
+TABLES;
 QUIT;

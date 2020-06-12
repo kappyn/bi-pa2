@@ -1,0 +1,5 @@
+SEL[Username, Surname, Ratio](scratch)~test;
+SEL[Age, Address](scratch)~aha;
+SEL[Ratio](scratch)~~;
+SEL[Age, Address](scratch)~;
+QUIT;
