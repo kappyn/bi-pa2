@@ -3,6 +3,7 @@
 const int    CLog::APP_PADDING        = 17;
 
 const string CLog::APP_COLOR_GOOD     = "\033[0;32m";
+const string CLog::APP_COLOR_RESULT   = "\033[1;36m";
 const string CLog::APP_COLOR_BAD      = "\u001b[31m";
 const string CLog::APP_COLOR_RESET    = "\u001b[0m";
 

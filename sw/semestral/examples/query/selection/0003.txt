@@ -1,5 +1,6 @@
-SEL[Username, Age](scratch)~boys;
+SEL[*](scratch)~boys;
+SEL[Age, Address](boys)~ages;
+SEL[Address](ages)~addr;
+SEL[Address](addr)~final;
 QUERIES;
-TABLES;
-SEL[*](boys);
 QUIT;

@@ -7,9 +7,13 @@ class CSelection : public CTableQuery {
 private:
 	CDatabase & m_Database;
 	CTable * m_QueryResult;
+	string m_QuerySaveName;
 
 	vector<string> m_SelectedCols;
 	string m_TableName;
+
+	CTableQuery * m_Origin;
+	bool m_Derived;
 
 public:
 	CSelection ( CDatabase & ref, vector<string> cols, string tableName );
@@ -17,4 +21,10 @@ public:
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
+	virtual CTableQuery * GetOrigin ( ) override;
+	virtual string GetQueryName ( ) override;
+
+	virtual string RetrieveSQL ( ) override;
+	virtual void SetQueryAsDerived ( ) override;
+	virtual bool IsDerived ( ) override;
 };

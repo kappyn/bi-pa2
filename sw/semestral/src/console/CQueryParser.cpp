@@ -140,7 +140,9 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		return CConsole::INVALID_QUERY;
 	}
 
-	cout << * userQuery->GetQueryResult( );
+	// result to output
+	cout << userQuery->RetrieveSQL( ) << endl;
+//	cout << * userQuery->GetQueryResult( );
 
 	// save query option ?
 	string querySaveName;
