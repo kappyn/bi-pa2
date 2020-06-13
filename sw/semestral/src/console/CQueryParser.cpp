@@ -142,7 +142,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 
 	// result to output
 	cout << * userQuery->GetQueryResult( );
-	cout << userQuery->GenerateSQL( ) << endl;
+
+	CLog::Msg( CLog::QP, userQuery->GenerateSQL(  ) );
 
 	// save query option ?
 	string querySaveName;

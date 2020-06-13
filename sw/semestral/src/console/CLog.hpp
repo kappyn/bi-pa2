@@ -12,15 +12,16 @@ using namespace std;
 class CLog {
 public:
 	static const int APP_PADDING;
+	static const string APP_LINE_HEIGHT;
 
 	static void
-	Msg ( const string & branch, const string & message, ostream & ost = cout );
+	Msg ( const string & branch, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
 
 	static void
-	HighlightedMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost = cout );
+	HighlightedMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
 
 	static void
-	BoldMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost = cout );
+	BoldMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
 
 	static void
 	CmdPromp ( const char & promptChar = CLog::CON_PROMPT_CHAR, ostream & ost = cout );

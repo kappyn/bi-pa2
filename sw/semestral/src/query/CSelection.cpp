@@ -63,12 +63,12 @@ string CSelection::GenerateSQL ( ) const {
 	CTableQuery * origin = m_Origin;
 	string output = CreateSQL( );
 	size_t depth = 1;
+
 	while ( origin != nullptr ) {
 		output += origin->CreateSQL( );
 		origin = origin->GetOrigin( );
 		++ depth;
 	}
-
 	for ( ; depth > 0; -- depth )
 		output += " )";
 
@@ -80,10 +80,10 @@ string CSelection::CreateSQL ( ) const {
 	size_t max = m_SelectedCols.size( );
 	for ( size_t cnt = 0; cnt < max; ++ cnt )
 		if ( cnt == max - 1 )
-			output += m_SelectedCols[ cnt ] + "";
+			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
 		else
-			output += m_SelectedCols[ cnt ] + ", ";
-	output += " FROM " + string( m_Derived ? "" : m_TableName );
+			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
+	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
 	return output;
 }
 

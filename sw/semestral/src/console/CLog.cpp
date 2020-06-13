@@ -1,6 +1,7 @@
 #include "CLog.hpp"
 
-const int    CLog::APP_PADDING        = 17;
+const int    CLog::APP_PADDING        = 14;
+const string CLog::APP_LINE_HEIGHT    = "\n";
 
 const string CLog::APP_COLOR_GOOD     = "\033[0;32m";
 const string CLog::APP_COLOR_RESULT   = "\033[1;36m";
@@ -46,8 +47,8 @@ const string CLog::QP_TABLE_EXISTS    =  string( APP_COLOR_BAD ).append(" name a
  * @param[in] message log message string
  * @param[in, out] ost output stream to log to.
  */
-void CLog::Msg ( const string & branch, const string & message, ostream & ost ) {
-	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << message << endl;
+void CLog::Msg ( const string & branch, const string & message, const string & extraPad, ostream & ost ) {
+	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << message << extraPad << endl;
 }
 
 /**
@@ -58,9 +59,9 @@ void CLog::Msg ( const string & branch, const string & message, ostream & ost ) 
  * @param[in, out] ost output stream to log to.
  */
 void
-CLog::HighlightedMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost ) {
+CLog::HighlightedMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << "\u001b[1m"
-	<< string( "\"\u001b[1m" ).append( highlighted ).append( "\u001b[0m\"" ) << message << endl;
+	<< string( "\"\u001b[1m" ).append( highlighted ).append( "\u001b[0m\"" ) << message << extraPad << endl;
 }
 
 /**
@@ -71,9 +72,9 @@ CLog::HighlightedMsg ( const string & branch, const string & highlighted, const 
  * @param[in, out] ost output stream to log to.
  */
 void
-CLog::BoldMsg ( const string & branch, const string & highlighted, const string & message, ostream & ost ) {
+CLog::BoldMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad, ostream & ost ) {
 	ost << setw( CLog::APP_PADDING ) << right << branch << ": " << "\u001b[1m"
-	<< string( "\u001b[1m" ).append( highlighted ).append( "\u001b[0m" ) << message << endl;
+	<< string( "\u001b[1m" ).append( highlighted ).append( "\u001b[0m" ) << message << extraPad << endl;
 }
 
 /**

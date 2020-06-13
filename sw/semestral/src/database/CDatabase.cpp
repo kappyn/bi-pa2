@@ -108,7 +108,8 @@ void CDatabase::ListQueries ( ) const {
 }
 
 void CDatabase::PrintTables ( ) const {
-	CLog::Msg( m_Name, "Printing tables..." );
+	CLog::Msg( m_Name, "Printing tables...", "" );
 	for ( const auto & i : m_TableData )
 		cout << * i.second;
+	cout << endl;
 }
