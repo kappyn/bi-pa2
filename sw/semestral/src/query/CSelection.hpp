@@ -16,15 +16,19 @@ private:
 	bool m_Derived;
 
 public:
-	CSelection ( CDatabase & ref, vector<string> cols, string tableName );
+	explicit CSelection ( CDatabase & ref, vector<string> cols, string tableName );
+
 	virtual ~CSelection ( ) override;
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
 	virtual CTableQuery * GetOrigin ( ) override;
-	virtual string GetQueryName ( ) override;
+	virtual string GetQueryName ( ) const override;
+	virtual void ArchiveQueryName ( const string & name ) override;
 
-	virtual string RetrieveSQL ( ) override;
+	virtual string GenerateSQL ( ) const override;
+	virtual string CreateSQL ( ) const override;
+
 	virtual void SetQueryAsDerived ( ) override;
-	virtual bool IsDerived ( ) override;
+	virtual bool IsDerived ( ) const override;
 };

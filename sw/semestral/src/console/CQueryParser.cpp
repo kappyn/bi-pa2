@@ -141,8 +141,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	}
 
 	// result to output
-	cout << userQuery->RetrieveSQL( ) << endl;
-//	cout << * userQuery->GetQueryResult( );
+	cout << * userQuery->GetQueryResult( );
+	cout << userQuery->GenerateSQL( ) << endl;
 
 	// save query option ?
 	string querySaveName;
@@ -155,6 +155,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 				delete userQuery;
 				return CConsole::INVALID_QUERY;
 			}
+			userQuery->ArchiveQueryName( querySaveName );
 			CLog::BoldMsg( CLog::QP, querySaveName, CLog::QP_QUERY_ADDED );
 		} else {
 			delete userQuery;

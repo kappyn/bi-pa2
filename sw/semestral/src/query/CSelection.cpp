@@ -7,8 +7,7 @@ CSelection::CSelection ( CDatabase & ref, vector<string> cols, string tableName 
 		  m_SelectedCols( std::move( cols ) ),
 		  m_TableName( std::move( tableName ) ),
 		  m_Origin( nullptr ),
-		  m_Derived( false )
-{ }
+		  m_Derived( false ) { }
 
 CSelection::~CSelection ( ) {
 	delete m_QueryResult;
@@ -29,7 +28,7 @@ bool CSelection::Evaluate ( ) {
 	CTableQuery * queryRef;
 	if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 
-		// mark current query as derived
+		// mark current query as derived from other query
 		m_Derived = true;
 
 		// save the previous saved query
@@ -37,7 +36,6 @@ bool CSelection::Evaluate ( ) {
 
 		// save the query result
 		return queryRef->GetQueryResult( )->GetSubTable( m_SelectedCols, ( m_QueryResult = new CTable { } ) );
-
 	}
 
 	CLog::HighlightedMsg( CLog::QP, m_TableName, CLog::QP_NO_SUCH_TABLE );
@@ -52,43 +50,47 @@ CTableQuery * CSelection::GetOrigin ( ) {
 	return m_Origin;
 }
 
-string CSelection::GetQueryName ( ) {
+string CSelection::GetQueryName ( ) const {
 	return m_QuerySaveName;
 }
 
-string CSelection::RetrieveSQL ( ) {
-	if ( m_Origin ) {
-		CTableQuery * origin = m_Origin;
-		string output = "";
-		while ( origin != nullptr ) {
-			cout << origin->GetQueryName( );
-			origin = origin->GetOrigin( );
-		}
-		return output;
-	} else {
-		return "No origin.";
-	}
-
-//	string output = string( CLog::APP_COLOR_RESULT ).append( "SELECT " );
-//	for ( const auto & i : m_SelectedCols ) {
-//		if ( i != * ( m_SelectedCols.end( ) - 1 ) )
-//			output.append( i ).append( ", " );
-//		else
-//			output.append( i ).append( "\n" );
-//	}
-
-//	.append( "\n" )
-//			.append( CLog::APP_COLOR_RESET );
-//	return output;
+void CSelection::ArchiveQueryName ( const string & name ) {
+	if ( m_QuerySaveName != name )
+		m_QuerySaveName = name;
 }
 
-/**
- * Flips the m_Derived flag.
- */
+string CSelection::GenerateSQL ( ) const {
+	CTableQuery * origin = m_Origin;
+	string output = CreateSQL( );
+	size_t depth = 1;
+	while ( origin != nullptr ) {
+		output += origin->CreateSQL( );
+		origin = origin->GetOrigin( );
+		++ depth;
+	}
+
+	for ( ; depth > 0; -- depth )
+		output += " )";
+
+	return output;
+}
+
+string CSelection::CreateSQL ( ) const {
+	string output = "( SELECT ";
+	size_t max = m_SelectedCols.size( );
+	for ( size_t cnt = 0; cnt < max; ++ cnt )
+		if ( cnt == max - 1 )
+			output += m_SelectedCols[ cnt ] + "";
+		else
+			output += m_SelectedCols[ cnt ] + ", ";
+	output += " FROM " + string( m_Derived ? "" : m_TableName );
+	return output;
+}
+
 void CSelection::SetQueryAsDerived ( ) {
 	m_Derived = true;
 }
-bool CSelection::IsDerived ( ) {
+bool CSelection::IsDerived ( ) const {
 	return m_Derived;
 }
 

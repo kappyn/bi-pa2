@@ -10,9 +10,12 @@ public:
 
 	virtual CTable * GetQueryResult ( ) = 0;
 	virtual CTableQuery * GetOrigin ( ) = 0;
-	virtual string RetrieveSQL ( ) = 0;
-	virtual string GetQueryName ( ) = 0;
 
+	virtual string GenerateSQL ( ) const = 0;
+	virtual string CreateSQL ( ) const = 0;
+
+	virtual string GetQueryName ( ) const = 0;
+	virtual void ArchiveQueryName ( const string & name ) = 0;
 	virtual void SetQueryAsDerived ( ) = 0;
-	virtual bool IsDerived ( ) = 0;
+	virtual bool IsDerived ( ) const = 0;
 };

@@ -2,5 +2,7 @@ SEL[*](scratch)~boys;
 SEL[Age, Address](boys)~ages;
 SEL[Address](ages)~addr;
 SEL[Address](addr)~final;
+SEL[Address](final)~eeee;
+SEL[Address](eeee)~oooo;
 QUERIES;
 QUIT;
