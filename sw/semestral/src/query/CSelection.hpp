@@ -7,6 +7,7 @@ class CSelection : public CTableQuery {
 private:
 	CDatabase & m_Database;
 	CTable * m_QueryResult;
+
 	vector<string> m_SelectedCols;
 	string m_TableName;
 

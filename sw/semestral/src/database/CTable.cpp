@@ -75,7 +75,7 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 	vector<CCell *> newColumn;
 	newColumn.reserve( elementCount );
 	for ( const auto & i : col )
-		newColumn.push_back( i->Clone() );
+		newColumn.push_back( i->Clone( ) );
 
 	m_Data.push_back( std::move( newColumn ) );
 	return true;
@@ -88,6 +88,13 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
  * @return true if columns provided were correct, and table was generated
  */
 bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const {
+	if ( cols.size( ) == 1 && ( * cols.begin( ) == "*" ) ) {
+		for ( const auto & i : m_Data )
+			if ( ! outPtr->InsertDeepCol( i ) )
+				return false;
+		return true;
+	}
+
 	vector<int> columnIndexes;
 	vector<string> correctColumns = GetColumnNames( );
 
@@ -120,7 +127,7 @@ size_t CTable::GetColumnCount ( ) const {
 vector<string> CTable::GetColumnNames ( ) const {
 	vector<string> res;
 
-	if ( m_Data.empty ( ) )
+	if ( m_Data.empty( ) )
 		throw logic_error( CLog::TAB_NO_DATA );
 
 	for ( const auto & i : m_Data )

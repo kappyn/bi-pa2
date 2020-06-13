@@ -64,6 +64,11 @@ CTable * CDatabase::GetTable ( const string & tableName ) const {
 	return tmp == m_TableData.end( ) ? nullptr : tmp->second;
 }
 
+CTableQuery * CDatabase::GetTableQ ( const string & tableName ) const {
+	auto tmp = m_QueryData.find( tableName );
+	return tmp == m_QueryData.end( ) ? nullptr : tmp->second;
+}
+
 void CDatabase::ListTables ( ) const {
 	CLog::Msg( m_Name, CLog::CON_LISTING_T );
 

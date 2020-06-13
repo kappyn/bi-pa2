@@ -22,7 +22,10 @@ private:
 public:
 	explicit CDatabase ( string name );
 	~CDatabase ( );
+
 	CTable * GetTable ( const string & tableName ) const;
+	CTableQuery * GetTableQ ( const string & tableName ) const;
+
 	bool TableExists ( const string & tableName ) const;
 	bool QueryExists ( const string & tableName ) const;
 	bool InsertTable ( const string & tableName, CTable * tableRef );

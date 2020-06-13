@@ -1,11 +1,5 @@
-SEL[Username](scratch)~names;
+SEL[Username, Age](scratch)~boys;
 QUERIES;
-SEL[Age](scratch)~ages;
 TABLES;
-QUERIES;
-SEL[Age](scratch)~ages;
-SEL[Age](scratch)~;
-SEL[Age](scratch)aa~;
-SEL[Age](scratch)~ages2;
-QUERIES;
+SEL[*](boys);
 QUIT;
