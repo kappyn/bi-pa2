@@ -120,17 +120,31 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	CTableQuery * userQuery;
 
 	// relational algebra operations
-	if ( queryName == CQueryParser::SELECTION ) {
 
+	// SELECTION
+	if ( queryName == CQueryParser::SELECTION ) {
 		string columns, table;
 		if (
-			! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
-			! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
-		)
+				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
+				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
+				)
 			return CConsole::INVALID_QUERY;
 		userQuery = new CSelection { m_Database, CDataParser::Split( columns, false, false, ',' ), table };
+	}
 
-	} else {
+	// PROJECTION
+//	else if ( queryName == CQueryParser::PROJECTION ) {
+//		string condition, table;
+//		if (
+//				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, condition ) ||
+//				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
+////				! ValidateConditionSyntax( condition );
+//				)
+//			return CConsole::INVALID_QUERY;
+//		userQuery = new CProjection { m_Database, condition, table };
+//	}
+
+	else {
 		return CConsole::INVALID_QUERY;
 	}
 
@@ -165,6 +179,10 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 
 	// success
 	return CConsole::VALID_QUERY;
+}
+
+bool CQueryParser::ValidateConditionSyntax ( const string & condition, CQueryParser::CCondition & out ) {
+	return false;
 }
 
 /**

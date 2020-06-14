@@ -78,7 +78,9 @@ Popis operace: Vybere záznamy tabulky na základě kritérií.
 
 Použití: ``PRO[ podminka ]( jmeno_tabulky );``
 
-Podmínka musí být ve tvaru: ``atribut λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
+Podmínka musí být ve tvaru: ``sloupec λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
+
+Konstanty jsou buď ve formátu číselném (např. **666**, **3.14**), nebo textovém ( **"Maxipes"** )
 
 ---
 

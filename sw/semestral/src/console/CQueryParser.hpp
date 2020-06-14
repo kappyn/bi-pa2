@@ -9,7 +9,9 @@
 #include "CConsole.hpp"
 #include "../tool/CDataParser.hpp"
 #include "../database/CDatabase.hpp"
+
 #include "../query/CSelection.hpp"
+//#include "../query/CProjection.hpp"
 
 using namespace std;
 
@@ -20,6 +22,11 @@ class CQueryParser {
 private:
 	CDatabase & m_Database;
 
+	struct CCondition {
+		string column;
+		string relation;
+		string constant;
+	};
 public:
 	explicit CQueryParser( CDatabase & ref );
 
@@ -36,5 +43,6 @@ public:
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
 	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );
+	static bool ValidateConditionSyntax ( const string & condition, CCondition & out );
 	int ProcessQuery ( const string & basicString);
 };
