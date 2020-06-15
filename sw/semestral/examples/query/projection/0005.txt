@@ -1,0 +1,2 @@
+PRO[ Ratio <= 10.2 ]( scratch );
+QUIT;

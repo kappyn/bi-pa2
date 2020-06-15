@@ -52,7 +52,9 @@ id, first_name, last_name, email, gender, ratio, overall_score
 ```
 
 ### Relační operátory a operace s množinami
-Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy. Na mezerách v dotazech nezáleží, musí ale dodržovat správné závorkování, které je definováno níže.
+Po úspěšném načtení alespoň jedné tabulky program přejde do stavu dotazování uživatele. Každá operace definovaná RA má svojí syntaxi, která musí být dodržena. Následující shrnutí definuje tyto dotazy. 
+
+Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definováno. Správné závorkování musí být dodrženo vždy.
 
 ---
 
@@ -78,9 +80,9 @@ Popis operace: Vybere záznamy tabulky na základě kritérií.
 
 Použití: ``PRO[ podminka ]( jmeno_tabulky );``
 
-Podmínka musí být ve tvaru: ``sloupec λ konstanta``, kde `λ` je vztah ``<,>,<=,=>,==``. Operandy nelze zaměnit.
+Podmínka musí být ve tvaru: ``sloupec λ konstanta``, kde `λ` je vztah ``<,>,>=,=>,==``. Operandy nelze zaměnit.
 
-Konstanty jsou buď ve formátu číselném (např. **666**, **3.14**), nebo textovém ( **"Maxipes"** )
+Konstanty jsou buď ve formátu číselném (např. **666**, **3.14**), nebo textovém (**Maxipes**). Program se pokusí o konverzi na typ, který mají buňky vybraného sloupce.
 
 ---
 

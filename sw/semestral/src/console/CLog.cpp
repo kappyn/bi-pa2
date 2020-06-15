@@ -39,6 +39,9 @@ const string CLog::QP_NO_SUCH_TABLE   =  string( APP_COLOR_BAD ).append(" table 
 const string CLog::QP_NO_SUCH_COL     =  string( APP_COLOR_BAD ).append(" column was not found." ).append( APP_COLOR_RESET );
 const string CLog::QP_QUERY_ADDED     =  string( APP_COLOR_GOOD ).append(" query was added!" ).append( APP_COLOR_RESET );
 const string CLog::QP_TABLE_EXISTS    =  string( APP_COLOR_BAD ).append(" name already taken (please use TABLES or QUERIES to prevent this)." ).append( APP_COLOR_RESET );
+const string CLog::QP_INVALID_CON     =  string( APP_COLOR_BAD ).append(" the condition clause is missing an operand." ).append( APP_COLOR_RESET );
+const string CLog::QP_INVALID_REL     =  string( APP_COLOR_BAD ).append(" the condition clause is missing a relation operator." ).append( APP_COLOR_RESET );
+const string CLog::QP_CON_PARSE_ERROR =  string( APP_COLOR_BAD ).append(" unable to convert constant to a correct type." ).append( APP_COLOR_RESET );
 
 
 /**

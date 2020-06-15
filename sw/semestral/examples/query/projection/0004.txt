@@ -1,0 +1,8 @@
+PRO[ Ratio > 0 ]( scratch );
+PRO[ Ratio <= 10.2 ]( scratch );
+PRO[ Ratio == 222.222 ]( scratch );
+PRO[ Ratio > 0.3 ]( scratch );
+PRO[ Ratio >= 50 ]( scratch );
+SEL[Username,Surname,Ratio](scratch)~Users;
+PRO[ Ratio > 403.22 ]( Users );
+QUIT;

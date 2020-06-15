@@ -62,4 +62,7 @@ public:
 	static const string QP_NO_SUCH_COL;
 	static const string QP_QUERY_ADDED;
 	static const string QP_TABLE_EXISTS;
+	static const string QP_INVALID_CON;
+	static const string QP_INVALID_REL;
+	static const string QP_CON_PARSE_ERROR;
 };

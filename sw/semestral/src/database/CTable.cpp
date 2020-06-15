@@ -41,6 +41,21 @@ bool CTable::VerifyColumns ( const vector<string> & cols ) const {
 }
 
 /**
+ * Verifies if given column is present in the table
+ */
+bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
+	vector<string> correctColumns = GetColumnNames( );
+
+	vector<string>::iterator i;
+	if ( ( i = find( correctColumns.begin( ), correctColumns.end( ), col ) ) == correctColumns.end( ) ) {
+		CLog::HighlightedMsg( CLog::QP, col, CLog::QP_NO_SUCH_COL );
+		return false;
+	}
+	index = i - correctColumns.begin( );
+	return true;
+}
+
+/**
  * Table row insertion. References are copied, not reallocated!
  * @param[in] row Row to be inserted
  * @return true if row was inserted without errors
@@ -114,6 +129,53 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
 		if ( ! outPtr->InsertDeepCol( m_Data.at( i ) ) )
 			return false;
 
+	return true;
+}
+
+/**
+ * Creates a deep copy of current object. The rows must meet the condition to be copied.
+ * @param[in] condition the condition object
+ * @param[in] outPtr pointer to a new table to save
+ * @return true if table was successfully created
+ */
+bool CTable::GetDeepCopy ( CCondition * condition, CTable * outPtr ) const {
+	size_t index;
+	if ( ! VerifyColumn( condition->m_Column, index ) )
+		return false;
+
+	cout << condition->m_Constant << endl;
+
+	string colType = m_Data.at( index ).at( 1 )->GetType( );
+	CCell * criterionCell;
+	try {
+		if ( colType == typeid( string ).name( ) )
+			criterionCell = new CString ( condition->m_Constant );
+
+		else if ( colType == ( typeid( int ).name( ) ) )
+			criterionCell = new CInt ( std::stoi( condition->m_Constant ) );
+
+		else {
+			char * c;
+			double output = std::strtod( condition->m_Constant.c_str( ), & c );
+			criterionCell = new CDouble ( output );
+			if ( c == condition->m_Constant.c_str( ) ) {
+				CLog::BoldMsg( CLog::QP, condition->m_Constant, CLog::QP_CON_PARSE_ERROR );
+				delete criterionCell;
+				return false;
+			}
+		}
+	}
+	catch ( std::logic_error const & e ) {
+		CLog::BoldMsg( CLog::QP, condition->m_Constant, CLog::QP_CON_PARSE_ERROR );
+		return false;
+	};
+
+	criterionCell->Print( );
+	cout << endl;
+	
+	cout << endl;
+
+	delete criterionCell;
 	return true;
 }
 
@@ -215,7 +277,6 @@ void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & os
 	tmp = 0;
 }
 
-
 /**
  * Renders a specified column of the table.
  * @param[in] index index of the column in the table
@@ -227,7 +288,6 @@ vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const 
 		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
 	return m_Data.at( index );
 }
-
 ostream & operator << ( ostream & ost, const CTable & table ) {
 	table.Render( ost );
 	return ost;

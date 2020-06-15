@@ -1,5 +1,9 @@
 #include "CCell.hpp"
 
+CString * CString::Clone ( ) {
+	return new CString( * this );
+}
+
 size_t CString::GetLength ( ) const {
 	return m_Val.length( );
 }
@@ -13,8 +17,16 @@ string CString::RetrieveMVal ( ) const {
 	return m_Val;
 }
 
-CString * CString::Clone ( ) {
-	return new CString( * this );
+string CString::GetType ( ) const {
+	return typeid( m_Val ).name( );
+}
+
+
+//
+
+
+CDouble * CDouble::Clone ( ) {
+	return new CDouble( * this );
 }
 
 size_t CDouble::GetLength ( ) const {
@@ -31,8 +43,17 @@ string CDouble::RetrieveMVal ( ) const {
 	return to_string( m_Val );
 }
 
-CDouble * CDouble::Clone ( ) {
-	return new CDouble( * this );
+string CDouble::GetType ( ) const {
+	return typeid( m_Val ).name( );
+}
+
+
+//
+
+
+
+CInt * CInt::Clone ( ) {
+	return new CInt( * this );
 }
 
 size_t CInt::GetLength ( ) const {
@@ -47,6 +68,7 @@ ostream & CInt::Print ( ostream & ost ) const {
 string CInt::RetrieveMVal ( ) const {
 	return to_string( m_Val );
 }
-CInt * CInt::Clone ( ) {
-	return new CInt( * this );
+
+string CInt::GetType ( ) const {
+	return typeid( m_Val ).name( );
 }

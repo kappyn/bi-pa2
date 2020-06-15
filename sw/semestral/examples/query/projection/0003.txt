@@ -1,0 +1,10 @@
+PRO[ Age > Dobry den ]( scratch );
+PRO[ Age >= Dobry den ]( scratch );
+PRO[ Age < Cely den ]( scratch );
+PRO[ Age > Jedenact ]( scratch );
+PRO[ Ratio >= DD ]( scratch );
+SEL[Username,Surname,Ratio](scratch)~Users;
+PRO[ Ratio > Hey ]( Users );
+PRO[ Ratio > - ]( Users );
+PRO[ Ratio > -0.0 ]( Users );
+QUIT;

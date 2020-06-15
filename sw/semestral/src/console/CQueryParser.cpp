@@ -1,11 +1,13 @@
 #include "CQueryParser.hpp"
 
-const string CQueryParser::TABLES       = "TABLES";
-const string CQueryParser::QUERIES      = "QUERIES";
-const string CQueryParser::QUIT         = "QUIT";
+// command queries
+const string CQueryParser::TABLES = "TABLES";
+const string CQueryParser::QUERIES = "QUERIES";
+const string CQueryParser::QUIT = "QUIT";
 
-const string CQueryParser::SELECTION    = "SEL";
-const string CQueryParser::PROJECTION   = "PRO";
+const string CQueryParser::SELECTION = "SEL";
+const string CQueryParser::PROJECTION = "PRO";
+
 
 /**
  * Reads and determines if a user wants the query to be saved into memory.
@@ -127,24 +129,36 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		if (
 				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
 				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
-				)
+			)
 			return CConsole::INVALID_QUERY;
 		userQuery = new CSelection { m_Database, CDataParser::Split( columns, false, false, ',' ), table };
 	}
 
 	// PROJECTION
-//	else if ( queryName == CQueryParser::PROJECTION ) {
-//		string condition, table;
-//		if (
-//				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, condition ) ||
-//				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
-////				! ValidateConditionSyntax( condition );
-//				)
-//			return CConsole::INVALID_QUERY;
-//		userQuery = new CProjection { m_Database, condition, table };
-//	}
+	else if ( queryName == CQueryParser::PROJECTION ) {
 
-	else {
+		auto * conditionQuery = new CCondition;
+		string condition, table;
+		if (
+				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, condition ) ||
+				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) ||
+				! ValidateConditionSyntax( condition, conditionQuery )
+			) {
+			delete conditionQuery;
+			return CConsole::INVALID_QUERY;
+		}
+
+		userQuery = new CProjection { m_Database, conditionQuery, table };
+
+		if ( ! userQuery->Evaluate( ) ) {
+			delete userQuery;
+			return CConsole::INVALID_QUERY;
+		}
+
+		delete userQuery;
+		return CConsole::VALID_QUERY;
+
+	} else {
 		return CConsole::INVALID_QUERY;
 	}
 
@@ -155,9 +169,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	}
 
 	// result to output
-	cout << * userQuery->GetQueryResult( );
-
-	CLog::Msg( CLog::QP, userQuery->GenerateSQL(  ) );
+//	cout << * userQuery->GetQueryResult( );
+//	CLog::Msg( CLog::QP, userQuery->GenerateSQL( ) );
 
 	// save query option ?
 	string querySaveName;
@@ -181,11 +194,43 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	return CConsole::VALID_QUERY;
 }
 
-bool CQueryParser::ValidateConditionSyntax ( const string & condition, CQueryParser::CCondition & out ) {
+/**
+ * Validates condition syntax of a query.
+ * @param[in] query condition expression of the query
+ * @return true if condition is correct (in syntax sense only)
+ */
+bool CQueryParser::ValidateConditionSyntax ( const string & query, CCondition * output ) {
+	string column, constant;
+	size_t found = 0;
+	for ( const string & i : m_Operators ) {
+		if ( ( found = query.find( i ) ) != string::npos ) {
+			column = query.substr( 0, found );
+			if ( column.empty( ) ) {
+				CLog::HighlightedMsg( CLog::QP, query, CLog::QP_INVALID_CON );
+				return false;
+			}
+			constant = query.substr( found + i.size( ), query.size( ) );
+			if ( constant.empty( ) ) {
+				CLog::HighlightedMsg( CLog::QP, query, CLog::QP_INVALID_CON );
+				return false;
+			}
+			output->m_Column   = column;
+			output->m_Constant = constant;
+			output->m_Operator = i;
+			return true;
+		}
+	}
+	CLog::HighlightedMsg( CLog::QP, query, CLog::QP_INVALID_REL );
 	return false;
 }
 
 /**
  * Constructor with application database reference.
  */
-CQueryParser::CQueryParser ( CDatabase & ref ) : m_Database( ref ) { }
+CQueryParser::CQueryParser ( CDatabase & ref ) : m_Database( ref ) {
+	m_Operators.emplace_back( "<=" );
+	m_Operators.emplace_back( ">=" );
+	m_Operators.emplace_back( "==" );
+	m_Operators.emplace_back( ">"  );
+	m_Operators.emplace_back( "<"  );
+}

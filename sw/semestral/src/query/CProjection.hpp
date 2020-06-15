@@ -1,7 +1,9 @@
-#pragma once
+#ifndef CPROJECTION_H
+#define CPROJECTION_H
 
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
+#include "../database/CCondition.hpp"
 
 class CProjection : public CTableQuery {
 private:
@@ -9,14 +11,14 @@ private:
 	CTable * m_QueryResult;
 	string m_QuerySaveName;
 
-	string m_QueryCondition;
+	CCondition * m_QueryCondition;
 	string m_TableName;
 
 	CTableQuery * m_Origin;
 	bool m_Derived;
 
 public:
-	explicit CProjection ( CDatabase & ref, string condition, string tableName );
+	explicit CProjection ( CDatabase & ref, CCondition * conditionRef, string tableName );
 
 	virtual ~CProjection ( ) override;
 
@@ -32,3 +34,5 @@ public:
 	virtual void SetQueryAsDerived ( ) override;
 	virtual bool IsDerived ( ) const override;
 };
+
+#endif
