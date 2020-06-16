@@ -7,7 +7,8 @@ CProjection::CProjection ( CDatabase & ref, CCondition * conditionRef, string ta
 		  m_QueryCondition( conditionRef ),
 		  m_TableName( std::move( tableName ) ),
 		  m_Origin( nullptr ),
-		  m_Derived( false ) { }
+		  m_Derived( false ),
+		  m_Resolved( false ) { }
 
 CProjection::~CProjection ( ) {
 	delete m_QueryResult;
@@ -19,16 +20,14 @@ bool CProjection::Evaluate ( ) {
 	CTableQuery * queryRef;
 
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
-		return tableRef
-		->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) );
+		return
+		( m_Resolved = tableRef->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) ) );
 	}
 	else if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
 		m_Origin = queryRef;
-
-		return queryRef
-		->GetQueryResult( )
-		->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) );
+		return
+		( m_Resolved = queryRef->GetQueryResult( )->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { queryRef->GetQueryResult( )->GetHeader( ) } ) ) );
 	}
 	else {
 		return false;
@@ -40,7 +39,7 @@ CTable * CProjection::GetQueryResult ( ) {
 }
 
 CTableQuery * CProjection::GetOrigin ( ) {
-	return nullptr;
+	return m_Origin;
 }
 
 string CProjection::GetQueryName ( ) const {
@@ -52,11 +51,47 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 }
 
 string CProjection::GenerateSQL ( ) const {
-	return std::__cxx11::string( );
+	if ( ! m_Resolved )
+		return "";
+
+	CTableQuery * origin = m_Origin;
+	string output = CreateSQL( );
+	size_t depth = 1;
+
+	while ( origin != nullptr ) {
+		output += origin->CreateSQL( );
+		origin = origin->GetOrigin( );
+		++ depth;
+	}
+	for ( ; ( depth - 1 ) > 0; -- depth )
+		output += " )";
+
+	output += " WHERE " +
+		string( CLog::APP_COLOR_RESULT )
+		.append( m_QueryCondition->m_Column )
+		.append( CLog::APP_COLOR_RESET )
+		.append( " " )
+		.append( m_QueryCondition->m_Operator )
+		.append( " " )
+		.append( CLog::APP_COLOR_RESULT )
+		.append( m_QueryCondition->m_Constant )
+		.append( CLog::APP_COLOR_RESET )
+		.append( " )");
+
+	return output;
 }
 
 string CProjection::CreateSQL ( ) const {
-	return std::__cxx11::string( );
+	string output = "( SELECT ";
+	vector<string> header = m_QueryResult->GetColumnNames( );
+	size_t max = header.size( );
+	for ( size_t cnt = 0; cnt < max; ++ cnt )
+		if ( cnt == max - 1 )
+			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
+		else
+			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
+	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
+	return output;
 }
 
 void CProjection::SetQueryAsDerived ( ) {

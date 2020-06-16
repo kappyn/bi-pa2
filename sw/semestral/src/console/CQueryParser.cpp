@@ -148,17 +148,14 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		CDataParser::TrimAllSpaces( conditionQuery->m_Column, '"' );
 		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
 
-		cout << conditionQuery->m_Column;
-		cout << conditionQuery->m_Constant;
-
 		userQuery = new CProjection { m_Database, conditionQuery, table };
-
 		if ( ! userQuery->Evaluate( ) ) {
 			delete userQuery;
 			return CConsole::INVALID_QUERY;
 		}
 
 		cout << * userQuery->GetQueryResult( );
+		CLog::Msg( CLog::QP, userQuery->GenerateSQL( ) );
 
 		delete userQuery;
 		return CConsole::VALID_QUERY;

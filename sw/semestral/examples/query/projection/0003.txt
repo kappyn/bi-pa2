@@ -1,10 +1,8 @@
-PRO[ Age > Dobry den ]( scratch );
-PRO[ Age >= Dobry den ]( scratch );
-PRO[ Age < Cely den ]( scratch );
-PRO[ Age > Jedenact ]( scratch );
-PRO[ Ratio >= DD ]( scratch );
+PRO[ Ratio > 0 ]( scratch );
+PRO[ Ratio <= 10.2 ]( scratch );
+PRO[ Ratio == 222.222 ]( scratch );
+PRO[ Ratio > 0.3 ]( scratch );
+PRO[ Ratio >= 50 ]( scratch );
 SEL[Username,Surname,Ratio](scratch)~Users;
-PRO[ Ratio > Hey ]( Users );
-PRO[ Ratio > - ]( Users );
-PRO[ Ratio > -0.0 ]( Users );
+PRO[ Ratio > 403.22 ]( Users );
 QUIT;

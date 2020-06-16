@@ -16,6 +16,7 @@ private:
 
 	CTableQuery * m_Origin;
 	bool m_Derived;
+	bool m_Resolved;
 
 public:
 	explicit CProjection ( CDatabase & ref, CCondition * conditionRef, string tableName );

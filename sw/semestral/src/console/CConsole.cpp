@@ -12,9 +12,6 @@ int CConsole::Start ( CDatabase & dbRef ) {
 
 		getline( std::cin, buffer, ';' );
 
-//		cout << "EOF:  "  << cin.eof( ) << endl;
-//		cout << "FAIL: " << cin.fail( ) << endl;
-
 		if ( cin.eof( ) || cin.fail( ) )
 			break;
 

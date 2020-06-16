@@ -1,2 +1,0 @@
-PRO[ "Username" == "Kevin" ]( scratch );
-QUIT;

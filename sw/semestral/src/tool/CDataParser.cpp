@@ -184,6 +184,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			CLog::BoldMsg( CLog::DP, filePath,
 			               string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append(
 					               ".\u001b[0m" ) );
+			delete parsedResult;
 			return false;
 		}
 
@@ -192,6 +193,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			CLog::BoldMsg( CLog::DP, filePath,
 			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
 					               ".\u001b[0m" ) );
+			delete parsedResult;
 			return false;
 		}
 
@@ -201,6 +203,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			CLog::BoldMsg( CLog::DP, filePath,
 			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
 					               ".\u001b[0m" ) );
+			delete parsedResult;
 			return false;
 		}
 
@@ -224,10 +227,16 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			}
 		} catch ( std::logic_error const & e ) {
 			CLog::BoldMsg( CLog::QP, e.what( ), CLog::QP_CON_PARSE_ERROR );
+
 			delete parsedResult;
 			for ( const auto & i : newTypedRow )
 				delete i;
+
+			// if you wish to import only correct tables
 			return false;
+
+			// one table wrong -> all tables wrong
+			// throw logic_error( CLog::QP_CON_PARSE_ERROR );
 		}
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )

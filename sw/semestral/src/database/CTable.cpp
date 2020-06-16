@@ -154,7 +154,7 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
  * @return true if table was successfully created
  */
 bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const {
-	if ( outPtr->GetColumnCount( ) == 0 || m_Data.empty( ) )
+	if ( ! outPtr || outPtr->GetColumnCount( ) == 0 || m_Data.empty( ) )
 		return false;
 
 	// column projection verification
@@ -167,8 +167,10 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 	// constant type conversion
 	try {
-		if ( colType == typeid( string ).name( ) )
+		if ( colType == typeid( string ).name( ) ) {
 			criterionCell = new CString( condition->m_Constant );
+			condition->m_Constant = string( "\"" ).append( condition->m_Constant ).append( "\"" );
+		}
 
 		else if ( colType == ( typeid( int ).name( ) ) )
 			criterionCell = new CInt( std::stoi( condition->m_Constant ) );
@@ -195,9 +197,6 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 	size_t cols = m_Data.size( );
 	vector<CCell *> newRow;
 
-	// DEREFERENCE BEFORE COMPARING
-	cout << condition->m_Operator << endl;
-
 	for ( size_t i = 1; i < rows; ++ i ) {
 		for ( size_t j = 0; j < cols; ++ j ) {
 			if ( j == index ) {
@@ -221,7 +220,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 					continue;
 				}
 
-				if ( condition->m_Operator == ">=" && ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
+				if ( condition->m_Operator == ">=" ) {
 					if (  ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
 						GetDeepRowCopy( i, newRow );
 						outPtr->InsertShallowRow( newRow );
@@ -261,15 +260,20 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 					continue;
 				}
 
-				cout << "INVALID OPERATOR!" << endl;
+				CLog::Msg( CLog::QP, CLog::QP_INVALID_OPER );
 				return false;
 			}
 		}
 	}
 
-	cout << rcnt << endl;
 	delete criterionCell;
-	return rcnt != 0;
+
+	if ( rcnt < 1 ) {
+		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
+		return false;
+	}
+
+	return true;
 }
 
 size_t CTable::GetColumnCount ( ) const {
