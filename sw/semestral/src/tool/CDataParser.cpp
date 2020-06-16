@@ -62,7 +62,7 @@ CDataParser::Split ( string & s, const bool & allowQuotes, const bool & allowSpa
 	if ( ! allowSpace )
 		TrimAllSpaces( s, ' ' );
 	vector<string> tokenizedString;
-	bool quoteFlag = false;
+	bool quoteFlag = false;;
 	tokenizedString.emplace_back( "" );
 	for ( char i : s ) {
 		if ( i == '\"' ) {
@@ -182,16 +182,16 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		// empty lines..
 		if ( tmp.empty( ) ) {
 			CLog::BoldMsg( CLog::DP, filePath,
-			                      string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append(
-					                      ".\u001b[0m" ) );
+			               string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append(
+					               ".\u001b[0m" ) );
 			return false;
 		}
 
 		// wrong formatting
 		if ( * ( tmp.end( ) - 1 ) == ',' ) {
 			CLog::BoldMsg( CLog::DP, filePath,
-			                      string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
-					                      ".\u001b[0m" ) );
+			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
+					               ".\u001b[0m" ) );
 			return false;
 		}
 
@@ -199,27 +199,41 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		vector<string> newRow = Split( tmp, false, true );
 		if ( newRow.size( ) != requiredColumns ) {
 			CLog::BoldMsg( CLog::DP, filePath,
-			                      string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
-					                      ".\u001b[0m" ) );
+			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
+					               ".\u001b[0m" ) );
 			return false;
 		}
 
 		// parse to appropriate data types
 		int cnt = 0;
 		vector<CCell *> newTypedRow;
-		for ( const string & i : newRow ) {
-			if ( columnTypes[ cnt ] == TYPE_STRING )
-				newTypedRow.push_back( new CString( i ) );
-			else if ( columnTypes[ cnt ] == TYPE_INT )
-				newTypedRow.push_back( new CInt( stoi( i ) ) );
-			else
-				newTypedRow.push_back( new CDouble( stod( i ) ) );
-			++ cnt;
+		try {
+			for ( const string & i : newRow ) {
+				if ( columnTypes[ cnt ] == TYPE_STRING ) {
+					newTypedRow.push_back( new CString( i ) );
+				}
+				else if ( columnTypes[ cnt ] == TYPE_INT ) {
+					int x = stoi( i );
+					newTypedRow.push_back( new CInt( x ) );
+				}
+				else {
+					double x = stod( i );
+					newTypedRow.push_back( new CDouble( x ) );
+				}
+				++ cnt;
+			}
+		} catch ( std::logic_error const & e ) {
+			CLog::BoldMsg( CLog::QP, e.what( ), CLog::QP_CON_PARSE_ERROR );
+			delete parsedResult;
+			for ( const auto & i : newTypedRow )
+				delete i;
+			return false;
 		}
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )
 			return false;
-	}
-	db.InsertTable( filePath, parsedResult );
-	return true;
+		}
+
+		db.InsertTable( filePath, parsedResult );
+		return true;
 }

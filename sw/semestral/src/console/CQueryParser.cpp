@@ -60,7 +60,7 @@ bool CQueryParser::ReadQueryName ( const string & fullQuery, string & output ) {
  * @return true if any content exists and the parenthesis is correctly ended
  */
 bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd,
-                                          int & stringPos, string & output ) {
+                                          size_t & stringPos, string & output ) {
 	output.clear( );
 	bool readMode = false;
 
@@ -82,7 +82,6 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
 		}
 		++ stringPos;
 	}
-
 	return false;
 }
 
@@ -118,7 +117,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		return CConsole::INVALID_QUERY;
 	}
 
-	int stringProgress = 0;
+	size_t stringProgress = 0;
 	CTableQuery * userQuery;
 
 	// relational algebra operations
@@ -136,7 +135,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 
 	// PROJECTION
 	else if ( queryName == CQueryParser::PROJECTION ) {
-
 		auto * conditionQuery = new CCondition;
 		string condition, table;
 		if (
@@ -147,6 +145,11 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 			delete conditionQuery;
 			return CConsole::INVALID_QUERY;
 		}
+		CDataParser::TrimAllSpaces( conditionQuery->m_Column, '"' );
+		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
+
+		cout << conditionQuery->m_Column;
+		cout << conditionQuery->m_Constant;
 
 		userQuery = new CProjection { m_Database, conditionQuery, table };
 
@@ -154,6 +157,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 			delete userQuery;
 			return CConsole::INVALID_QUERY;
 		}
+
+		cout << * userQuery->GetQueryResult( );
 
 		delete userQuery;
 		return CConsole::VALID_QUERY;
@@ -169,8 +174,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	}
 
 	// result to output
-//	cout << * userQuery->GetQueryResult( );
-//	CLog::Msg( CLog::QP, userQuery->GenerateSQL( ) );
+	cout << * userQuery->GetQueryResult( );
+	CLog::Msg( CLog::QP, userQuery->GenerateSQL( ) );
 
 	// save query option ?
 	string querySaveName;
@@ -228,9 +233,10 @@ bool CQueryParser::ValidateConditionSyntax ( const string & query, CCondition * 
  * Constructor with application database reference.
  */
 CQueryParser::CQueryParser ( CDatabase & ref ) : m_Database( ref ) {
-	m_Operators.emplace_back( "<=" );
-	m_Operators.emplace_back( ">=" );
 	m_Operators.emplace_back( "==" );
+	m_Operators.emplace_back( "!=" );
+	m_Operators.emplace_back( ">=" );
+	m_Operators.emplace_back( "<=" );
 	m_Operators.emplace_back( ">"  );
 	m_Operators.emplace_back( "<"  );
 }

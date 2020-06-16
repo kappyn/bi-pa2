@@ -21,7 +21,5 @@ private:
 
 public:
 	explicit CFileManager ( const string & configFile, CDatabase & database );
-
-	// void, since the program throws an exception if any error occurs.
-	void LoadTables( );
+	bool LoadTables( );
 };

@@ -31,6 +31,7 @@ public:
 	virtual ~CCell ( ) = default;
 
 	virtual bool operator == ( const CCell & other ) const = 0;
+	virtual bool operator != ( const CCell & other ) const = 0;
 	virtual bool operator >= ( const CCell & other ) const = 0;
 	virtual bool operator <= ( const CCell & other ) const = 0;
 	virtual bool operator  > ( const CCell & other ) const = 0;
@@ -46,12 +47,14 @@ private:
 
 public:
 	bool operator == ( const CCell & other ) const {
-		cout << "test";
 		if ( ! typeCheck( other ) )
 			return false;
 		const Derived & a = static_cast<const Derived &>( * this );
 		const Derived & b = static_cast<const Derived &>( other );
 		return a == b;
+	}
+	bool operator != ( const CCell & other ) const {
+		return ! ( * this == other );
 	}
 	bool operator >= ( const CCell & other ) const {
 		if ( ! typeCheck( other ) )
@@ -97,6 +100,9 @@ public:
 	bool operator == ( const CString & other ) const {
 		return m_Val == other.m_Val;
 	}
+	bool operator != ( const CString & other ) const {
+		return m_Val != other.m_Val;
+	}
 	bool operator >= ( const CString & other ) const {
 		return m_Val >= other.m_Val;
 	}
@@ -136,6 +142,9 @@ public:
 	bool operator == ( const CDouble & other ) const {
 		return cmpEq( m_Val, other.m_Val );
 	}
+	bool operator != ( const CDouble & other ) const {
+		return ! cmpEq( m_Val, other.m_Val );
+	}
 	bool operator >= ( const CDouble & other ) const {
 		return ( cmpEq( m_Val, other.m_Val ) || cmpGt( m_Val, other.m_Val ) );
 	}
@@ -150,7 +159,7 @@ public:
 	}
 };
 
-class CInt : public ComparableCCell<CCell, CInt> {
+class CInt    : public ComparableCCell<CCell, CInt> {
 public:
 	int m_Val;
 	virtual CInt * Clone ( ) override;
@@ -163,6 +172,9 @@ public:
 
 	bool operator == ( const CInt & other ) const {
 		return m_Val == other.m_Val;
+	}
+	bool operator != ( const CInt & other ) const {
+		return m_Val != other.m_Val;
 	}
 	bool operator >= ( const CInt & other ) const {
 		return m_Val >= other.m_Val;

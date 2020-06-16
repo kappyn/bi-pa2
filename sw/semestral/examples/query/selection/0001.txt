@@ -1,7 +1,6 @@
 SEL;
 SEL(;
 SEL();
-SEL[;
 SEL[];
 SEL[]();
 SEL[a]();

@@ -19,15 +19,14 @@ CFileManager::CFileManager ( const string & configFile, CDatabase & database ) :
 /**
  * This method serves tasks to the parser module, validates correct number of imported tables.
  */
-void CFileManager::LoadTables ( ) {
+bool CFileManager::LoadTables ( ) {
 	CLog::Msg( CLog::FM, CLog::FM_LOADING );
 	string tableFilePath;
 	ifstream tableFileStream { };
 
-	int loadedTablesCnt = 0;
+	size_t loadedTablesCnt = 0;
 	while ( m_ConfigStream >> tableFilePath ) {
 		tableFileStream.open( tableFilePath, ios::in );
-
 		if ( tableFileStream && CDataParser::ParseTable( m_Database, tableFileStream, tableFilePath ) ) {
 			CLog::BoldMsg( CLog::FM, tableFilePath, CLog::FM_IMPORT_OK );
 			++ loadedTablesCnt;
@@ -36,6 +35,10 @@ void CFileManager::LoadTables ( ) {
 		tableFileStream.close( );
 	}
 
-	if ( ! loadedTablesCnt )
-		throw std::logic_error( CLog::FM_CFG_FAILED );
+	if ( ! loadedTablesCnt ) {
+		m_Database.ListTables( );
+		m_Database.ListQueries( );
+		return false;
+	}
+	return true;
 }

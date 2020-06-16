@@ -4,65 +4,91 @@
 #include <iomanip>
 #include <string>
 
-using namespace std;
-
 /**
- * This module works as an application logger, storing messages to print, providing better user experience.
+ * This module works as an application logger, storing messages to print, providing better UI.
  */
-class CLog {
-public:
-	static const int APP_PADDING;
-	static const string APP_LINE_HEIGHT;
+namespace CLog {
+	using namespace std;
 
-	static void
-	Msg ( const string & branch, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
+	static constexpr int APP_PADDING ( )
+	{ return 14; }
+	
+	const string APP_LINE_HEIGHT    = "\n";
+	const string APP_COLOR_GOOD     = "\033[0;32m";
+	const string APP_COLOR_RESULT   = "\033[1;36m";
+	const string APP_COLOR_BAD      = "\u001b[31m";
+	const string APP_COLOR_RESET    = "\u001b[0m";
 
-	static void
-	HighlightedMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
+	const string FM                 = "FILE MANAGER";
+	const string FM_CFG_FOUND       = "Configuration file found.";
+	const string FM_CFG_NOT_FOUND   = "Configuration file not found.";
+	const string FM_CFG_FAILED      = "Configuration file wasn't imported properly.";
+	const string FM_LOADING         = "Loading tables from the file into database..";
+	const string FM_IMPORT_OK       = " successfully imported!";
+	const string FM_IMPORT_FAIL     = " is in incorrect format or doesn't exist.";
 
-	static void
-	BoldMsg ( const string & branch, const string & highlighted, const string & message, const string & extraPad = CLog::APP_LINE_HEIGHT, ostream & ost = cout );
+	const string DP                 = "DATA PARSER";
+	const string DP_LINE_MISMATCH   = " number of columns does not match at line ";
+	const string DP_NO_DATATYPES    = " data types for the columns were not provided.";
+	const string DP_EMPTY_LINE      = " incorrect formatting - empty line at ";
 
-	static void
-	CmdPromp ( const char & promptChar = CLog::CON_PROMPT_CHAR, ostream & ost = cout );
+	const string CON                = "CONSOLE";
+	const string CON_START          = "Starting console..";
+	const string CON_INVALID_QUERY  = " invalid command.";
+	const string CON_EOF_DETECTED   = "EOF detected. Exiting application.";
+	const string CON_EXIT           = "Exiting application.";
+	const char   CON_PROMPT_CHAR    = '>';
+	const string CON_LISTING_T      = "Listing existing tables..";
+	const string CON_LISTING_Q      = "Listing saved queries..";
 
-	static const string APP_COLOR_GOOD;
-	static const string APP_COLOR_BAD;
-	static const string APP_COLOR_RESULT;
+	const string TAB_NO_BODY        = "Unable to render - table body is missing.";
+	const string TAB_NO_DATA        = "The table doesn't have any columns.";
+	const string TAB_INVALID_INDEX  = "Invalid index.";
 
-	static const string APP_COLOR_RESET;
-	static const string FM;
-	static const string FM_CFG_FOUND;
-	static const string FM_CFG_NOT_FOUND;
-	static const string FM_CFG_FAILED;
-	static const string FM_LOADING;
-	static const string FM_IMPORT_OK;
+	const string QP                 = "QUERY PARSER";
+	const string QP_NO_SUCH_TABLE   =  " table was not found.";
+	const string QP_NO_SUCH_COL     =  " column was not found.";
+	const string QP_QUERY_ADDED     =  " query was added!";
+	const string QP_TABLE_EXISTS    =  " name already taken (please use TABLES or QUERIES to prevent this).";
+	const string QP_INVALID_CON     =  " the condition clause is missing an operand.";
+	const string QP_INVALID_REL     =  " the condition clause is missing a relation operator.";
+	const string QP_CON_PARSE_ERROR =  " unable to convert constant to a correct type.";
 
-	static const string FM_IMPORT_FAIL;
-	static const string DP;
-	static const string DP_LINE_MISMATCH;
-	static const string DP_EMPTY_LINE;
+	/**
+	 * Standart message.
+	 * @param[in] branch module from where the message is originated
+	 * @param[in] message log message string
+	 * @param[in, out] ost output stream to log to.
+	 */
+	inline void Msg ( const string & branch, const string & message, const string & extraPad = APP_LINE_HEIGHT, ostream & ost = cout ) {
+		ost << setw( APP_PADDING( ) ) << right << branch << ": " << message << extraPad << endl;
+	}
 
-	static const string DP_NO_DATATYPES;
-	static const string CON;
-	static const string CON_START;
-	static const string CON_INVALID_QUERY;
-	static const string CON_EOF_DETECTED;
-	static const string CON_EXIT;
-	static const char CON_PROMPT_CHAR;
-	static const string CON_LISTING_Q;
+	/**
+	 * Highlighted message
+	 * @param[in] branch module from where the message is originated
+	 * @param[in] highlighted highlighted part of the message
+	 * @param[in] message log message string
+	 * @param[in, out] ost output stream to log to.
+	 */
+	inline void
+	HighlightedMsg ( const string & branch, const string & highlighted, const string & message,
+	                 const string & extraPad = APP_LINE_HEIGHT, ostream & ost = cout ) {
+		ost << setw( APP_PADDING( ) ) << right << branch << ": " << "\u001b[1m"
+		<< string( "\"\u001b[1m" ).append( highlighted ).append( "\u001b[0m\"" ) << message << extraPad << endl;
+	}
 
-	static const string CON_LISTING_T;
-	static const string TAB_NO_BODY;
-	static const string TAB_NO_DATA;
-
-	static const string TAB_INVALID_INDEX;
-	static const string QP;
-	static const string QP_NO_SUCH_TABLE;
-	static const string QP_NO_SUCH_COL;
-	static const string QP_QUERY_ADDED;
-	static const string QP_TABLE_EXISTS;
-	static const string QP_INVALID_CON;
-	static const string QP_INVALID_REL;
-	static const string QP_CON_PARSE_ERROR;
-};
+	/**
+	 * Bold message
+	 * @param[in] branch module from where the message is originated
+	 * @param[in] highlighted highlighted part of the message
+	 * @param[in] message log message string
+	 * @param[in, out] ost output stream to log to.
+	 */
+	inline void
+	BoldMsg ( const string & branch, const string & highlighted, const string & message,
+	          const string & extraPad = APP_LINE_HEIGHT, ostream & ost = cout ) {
+		ost << setw( APP_PADDING( ) ) << right << branch << ": " << "\u001b[1m"
+		<< string( "\u001b[1m" ).append( highlighted ).append( "\u001b[0m" ) << message << extraPad << endl;
+	}
+}

@@ -1,0 +1,7 @@
+SEL[*](scratch)~itch;
+PRO[ Age >= 20 ]( scratch );
+SEL[Age,Surname](scratch)~test;
+PRO[ Age >= 20 ]( test );
+PRO[ Surname >= 20 ]( test );
+PRO[ x >= 20 ]( test );
+QUIT;

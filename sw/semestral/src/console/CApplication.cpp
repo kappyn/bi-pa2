@@ -2,7 +2,8 @@
 
 CApplication::CApplication ( const string & dbName, const string & srcName ) : m_Database( CDatabase { dbName } ),
                                                                                m_FileManager( srcName, m_Database ) {
-	m_FileManager.LoadTables( );
+	if ( ! m_FileManager.LoadTables( ) )
+		throw logic_error( "tet" );
 	m_Database.PrintTables( );
 }
 

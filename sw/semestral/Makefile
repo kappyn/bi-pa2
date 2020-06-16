@@ -14,7 +14,7 @@ OBJECTS    	      = $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
 
 # compiler settings
 CXX        		  = g++
-CXX_FLAGS  		  = -std=c++14 -Werror -Wall -pedantic -Wno-long-long
+CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0 -ggdb
 MKDIR      		  = mkdir -p
 
 # colors
@@ -23,7 +23,7 @@ COLOR_MSG = \033[1;36m
 
 # memory management settings
 CHECK      		  = valgrind
-CHECKFLAGS 		  = --leak-check=full --tool=memcheck
+CHECK_FLAGS 	  = --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # tasks
 all: clean dep compile doc
@@ -42,7 +42,7 @@ run: $(TARGET)
 
 memcheck: $(TARGET)
 	@echo "$(COLOR_MSG)Starting memory check..$(COLOR_DEF)"
-	$(CHECK) $(CHECKFLAGS) ./$(TARGET)
+	$(CHECK) $(CHECK_FLAGS) ./$(TARGET)
 
 fwatch:
 	@echo "$(COLOR_MSG)Starting dev filewatcher..$(COLOR_DEF)"
@@ -59,24 +59,24 @@ clean:
 dep:
 	find src/ -name *.cpp | xargs $(CXX) -MM > Makefile.d
 	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' Makefile.d
-	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
+	echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
 doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
 	rm -rf $(DOC_DIR)
-	$(MKDIR) $(DOC_DIR)
+	@$(MKDIR) $(DOC_DIR)
 	doxygen Doxyfile
-	@echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
+	echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
-	@echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
+	echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
-	$(MKDIR) $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+	@$(MKDIR) $(BUILD_DIR)
+	$(CXX) $(CXX_FLAGS) $< -c -o $@
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/**/%.cpp
-	$(MKDIR) $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $< -c -o $@
+	@$(MKDIR) $(BUILD_DIR)
+	$(CXX) $(CXX_FLAGS) $< -c -o $@
 
 -include Makefile.d

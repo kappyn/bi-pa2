@@ -80,9 +80,9 @@ Popis operace: Vybere záznamy tabulky na základě kritérií.
 
 Použití: ``PRO[ podminka ]( jmeno_tabulky );``
 
-Podmínka musí být ve tvaru: ``sloupec λ konstanta``, kde `λ` je vztah ``<,>,>=,=>,==``. Operandy nelze zaměnit.
+Podmínka musí být ve tvaru: ``sloupec λ konstanta``, kde `λ` je vztah ``<,>,>=,=>,==,!=``. Operandy nelze zaměnit.
 
-Konstanty jsou buď ve formátu číselném (např. **666**, **3.14**), nebo textovém (**Maxipes**). Program se pokusí o konverzi na typ, který mají buňky vybraného sloupce.
+Konstanty jsou buď ve formátu číselném (např. **666**, **3.14**), nebo textovém (**"Maxipes"** - lze i bez uvozovek, pokud hledaný výraz má pouze jedno slovo). Program se pokusí o konverzi na typ, který mají buňky vybraného sloupce.
 
 ---
 

@@ -35,7 +35,7 @@ public:
 
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
-	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, int & stringPos, string & output );
+	static bool ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, size_t & stringPos, string & output );
 
 	int ProcessQuery ( const string & basicString);
 	bool ValidateConditionSyntax ( const string & query, CCondition * output );

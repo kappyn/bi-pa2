@@ -1,4 +1,2 @@
-SEL[ Username, Surname ]( scratch );
-SEL[ Username, Surname, Age ]( scratch ) ~ Users;
-SEL[ Age ]( Users );
+SEL[ Username, "Surname" ]( "scratch" );
 QUIT;

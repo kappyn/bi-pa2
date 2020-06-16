@@ -1,5 +1,5 @@
-PRO[ Username > Testing ]( scratch );
-SEL [ Age ]( scratch ) ~ Ages;
-PRO[ Age > 10 ]( Ages );
-PRO[ Ratio > 10 ]( scratch );
+PRO[ Username == Kevin ]( scratch );
+PRO[ Age > 20 ]( scratch );
+PRO[ Ratio > 1.3 ]( scratch );
+PRO[ Address == "Prazskeho povstani" ]( scratch );
 QUIT;

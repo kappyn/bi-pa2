@@ -45,7 +45,6 @@ bool CTable::VerifyColumns ( const vector<string> & cols ) const {
  */
 bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
 	vector<string> correctColumns = GetColumnNames( );
-
 	vector<string>::iterator i;
 	if ( ( i = find( correctColumns.begin( ), correctColumns.end( ), col ) ) == correctColumns.end( ) ) {
 		CLog::HighlightedMsg( CLog::QP, col, CLog::QP_NO_SUCH_COL );
@@ -61,7 +60,7 @@ bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
  * @return true if row was inserted without errors
  */
 bool CTable::InsertShallowRow ( const vector<CCell *> & row ) {
-	if ( m_Data.size( ) != row.size( ) )
+	if ( ( m_Data.begin( )->empty( ) ) || m_Data.size( ) != row.size( ) )
 		return false;
 	auto d = m_Data.begin( );
 	auto r = row.begin( );
@@ -81,8 +80,10 @@ bool CTable::InsertShallowRow ( const vector<CCell *> & row ) {
 bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 	size_t elementCount = 0;
 	if ( ! m_Data.empty( ) ) {
-		for ( const auto & i : m_Data.at( 0 ) )
-			++ elementCount;
+		elementCount = m_Data.at( 0 ).size( );
+//		for ( const auto & i : m_Data.at( 0 ) )
+//			++ elementCount;
+
 		if ( elementCount != col.size( ) || * col.begin( ) == * m_Data.at( 0 ).begin( ) )
 			return false;
 	}
@@ -93,6 +94,20 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 		newColumn.push_back( i->Clone( ) );
 
 	m_Data.push_back( std::move( newColumn ) );
+	return true;
+}
+
+/**
+ * Creates a deep copy of a table row.
+ * @param[in] outPtr out row save pointer
+ * @return true if the row was exported without errors
+ */
+bool CTable::GetDeepRowCopy ( const size_t & index, vector<CCell *> & outPtr ) const {
+	if ( ! outPtr.empty( ) )
+		outPtr.clear( );
+	for ( const auto & i : m_Data ) {
+		outPtr.push_back( i.at( index )->Clone( ) );
+	}
 	return true;
 }
 
@@ -138,26 +153,30 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
  * @param[in] outPtr pointer to a new table to save
  * @return true if table was successfully created
  */
-bool CTable::GetDeepCopy ( CCondition * condition, CTable * outPtr ) const {
+bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const {
+	if ( outPtr->GetColumnCount( ) == 0 || m_Data.empty( ) )
+		return false;
+
+	// column projection verification
 	size_t index;
 	if ( ! VerifyColumn( condition->m_Column, index ) )
 		return false;
 
-	cout << condition->m_Constant << endl;
-
 	string colType = m_Data.at( index ).at( 1 )->GetType( );
 	CCell * criterionCell;
+
+	// constant type conversion
 	try {
 		if ( colType == typeid( string ).name( ) )
-			criterionCell = new CString ( condition->m_Constant );
+			criterionCell = new CString( condition->m_Constant );
 
 		else if ( colType == ( typeid( int ).name( ) ) )
-			criterionCell = new CInt ( std::stoi( condition->m_Constant ) );
+			criterionCell = new CInt( std::stoi( condition->m_Constant ) );
 
 		else {
 			char * c;
 			double output = std::strtod( condition->m_Constant.c_str( ), & c );
-			criterionCell = new CDouble ( output );
+			criterionCell = new CDouble( output );
 			if ( c == condition->m_Constant.c_str( ) ) {
 				CLog::BoldMsg( CLog::QP, condition->m_Constant, CLog::QP_CON_PARSE_ERROR );
 				delete criterionCell;
@@ -170,17 +189,108 @@ bool CTable::GetDeepCopy ( CCondition * condition, CTable * outPtr ) const {
 		return false;
 	};
 
-	criterionCell->Print( );
-	cout << endl;
-	
-	cout << endl;
+	// filtering data
+	size_t rcnt = 0;
+	size_t rows = m_Data.begin( )->size( );
+	size_t cols = m_Data.size( );
+	vector<CCell *> newRow;
 
+	// DEREFERENCE BEFORE COMPARING
+	cout << condition->m_Operator << endl;
+
+	for ( size_t i = 1; i < rows; ++ i ) {
+		for ( size_t j = 0; j < cols; ++ j ) {
+			if ( j == index ) {
+				if ( condition->m_Operator == "==" ) {
+					if ( ( * m_Data.at( j ).at( i ) == * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				if ( condition->m_Operator == "!=" ) {
+					if ( ( * m_Data.at( j ).at( i ) != * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				if ( condition->m_Operator == ">=" && ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
+					if (  ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				if ( condition->m_Operator == "<=" ) {
+					if ( ( * m_Data.at( j ).at( i ) <= * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				if ( condition->m_Operator == ">" ) {
+					if ( ( * m_Data.at( j ).at( i ) > * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				if ( condition->m_Operator == "<" ) {
+					if ( ( * m_Data.at( j ).at( i ) < * criterionCell ) ) {
+						GetDeepRowCopy( i, newRow );
+						outPtr->InsertShallowRow( newRow );
+						newRow.clear( );
+						++ rcnt;
+					}
+					continue;
+				}
+
+				cout << "INVALID OPERATOR!" << endl;
+				return false;
+			}
+		}
+	}
+
+	cout << rcnt << endl;
 	delete criterionCell;
-	return true;
+	return rcnt != 0;
 }
 
 size_t CTable::GetColumnCount ( ) const {
 	return m_Data.size( );
+}
+
+size_t CTable::GetRowCount ( ) const {
+	if ( m_Data.empty( ) )
+		return 0;
+	return m_Data.begin( )->size( );
+}
+
+vector<CCell *> CTable::GetHeader ( ) const {
+	if ( m_Data.empty( ) )
+		return vector<CCell *> { };
+
+	vector<CCell *> out;
+	for ( const auto & i : m_Data ) {
+		out.push_back( i.at( 0 )->Clone( ) );
+	}
+	return out;
 }
 
 /**

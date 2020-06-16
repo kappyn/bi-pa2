@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CDATABASE_H
+#define CDATABASE_H
 
 #include <algorithm>
 #include <utility>
@@ -34,4 +35,14 @@ public:
 	void ListTables ( ) const;
 	void ListQueries ( ) const;
 	void PrintTables ( ) const;
+
+	void WipeAllData( ) {
+		for ( const auto & i : m_TableData )
+			delete i.second;
+
+		for ( const auto & i : m_QueryData )
+			delete i.second;
+	}
 };
+
+#endif

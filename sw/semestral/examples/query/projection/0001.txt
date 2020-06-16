@@ -10,4 +10,7 @@ PRO[ <= ]( scratch );
 PRO[ == 30 ]( scratch );
 PRO[ < 30 ]( scratch );
 PRO[ Age ]( scratch );
+PRO[ "Age" ]( scratch );
+PRO[ "Age" >= "d" ]( scratch );
+PRO[ "Address"="Prazskeho povstani" ]( scratch );
 QUIT;

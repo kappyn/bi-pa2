@@ -9,7 +9,7 @@ CProjection::CProjection ( CDatabase & ref, CCondition * conditionRef, string ta
 		  m_Origin( nullptr ),
 		  m_Derived( false ) { }
 
-CProjection::~CProjection() {
+CProjection::~CProjection ( ) {
 	delete m_QueryResult;
 	delete m_QueryCondition;
 }
@@ -19,22 +19,24 @@ bool CProjection::Evaluate ( ) {
 	CTableQuery * queryRef;
 
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
-		return tableRef->GetDeepCopy( m_QueryCondition, m_QueryResult );
+		return tableRef
+		->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) );
 	}
 	else if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
 		m_Origin = queryRef;
-		return queryRef->GetQueryResult( )->GetDeepCopy( m_QueryCondition, m_QueryResult );
+
+		return queryRef
+		->GetQueryResult( )
+		->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) );
 	}
 	else {
 		return false;
 	}
-
-	return false;
 }
 
 CTable * CProjection::GetQueryResult ( ) {
-	return nullptr;
+	return m_QueryResult;
 }
 
 CTableQuery * CProjection::GetOrigin ( ) {

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CSELECTION_H
+#define CSELECTION_H
 
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
@@ -32,3 +33,5 @@ public:
 	virtual void SetQueryAsDerived ( ) override;
 	virtual bool IsDerived ( ) const override;
 };
+
+#endif

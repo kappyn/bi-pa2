@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CDATAPARSER_H
+#define CDATAPARSER_H
 
 #include <fstream>
 #include <sstream>
@@ -34,3 +35,5 @@ public:
 	static bool ParseTable ( CDatabase & db, ifstream & ifs, string & filePath );
 	static bool ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath );
 };
+
+#endif
