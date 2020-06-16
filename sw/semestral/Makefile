@@ -14,7 +14,7 @@ OBJECTS    	      = $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
 
 # compiler settings
 CXX        		  = g++
-CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0 -ggdb
+CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0
 MKDIR      		  = mkdir -p
 
 # colors
@@ -59,17 +59,17 @@ clean:
 dep:
 	find src/ -name *.cpp | xargs $(CXX) -MM > Makefile.d
 	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' Makefile.d
-	echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
 doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
 	rm -rf $(DOC_DIR)
 	@$(MKDIR) $(DOC_DIR)
 	doxygen Doxyfile
-	echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Documentation has been created.$(COLOR_DEF)"
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
-	echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@$(MKDIR) $(BUILD_DIR)

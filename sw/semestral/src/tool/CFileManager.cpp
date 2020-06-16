@@ -35,10 +35,6 @@ bool CFileManager::LoadTables ( ) {
 		tableFileStream.close( );
 	}
 
-	if ( ! loadedTablesCnt ) {
-		m_Database.ListTables( );
-		m_Database.ListQueries( );
-		return false;
-	}
-	return true;
+	return loadedTablesCnt != 0;
+
 }
