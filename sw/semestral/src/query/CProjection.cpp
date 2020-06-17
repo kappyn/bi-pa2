@@ -21,13 +21,15 @@ bool CProjection::Evaluate ( ) {
 
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
 		return
-		( m_Resolved = tableRef->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { tableRef->GetHeader( ) } ) ) );
+		( m_Resolved = tableRef->GetDeepTable( m_QueryCondition, ( m_QueryResult = new CTable {
+				tableRef->GetDeepHeader( ) } ) ) );
 	}
 	else if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
 		m_Origin = queryRef;
 		return
-		( m_Resolved = queryRef->GetQueryResult( )->GetDeepTableCopy( m_QueryCondition, ( m_QueryResult = new CTable { queryRef->GetQueryResult( )->GetHeader( ) } ) ) );
+		( m_Resolved = queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, ( m_QueryResult = new CTable {
+				queryRef->GetQueryResult( )->GetDeepHeader( ) } ) ) );
 	}
 	else {
 		return false;
@@ -50,26 +52,31 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 
 }
 
-string CProjection::GenerateSQL ( const string & tmp ) const {
+string CProjection::GenerateSQL ( ) const {
 	if ( ! m_Resolved )
 		return "";
 
-	CTableQuery * origin = m_Origin;
-	string output = CreateSQL( );
-	size_t depth = 1;
+	return CreateSQL( );
 
-	while ( origin != nullptr ) {
-		output += origin->CreateSQL( );
-		origin = origin->GetOrigin( );
-		++ depth;
-	}
-
-	for ( ; ( depth - 1 ) > 0; -- depth )
-		output += " )";
-	return output;
+//	CTableQuery * origin = m_Origin;
+//	string output = CreateSQL( );
+//
+//	size_t depth = 1;
+//	while ( origin != nullptr ) {
+//		output += origin->CreateSQL( );
+//		origin = origin->GetOrigin( );
+//		++ depth;
+//	}
+//
+//	for ( ; ( depth - 1 ) > 0; -- depth )
+//		output += " )";
+//	output += AppendWhereClause( );
+//
+//	return output;
 }
 
 string CProjection::CreateSQL ( ) const {
+	CTableQuery * origin = m_Origin;
 	string output = "( SELECT ";
 	vector<string> header = m_QueryResult->GetColumnNames( );
 	size_t max = header.size( );
@@ -79,7 +86,25 @@ string CProjection::CreateSQL ( ) const {
 		else
 			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
 	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
+
+	if ( origin )
+		output += origin->GenerateSQL( );
+
 	output += AppendWhereClause( );
+
+
+//	size_t depth = 1;
+//	while ( origin != nullptr ) {
+//		output += origin->CreateSQL( );
+//		origin = origin->GetOrigin( );
+//		output += AppendWhereClause( );
+//		++ depth;
+//	}
+//
+//	for ( ; ( depth - 1 ) > 0; -- depth )
+//		output += " )";
+//	output += AppendWhereClause( );
+
 	return output;
 }
 
@@ -91,10 +116,14 @@ bool CProjection::IsDerived ( ) const {
 }
 string CProjection::AppendWhereClause ( ) const {
 	return string( " WHERE " )
+	.append( CLog::APP_COLOR_RESULT )
 	.append( m_QueryCondition->m_Column )
+	.append( CLog::APP_COLOR_RESET )
 	.append( " " )
 	.append( m_QueryCondition->m_Operator )
 	.append( " " )
-	.append( m_QueryCondition->m_Constant )
+	.append( CLog::APP_COLOR_RESULT )
+	.append( m_QueryCondition->IsStringConstant ? string( "\"" ).append( m_QueryCondition->m_Constant ).append( "\"" ) : m_QueryCondition->m_Constant )
+	.append( CLog::APP_COLOR_RESET )
 	.append( " )");
 }

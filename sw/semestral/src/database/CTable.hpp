@@ -33,14 +33,15 @@ public:
 	bool VerifyColumn ( const string & col, size_t & index ) const;
 	bool InsertShallowRow ( const vector<CCell *> & row );
 	bool InsertDeepCol ( const vector<CCell *> & col );
+	bool InsertDeepRow ( const size_t & index, CTable * outPtr, vector<CCell *> & tmp ) const;
 
-	bool GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const;
-	bool GetDeepRowCopy ( const size_t & index, vector<CCell *> & outPtr ) const;
+	vector<CCell *> GetDeepHeader ( ) const;
+	bool GetDeepTable ( CCondition * condition, CTable * outPtr ) const;
+	bool GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const;
 	bool GetSubTable ( const vector<string> & row, CTable * outPtr ) const;
 
 	size_t GetColumnCount ( ) const;
 	size_t GetRowCount ( ) const;
-	vector<CCell *> GetHeader ( ) const;
 	vector<string> GetColumnNames ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
 

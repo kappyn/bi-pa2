@@ -10,6 +10,7 @@ public:
 	string m_Column;
 	string m_Operator;
 	string m_Constant;
+	bool IsStringConstant = false;
 };
 
 #endif

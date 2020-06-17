@@ -31,7 +31,7 @@ public:
 	virtual string GetQueryName ( ) const override;
 	virtual void ArchiveQueryName ( const string & name ) override;
 
-	virtual string GenerateSQL ( const string & tmp ) const override;
+	virtual string GenerateSQL ( ) const override;
 	virtual string CreateSQL ( ) const override;
 
 	virtual void SetQueryAsDerived ( ) override;

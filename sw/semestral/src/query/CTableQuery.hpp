@@ -11,7 +11,7 @@ public:
 	virtual CTable * GetQueryResult ( ) = 0;
 	virtual CTableQuery * GetOrigin ( ) = 0;
 
-	virtual string GenerateSQL ( const string & tmp = "" ) const = 0;
+	virtual string GenerateSQL ( ) const = 0;
 	virtual string CreateSQL ( ) const = 0;
 
 	virtual string GetQueryName ( ) const = 0;

@@ -59,7 +59,7 @@ void CSelection::ArchiveQueryName ( const string & name ) {
 		m_QuerySaveName = name;
 }
 
-string CSelection::GenerateSQL ( const string & ) const {
+string CSelection::GenerateSQL ( ) const {
 	CTableQuery * origin = m_Origin;
 	string output = CreateSQL( );
 	size_t depth = 1;

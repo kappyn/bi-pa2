@@ -74,7 +74,7 @@ bool CTable::InsertShallowRow ( const vector<CCell *> & row ) {
 
 /**
  * Table column insertion ~ deep copy is made (for queries).
- * @param[in] col Column to be inserted
+ * @param[in] col Column reference to be inserted
  * @return true if col was inserted without errors and column name is not taken.
  */
 bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
@@ -98,11 +98,25 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 }
 
 /**
+ * Table row insertion ~ deep copy is made (for queries).
+ * @param[in] index index of a row to be duplicated
+ * @param[in, out] outPtr out row save pointer
+ * @param[in] newRow reference to transfer data over (avoid creating a new vector all the time)
+ * @return true if col was inserted without errors and column name is not taken.
+ */
+bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr, vector<CCell *> & newRow ) const {
+	if ( ! outPtr || ! GetDeepRow( index, newRow ) || ! outPtr->InsertShallowRow( newRow ) )
+		return false;
+	newRow.clear( );
+	return true;
+}
+
+/**
  * Creates a deep copy of a table row.
- * @param[in] outPtr out row save pointer
+ * @param[in, out] outPtr out row save pointer
  * @return true if the row was exported without errors
  */
-bool CTable::GetDeepRowCopy ( const size_t & index, vector<CCell *> & outPtr ) const {
+bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const {
 	if ( ! outPtr.empty( ) )
 		outPtr.clear( );
 	for ( const auto & i : m_Data ) {
@@ -153,7 +167,7 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
  * @param[in] outPtr pointer to a new table to save
  * @return true if table was successfully created
  */
-bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const {
+bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 	if ( ! outPtr || outPtr->GetColumnCount( ) == 0 || m_Data.empty( ) )
 		return false;
 
@@ -169,7 +183,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 	try {
 		if ( colType == typeid( string ).name( ) ) {
 			criterionCell = new CString( condition->m_Constant );
-			condition->m_Constant = string( "\"" ).append( condition->m_Constant ).append( "\"" );
+			condition->IsStringConstant = true;
 		}
 
 		else if ( colType == ( typeid( int ).name( ) ) )
@@ -200,10 +214,13 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 	for ( size_t i = 1; i < rows; ++ i ) {
 		for ( size_t j = 0; j < cols; ++ j ) {
 			if ( j == index ) {
+				// extra spaces for readability
+
 				if ( condition->m_Operator == "==" ) {
 					if ( ( * m_Data.at( j ).at( i ) == * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
-						outPtr->InsertShallowRow( newRow );
+						GetDeepRow( i, newRow );
+						if ( ! outPtr->InsertShallowRow( newRow ) )
+							return false;
 						newRow.clear( );
 						++ rcnt;
 					}
@@ -212,7 +229,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 				if ( condition->m_Operator == "!=" ) {
 					if ( ( * m_Data.at( j ).at( i ) != * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
+						GetDeepRow( i, newRow );
 						outPtr->InsertShallowRow( newRow );
 						newRow.clear( );
 						++ rcnt;
@@ -222,7 +239,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 				if ( condition->m_Operator == ">=" ) {
 					if (  ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
+						GetDeepRow( i, newRow );
 						outPtr->InsertShallowRow( newRow );
 						newRow.clear( );
 						++ rcnt;
@@ -232,7 +249,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 				if ( condition->m_Operator == "<=" ) {
 					if ( ( * m_Data.at( j ).at( i ) <= * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
+						GetDeepRow( i, newRow );
 						outPtr->InsertShallowRow( newRow );
 						newRow.clear( );
 						++ rcnt;
@@ -242,7 +259,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 				if ( condition->m_Operator == ">" ) {
 					if ( ( * m_Data.at( j ).at( i ) > * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
+						GetDeepRow( i, newRow );
 						outPtr->InsertShallowRow( newRow );
 						newRow.clear( );
 						++ rcnt;
@@ -252,7 +269,7 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 
 				if ( condition->m_Operator == "<" ) {
 					if ( ( * m_Data.at( j ).at( i ) < * criterionCell ) ) {
-						GetDeepRowCopy( i, newRow );
+						GetDeepRow( i, newRow );
 						outPtr->InsertShallowRow( newRow );
 						newRow.clear( );
 						++ rcnt;
@@ -267,26 +284,33 @@ bool CTable::GetDeepTableCopy ( CCondition * condition, CTable * outPtr ) const 
 	}
 
 	delete criterionCell;
-
 	if ( rcnt < 1 ) {
 		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
 		return false;
 	}
-
 	return true;
 }
 
+/**
+ * Column count getter.
+ */
 size_t CTable::GetColumnCount ( ) const {
 	return m_Data.size( );
 }
 
+/**
+ * Row count getter.
+ */
 size_t CTable::GetRowCount ( ) const {
 	if ( m_Data.empty( ) )
 		return 0;
 	return m_Data.begin( )->size( );
 }
 
-vector<CCell *> CTable::GetHeader ( ) const {
+/**
+ * Duplicates a table header with duplicated CCells.
+ */
+vector<CCell *> CTable::GetDeepHeader ( ) const {
 	if ( m_Data.empty( ) )
 		return vector<CCell *> { };
 
