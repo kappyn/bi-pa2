@@ -1,0 +1,5 @@
+PRO[ Age > 24 ]( scratch ) ~ Test;
+SEL[ * ]( Test );
+PRO[ Ratio >= 3 ]( Test ) ~ Hoho;
+SEL[ * ]( Hoho );
+QUIT;

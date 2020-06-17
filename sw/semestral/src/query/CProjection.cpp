@@ -50,11 +50,10 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 
 }
 
-string CProjection::GenerateSQL ( ) const {
-	return ( m_Resolved ? CreateSQL( ) : "" );
-}
+string CProjection::GetSQL ( ) const {
+	if ( ! m_Resolved )
+		return "";
 
-string CProjection::CreateSQL ( ) const {
 	CTableQuery * origin = m_Origin;
 	string output = "( SELECT ";
 	vector<string> header = m_QueryResult->GetColumnNames( );
@@ -67,22 +66,9 @@ string CProjection::CreateSQL ( ) const {
 	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
 
 	if ( origin )
-		output += origin->GenerateSQL( );
+		output += origin->GetSQL( );
 
 	output += AppendWhereClause( );
-
-
-//	size_t depth = 1;
-//	while ( origin != nullptr ) {
-//		output += origin->CreateSQL( );
-//		origin = origin->GetOrigin( );
-//		output += AppendWhereClause( );
-//		++ depth;
-//	}
-//
-//	for ( ; ( depth - 1 ) > 0; -- depth )
-//		output += " )";
-//	output += AppendWhereClause( );
 
 	return output;
 }

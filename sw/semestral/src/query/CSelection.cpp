@@ -59,33 +59,52 @@ void CSelection::ArchiveQueryName ( const string & name ) {
 		m_QuerySaveName = name;
 }
 
-string CSelection::GenerateSQL ( ) const {
+string CSelection::GetSQL ( ) const {
+//	CTableQuery * origin = m_Origin;
+//	string output = CreateSQL( );
+//	size_t depth = 1;
+//
+//	while ( origin != nullptr ) {
+//		output += origin->CreateSQL( );
+//		origin = origin->GetOrigin( );
+//		++ depth;
+//	}
+//	for ( ; depth > 0; -- depth )
+//		output += " )";
+//
+//	return output;
+
 	CTableQuery * origin = m_Origin;
-	string output = CreateSQL( );
-	size_t depth = 1;
-
-	while ( origin != nullptr ) {
-		output += origin->CreateSQL( );
-		origin = origin->GetOrigin( );
-		++ depth;
-	}
-	for ( ; depth > 0; -- depth )
-		output += " )";
-
-	return output;
-}
-
-string CSelection::CreateSQL ( ) const {
 	string output = "( SELECT ";
-	size_t max = m_SelectedCols.size( );
+	vector<string> header = m_QueryResult->GetColumnNames( );
+	size_t max = header.size( );
+
 	for ( size_t cnt = 0; cnt < max; ++ cnt )
 		if ( cnt == max - 1 )
-			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
+			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
 		else
-			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
+			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
 	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
+
+	if ( origin )
+		output += origin->GetSQL( );
+
+	output += " )";
+
 	return output;
 }
+
+//string CSelection::CreateSQL ( ) const {
+//	string output = "( SELECT ";
+//	size_t max = m_SelectedCols.size( );
+//	for ( size_t cnt = 0; cnt < max; ++ cnt )
+//		if ( cnt == max - 1 )
+//			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
+//		else
+//			output += string( CLog::APP_COLOR_RESULT ).append( m_SelectedCols[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
+//	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
+//	return output;
+//}
 
 void CSelection::SetQueryAsDerived ( ) {
 	m_Derived = true;
