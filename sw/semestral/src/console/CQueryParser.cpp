@@ -149,10 +149,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
 
 		userQuery = new CProjection { m_Database, conditionQuery, table };
-		if ( ! userQuery->Evaluate( ) ) {
-			delete userQuery;
-			return CConsole::INVALID_QUERY;
-		}
 	} else {
 		return CConsole::INVALID_QUERY;
 	}

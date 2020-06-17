@@ -20,16 +20,14 @@ bool CProjection::Evaluate ( ) {
 	CTableQuery * queryRef;
 
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
-		return
-		( m_Resolved = tableRef->GetDeepTable( m_QueryCondition, ( m_QueryResult = new CTable {
-				tableRef->GetDeepHeader( ) } ) ) );
+		m_QueryResult = new CTable { tableRef->GetDeepHeader( ) };
+		return ( m_Resolved = tableRef->GetDeepTable( m_QueryCondition, m_QueryResult ) );
 	}
 	else if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
 		m_Origin = queryRef;
-		return
-		( m_Resolved = queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, ( m_QueryResult = new CTable {
-				queryRef->GetQueryResult( )->GetDeepHeader( ) } ) ) );
+		m_QueryResult = new CTable { queryRef->GetQueryResult( )->GetDeepHeader( ) };
+		return ( m_Resolved = queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, m_QueryResult ) );
 	}
 	else {
 		return false;
@@ -53,26 +51,7 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 }
 
 string CProjection::GenerateSQL ( ) const {
-	if ( ! m_Resolved )
-		return "";
-
-	return CreateSQL( );
-
-//	CTableQuery * origin = m_Origin;
-//	string output = CreateSQL( );
-//
-//	size_t depth = 1;
-//	while ( origin != nullptr ) {
-//		output += origin->CreateSQL( );
-//		origin = origin->GetOrigin( );
-//		++ depth;
-//	}
-//
-//	for ( ; ( depth - 1 ) > 0; -- depth )
-//		output += " )";
-//	output += AppendWhereClause( );
-//
-//	return output;
+	return ( m_Resolved ? CreateSQL( ) : "" );
 }
 
 string CProjection::CreateSQL ( ) const {

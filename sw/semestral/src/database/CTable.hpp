@@ -33,7 +33,7 @@ public:
 	bool VerifyColumn ( const string & col, size_t & index ) const;
 	bool InsertShallowRow ( const vector<CCell *> & row );
 	bool InsertDeepCol ( const vector<CCell *> & col );
-	bool InsertDeepRow ( const size_t & index, CTable * outPtr, vector<CCell *> & tmp ) const;
+	bool InsertDeepRow ( const size_t & index, CTable * outPtr ) const;
 
 	vector<CCell *> GetDeepHeader ( ) const;
 	bool GetDeepTable ( CCondition * condition, CTable * outPtr ) const;

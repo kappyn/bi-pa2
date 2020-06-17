@@ -81,8 +81,6 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 	size_t elementCount = 0;
 	if ( ! m_Data.empty( ) ) {
 		elementCount = m_Data.at( 0 ).size( );
-//		for ( const auto & i : m_Data.at( 0 ) )
-//			++ elementCount;
 
 		if ( elementCount != col.size( ) || * col.begin( ) == * m_Data.at( 0 ).begin( ) )
 			return false;
@@ -100,12 +98,13 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 /**
  * Table row insertion ~ deep copy is made (for queries).
  * @param[in] index index of a row to be duplicated
- * @param[in, out] outPtr out row save pointer
- * @param[in] newRow reference to transfer data over (avoid creating a new vector all the time)
- * @return true if col was inserted without errors and column name is not taken.
+ * @param[in, out] outPtr table pointer to save to
+ * @return true if the deep copy of a row was created and inserted correctly
  */
-bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr, vector<CCell *> & newRow ) const {
-	if ( ! outPtr || ! GetDeepRow( index, newRow ) || ! outPtr->InsertShallowRow( newRow ) )
+bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr ) const {
+	vector<CCell *> newRow;
+	GetDeepRow( index, newRow );
+	if ( ! outPtr || ! outPtr->InsertShallowRow( newRow ) )
 		return false;
 	newRow.clear( );
 	return true;
@@ -119,9 +118,8 @@ bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr, vector<CCell
 bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const {
 	if ( ! outPtr.empty( ) )
 		outPtr.clear( );
-	for ( const auto & i : m_Data ) {
+	for ( const auto & i : m_Data )
 		outPtr.push_back( i.at( index )->Clone( ) );
-	}
 	return true;
 }
 
@@ -176,10 +174,9 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 	if ( ! VerifyColumn( condition->m_Column, index ) )
 		return false;
 
+	// constant type conversion
 	string colType = m_Data.at( index ).at( 1 )->GetType( );
 	CCell * criterionCell;
-
-	// constant type conversion
 	try {
 		if ( colType == typeid( string ).name( ) ) {
 			criterionCell = new CString( condition->m_Constant );
@@ -209,7 +206,7 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 	size_t rcnt = 0;
 	size_t rows = m_Data.begin( )->size( );
 	size_t cols = m_Data.size( );
-	vector<CCell *> newRow;
+	bool rowMatchFound = false;
 
 	for ( size_t i = 1; i < rows; ++ i ) {
 		for ( size_t j = 0; j < cols; ++ j ) {
@@ -217,68 +214,50 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 				// extra spaces for readability
 
 				if ( condition->m_Operator == "==" ) {
-					if ( ( * m_Data.at( j ).at( i ) == * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						if ( ! outPtr->InsertShallowRow( newRow ) )
-							return false;
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+					if ( ( * m_Data.at( j ).at( i ) == * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				if ( condition->m_Operator == "!=" ) {
-					if ( ( * m_Data.at( j ).at( i ) != * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						outPtr->InsertShallowRow( newRow );
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+				else if ( condition->m_Operator == "!=" ) {
+					if ( ( * m_Data.at( j ).at( i ) != * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				if ( condition->m_Operator == ">=" ) {
-					if (  ( * m_Data.at( j ).at( i ) >= * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						outPtr->InsertShallowRow( newRow );
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+				else if ( condition->m_Operator == ">=" ) {
+					if ( ( * m_Data.at( j ).at( i ) >= * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				if ( condition->m_Operator == "<=" ) {
-					if ( ( * m_Data.at( j ).at( i ) <= * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						outPtr->InsertShallowRow( newRow );
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+				else if ( condition->m_Operator == "<=" ) {
+					if ( ( * m_Data.at( j ).at( i ) <= * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				if ( condition->m_Operator == ">" ) {
-					if ( ( * m_Data.at( j ).at( i ) > * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						outPtr->InsertShallowRow( newRow );
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+				else if ( condition->m_Operator == ">" ) {
+					if ( ( * m_Data.at( j ).at( i ) > * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				if ( condition->m_Operator == "<" ) {
-					if ( ( * m_Data.at( j ).at( i ) < * criterionCell ) ) {
-						GetDeepRow( i, newRow );
-						outPtr->InsertShallowRow( newRow );
-						newRow.clear( );
-						++ rcnt;
-					}
-					continue;
+				else if ( condition->m_Operator == "<" ) {
+					if ( ( * m_Data.at( j ).at( i ) < * criterionCell ) )
+						rowMatchFound = true;
 				}
 
-				CLog::Msg( CLog::QP, CLog::QP_INVALID_OPER );
-				return false;
+				else {
+					CLog::Msg( CLog::QP, CLog::QP_INVALID_OPER );
+					return false;
+				}
+
+				//
+
+				if ( rowMatchFound ) {
+					++ rcnt;
+					if ( ! InsertDeepRow( i, outPtr) ) {
+						delete criterionCell;
+						return false;
+					}
+					rowMatchFound = false;
+				}
 			}
 		}
 	}

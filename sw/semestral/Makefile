@@ -14,7 +14,7 @@ OBJECTS    	      = $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
 
 # compiler settings
 CXX        		  = g++
-CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0
+CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0 -g
 MKDIR      		  = mkdir -p
 
 # colors
