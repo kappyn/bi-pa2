@@ -50,7 +50,7 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 
 }
 
-string CProjection::GenerateSQL ( ) const {
+string CProjection::GenerateSQL ( const string & tmp ) const {
 	if ( ! m_Resolved )
 		return "";
 
@@ -63,21 +63,9 @@ string CProjection::GenerateSQL ( ) const {
 		origin = origin->GetOrigin( );
 		++ depth;
 	}
+
 	for ( ; ( depth - 1 ) > 0; -- depth )
 		output += " )";
-
-	output += " WHERE " +
-		string( CLog::APP_COLOR_RESULT )
-		.append( m_QueryCondition->m_Column )
-		.append( CLog::APP_COLOR_RESET )
-		.append( " " )
-		.append( m_QueryCondition->m_Operator )
-		.append( " " )
-		.append( CLog::APP_COLOR_RESULT )
-		.append( m_QueryCondition->m_Constant )
-		.append( CLog::APP_COLOR_RESET )
-		.append( " )");
-
 	return output;
 }
 
@@ -91,6 +79,7 @@ string CProjection::CreateSQL ( ) const {
 		else
 			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
 	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
+	output += AppendWhereClause( );
 	return output;
 }
 
@@ -99,4 +88,13 @@ void CProjection::SetQueryAsDerived ( ) {
 
 bool CProjection::IsDerived ( ) const {
 	return false;
+}
+string CProjection::AppendWhereClause ( ) const {
+	return string( " WHERE " )
+	.append( m_QueryCondition->m_Column )
+	.append( " " )
+	.append( m_QueryCondition->m_Operator )
+	.append( " " )
+	.append( m_QueryCondition->m_Constant )
+	.append( " )");
 }

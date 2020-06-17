@@ -153,13 +153,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 			delete userQuery;
 			return CConsole::INVALID_QUERY;
 		}
-
-		cout << * userQuery->GetQueryResult( );
-		CLog::Msg( CLog::QP, userQuery->GenerateSQL( ) );
-
-		delete userQuery;
-		return CConsole::VALID_QUERY;
-
 	} else {
 		return CConsole::INVALID_QUERY;
 	}
