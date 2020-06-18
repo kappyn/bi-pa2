@@ -1,12 +1,13 @@
 #include "CQueryParser.hpp"
 
 // command queries
-const string CQueryParser::TABLES = "TABLES";
+const string CQueryParser::TABLES  = "TABLES";
 const string CQueryParser::QUERIES = "QUERIES";
-const string CQueryParser::QUIT = "QUIT";
+const string CQueryParser::QUIT    = "QUIT";
 
-const string CQueryParser::SELECTION = "SEL";
+const string CQueryParser::SELECTION  = "SEL";
 const string CQueryParser::PROJECTION = "PRO";
+const string CQueryParser::NJOIN      = "NJOIN";
 
 
 /**
@@ -147,9 +148,30 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		}
 		CDataParser::TrimAllSpaces( conditionQuery->m_Column, '"' );
 		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
-
 		userQuery = new CProjection { m_Database, conditionQuery, table };
-	} else {
+	}
+
+	// NATURAL JOIN
+	else if ( queryName == CQueryParser::NJOIN ) {
+		string tables;
+		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
+			return CConsole::INVALID_QUERY;
+
+		vector<string> tableNames = CDataParser::Split( tables, ',' );
+		if ( tableNames.size( ) != 2 )
+			return CConsole::INVALID_QUERY;
+		userQuery = new CNaturalJoin { m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
+
+		if ( ! userQuery->Evaluate( ) ) {
+			delete userQuery;
+			return CConsole::INVALID_QUERY;
+		}
+
+		delete userQuery;
+		return CConsole::VALID_QUERY;
+	}
+
+	else {
 		return CConsole::INVALID_QUERY;
 	}
 

@@ -43,7 +43,7 @@ namespace CLog {
 	const string CON_LISTING_T      = "Listing existing tables..";
 	const string CON_LISTING_Q      = "Listing saved queries..";
 
-	const string TAB_NO_BODY        = "Unable to render - table body is missing.";
+	const string TAB_NO_BODY        = string( APP_COLOR_BAD ).append( "Unable to render - table body is missing." ).append( APP_COLOR_RESET );
 	const string TAB_NO_DATA        = "The table doesn't have any columns.";
 	const string TAB_INVALID_INDEX  = "Invalid index.";
 
@@ -57,6 +57,9 @@ namespace CLog {
 	const string QP_CON_PARSE_ERROR =  string( APP_COLOR_BAD ).append(" was unable to convert constant to a correct type." ).append( APP_COLOR_RESET );
 	const string QP_INVALID_OPER    =  string( APP_COLOR_BAD ).append(" invalid comparison operator was entered." ).append( APP_COLOR_RESET );
 	const string QP_EMPTY_RESULTS   =  string( APP_COLOR_BAD ).append( "The resulting query is empty." ).append( APP_COLOR_RESET );
+	const string QP_DUP_COL         = string( APP_COLOR_BAD ).append( "Unable to perform operation - the table has column duplicates." ).append( APP_COLOR_RESET );
+	const string QP_NO_COMMON_COL   =  string( APP_COLOR_BAD ).append( "The tables do not share any columns." ).append( APP_COLOR_RESET );
+
 
 	/**
 	 * Standart message.

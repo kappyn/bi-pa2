@@ -2,7 +2,7 @@
 
 const string CDataParser::TYPE_STRING = "string";
 const string CDataParser::TYPE_DOUBLE = "double";
-const string CDataParser::TYPE_INT = "int";
+const string CDataParser::TYPE_INT    = "int";
 
 /**
  * Trims whitespaces to the left of the text.
@@ -77,6 +77,20 @@ CDataParser::Split ( string & s, const bool & allowQuotes, const bool & allowSpa
 	for ( string & i : tokenizedString )
 		TrimSurroundingSpace( i );
 	return tokenizedString;
+}
+
+
+vector<string>
+CDataParser::Split ( string & s, const char & delim = ',' ) {
+	std::replace( s.begin( ), s.end( ), delim, ' ');
+	vector<string> tokenizedStr;
+	stringstream ss ( s );
+	if ( ! ss )
+		return vector<string> { };
+	string temp;
+	while ( ss >> temp )
+	    tokenizedStr.push_back(temp);
+	return tokenizedStr;
 }
 
 /**

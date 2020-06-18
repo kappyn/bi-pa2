@@ -29,9 +29,10 @@ public:
 
 	static void TrimAllSpaces ( string & token, const char & delimiter );
 	static vector<string> Split ( string & s, const bool & allowQuotes, const bool & allowSpaces, const char & delim = ',' );
+	static vector<string> Split ( string & s, const char & delimiter );
 	static string & SplitFileName ( string & filePath );
-	static string GetFileExtension ( const string & input );
 
+	static string GetFileExtension ( const string & input );
 	static bool ParseTable ( CDatabase & db, ifstream & ifs, string & filePath );
 	static bool ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath );
 };

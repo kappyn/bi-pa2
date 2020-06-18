@@ -43,11 +43,12 @@ CTableQuery * CProjection::GetOrigin ( ) {
 }
 
 string CProjection::GetQueryName ( ) const {
-	return std::__cxx11::string( );
+	return m_QuerySaveName;
 }
 
 void CProjection::ArchiveQueryName ( const string & name ) {
-
+	if ( m_QuerySaveName != name )
+		m_QuerySaveName = name;
 }
 
 string CProjection::GetSQL ( ) const {
@@ -57,23 +58,18 @@ string CProjection::GetSQL ( ) const {
 	CTableQuery * origin = m_Origin;
 	string output = "( SELECT ";
 	vector<string> header = m_QueryResult->GetColumnNames( );
-	size_t max = header.size( );
-	for ( size_t cnt = 0; cnt < max; ++ cnt )
-		if ( cnt == max - 1 )
-			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ] ).append( CLog::APP_COLOR_RESET ) + "";
-		else
-			output += string( CLog::APP_COLOR_RESULT ).append( header[ cnt ]).append( CLog::APP_COLOR_RESET ) + ", ";
+	output += string( CLog::APP_COLOR_RESULT ).append( "*" ).append( CLog::APP_COLOR_RESET ) + "";
 	output += " FROM " + string( m_Derived ? "" : string( CLog::APP_COLOR_RESULT ).append( m_TableName ).append( CLog::APP_COLOR_RESET ) );
 
 	if ( origin )
 		output += origin->GetSQL( );
-
 	output += AppendWhereClause( );
 
 	return output;
 }
 
 void CProjection::SetQueryAsDerived ( ) {
+	m_Derived = true;
 }
 
 bool CProjection::IsDerived ( ) const {

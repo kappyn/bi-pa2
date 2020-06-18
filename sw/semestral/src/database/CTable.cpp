@@ -55,6 +55,19 @@ bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
 }
 
 /**
+ * Verifies if table has any duplicate columns.
+ */
+bool CTable::HasDuplicateColumns ( ) const {
+	std::map<std::string, int> countMap;
+	for ( const auto & elem : m_Data ) {
+	    auto result = countMap.insert( pair<string, int> ( elem.at( 0 )->RetrieveMVal( ), 1 ) );
+	    if ( ! result.second )
+	    	return true;
+	}
+	return false;
+}
+
+/**
  * Table row insertion. References are copied, not reallocated!
  * @param[in] row Row to be inserted
  * @return true if row was inserted without errors

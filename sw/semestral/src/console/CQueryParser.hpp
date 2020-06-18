@@ -12,6 +12,7 @@
 
 #include "../query/CSelection.hpp"
 #include "../query/CProjection.hpp"
+#include "../query/CNaturalJoin.hpp"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ public:
 
 	static const string SELECTION;
 	static const string PROJECTION;
+	static const string NJOIN;
 
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );

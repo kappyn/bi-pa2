@@ -31,6 +31,7 @@ public:
 
 	bool VerifyColumns ( const vector<string> & cols ) const;
 	bool VerifyColumn ( const string & col, size_t & index ) const;
+	bool HasDuplicateColumns ( ) const;
 	bool InsertShallowRow ( const vector<CCell *> & row );
 	bool InsertDeepCol ( const vector<CCell *> & col );
 	bool InsertDeepRow ( const size_t & index, CTable * outPtr ) const;
