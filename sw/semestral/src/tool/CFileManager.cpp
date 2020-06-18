@@ -23,8 +23,8 @@ bool CFileManager::LoadTables ( ) {
 	CLog::Msg( CLog::FM, CLog::FM_LOADING );
 	string tableFilePath;
 	ifstream tableFileStream { };
-
 	size_t loadedTablesCnt = 0;
+
 	while ( m_ConfigStream >> tableFilePath ) {
 		tableFileStream.open( tableFilePath, ios::in );
 		if ( tableFileStream && CDataParser::ParseTable( m_Database, tableFileStream, tableFilePath ) ) {
@@ -36,5 +36,4 @@ bool CFileManager::LoadTables ( ) {
 	}
 
 	return loadedTablesCnt != 0;
-
 }

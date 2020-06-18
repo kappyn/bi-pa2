@@ -6,9 +6,10 @@
 
 class CQueryOperand {
 public:
-	CTableQuery * m_Origin = nullptr;
-	CTable * m_QueryResult = nullptr;
-	bool m_Derived         = false;
+	CTable * m_TableRef      = nullptr;
+	CTableQuery * m_QueryRef = nullptr;
+	CTableQuery * m_Origin   = nullptr;
+	bool m_Derived           = false;
 };
 
 class CNaturalJoin : public CTableQuery {
@@ -17,9 +18,10 @@ private:
 	CTable * m_QueryResult;
 	string m_QuerySaveName;
 
-	pair<string, string> m_TableNames;
-	pair<CQueryOperand, CQueryOperand> m_Operands;
+	CTableQuery * m_Origin = nullptr;
+	bool m_Derived         = false;
 
+	pair<string, string> m_TableNames;
 	bool m_Resolved;
 
 public:

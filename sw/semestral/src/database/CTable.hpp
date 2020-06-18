@@ -25,6 +25,7 @@ private:
 public:
 	explicit CTable ( const vector<CCell *> & header );
 	explicit CTable ( const vector<string> & header );
+	explicit CTable ( const vector<pair<string, int>> & header );
 	explicit CTable ( ) = default;
 
 	~CTable ( );
@@ -35,18 +36,21 @@ public:
 	bool InsertShallowRow ( const vector<CCell *> & row );
 	bool InsertDeepCol ( const vector<CCell *> & col );
 	bool InsertDeepRow ( const size_t & index, CTable * outPtr ) const;
+	static vector<CCell *> MergeRows ( const vector<CCell *> & rowA, const vector<CCell *> & rowB );
 
 	vector<CCell *> GetDeepHeader ( ) const;
+	bool GetShallowCol ( const string & name, vector<CCell *> & outPtr ) const;
 	bool GetDeepTable ( CCondition * condition, CTable * outPtr ) const;
 	bool GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const;
+	bool GetDeepRow ( const size_t & index, vector<string> & selectedColumns, vector<CCell *> & outPtr ) const;
 	bool GetSubTable ( const vector<string> & row, CTable * outPtr ) const;
 
+	vector<pair<size_t, size_t>> FindOccurences ( vector<vector<CCell *>> & columns ) const;
 	size_t GetColumnCount ( ) const;
 	size_t GetRowCount ( ) const;
 	vector<string> GetColumnNames ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
 
-	void DeleteData( );
 	void Render ( ostream & ost = cout ) const;
 	vector<CCell *> RenderCol ( const size_t & index, ostream & ost = cout ) const;
 	static void RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost = cout );

@@ -149,7 +149,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 	// first row - table column data types
 	getline( ifs, tmp );
-	if ( * ( tmp.end( ) - 1 ) == ',' )
+	if ( tmp.empty( ) || * ( tmp.end( ) - 1 ) == ',' )
 		return false;
 	vector<string> columnTypes = Split( tmp, false, false );
 	for ( const string & i : columnTypes ) {
@@ -169,7 +169,8 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 	size_t requiredColumns = columnTypes.size( );
 
 	getline( ifs, tmp );
-	if ( * ( tmp.end( ) - 1 ) == ',' )
+
+	if ( tmp.empty( ) || * ( tmp.end( ) - 1 ) == ',' )
 		return false;
 
 	vector<string> columnNames = Split( tmp, false, false );
@@ -240,17 +241,15 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 				++ cnt;
 			}
 		} catch ( std::logic_error const & e ) {
-			CLog::BoldMsg( CLog::QP, e.what( ), CLog::QP_CON_PARSE_ERROR );
-
 			delete parsedResult;
 			for ( const auto & i : newTypedRow )
 				delete i;
 
-			// if you wish to import only correct tables
-			return false;
+			// if you wish to import only correct tables (more tolerant option)
+			// return false;
 
 			// one table wrong -> all tables wrong
-			// throw logic_error( CLog::QP_CON_PARSE_ERROR );
+			 throw logic_error( CLog::FM_TABLE_PARSE_ERR );
 		}
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )

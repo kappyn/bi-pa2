@@ -11,6 +11,7 @@ SOURCES 		  = $(wildcard $(SOURCE_DIR)/*.cpp $(SOURCE_DIR)/*/*.cpp)
 HEADERS 		  = $(wildcard $(SOURCE_DIR)/*.hpp $(SOURCE_DIR)/*/*.hpp)
 OB_TMP    	      = $(notdir $(SOURCES:$(SOURCE_DIR)/%.cpp=%.o))
 OBJECTS    	      = $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
+DEPS    	      = Makefile.d
 
 # compiler settings
 CXX        		  = g++
@@ -46,7 +47,7 @@ memcheck: $(TARGET)
 
 fwatch:
 	@echo "$(COLOR_MSG)Starting dev filewatcher..$(COLOR_DEF)"
-	./filewatch
+	./examples/filewatch
 
 linecnt:
 	@echo "$(COLOR_MSG)Counting lines..$(COLOR_DEF)"
@@ -57,8 +58,8 @@ clean:
 	@echo "$(COLOR_MSG)Previous builds and object files have been cleaned.$(COLOR_DEF)"
 
 dep:
-	find src/ -name *.cpp | xargs $(CXX) -MM > Makefile.d
-	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' Makefile.d
+	find src/ -name *.cpp | xargs $(CXX) -MM > $(DEPS)
+	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' $(DEPS)
 	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
 doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
@@ -79,4 +80,4 @@ $(BUILD_DIR)/%.o: $(SOURCE_DIR)/**/%.cpp
 	@$(MKDIR) $(BUILD_DIR)
 	$(CXX) $(CXX_FLAGS) $< -c -o $@
 
--include Makefile.d
+-include $(DEPS)

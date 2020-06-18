@@ -7,43 +7,47 @@ CNaturalJoin::CNaturalJoin ( CDatabase & ref, const pair<string, string> & table
 		  m_QueryResult( nullptr ),
 		  m_QuerySaveName( "" ),
 		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ),
-		  m_Operands( ),
 		  m_Resolved( false ) { }
 
 CNaturalJoin::~CNaturalJoin ( ) {
-	delete m_Operands.first.m_QueryResult;
-	delete m_Operands.second.m_QueryResult;
+	delete m_QueryResult;
 }
 
 bool CNaturalJoin::Evaluate ( ) {
-	vector<string> columnsA, columnsB;
-
-	CTable * tableRef = nullptr;
-	if ( ( tableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
-//		m_Operands.first.m_QueryResult = new CTable { tableRef->GetDeepHeader( ) };
-		cout << "table A found!" << endl;
-			
-		if ( tableRef->HasDuplicateColumns( ) ) {
-			CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-			return false;
-		}
-		columnsA = tableRef->GetColumnNames( );
+	// initialization + search process
+	vector<string> colsA;
+	CQueryOperand A;
+	if ( ( A.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
+	} else if ( ( A.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
+		A.m_Derived = true;
+		A.m_Origin = A.m_QueryRef;
+		A.m_TableRef = A.m_QueryRef->GetQueryResult( );
 	} else {
 		return false;
 	}
+	if ( A.m_TableRef->HasDuplicateColumns( ) ) {
+		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
+		return false;
+	}
+	colsA = A.m_TableRef->GetColumnNames( );
 
-	if ( ( tableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
-		columnsB = tableRef->GetColumnNames( );
-		cout << "table B found!" << endl;
-
-		if ( tableRef->HasDuplicateColumns( ) ) {
-			CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-			return false;
-		}
+	vector<string> colsB;
+	CQueryOperand B;
+	if ( ( B.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
+	} else if ( ( B.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
+		B.m_Derived = true;
+		B.m_Origin = B.m_QueryRef;
+		B.m_TableRef = B.m_QueryRef->GetQueryResult( );
 	} else {
 		return false;
 	}
+	if ( B.m_TableRef->HasDuplicateColumns( ) ) {
+		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
+		return false;
+	}
+	colsB = B.m_TableRef->GetColumnNames( );
 
+	// search for common columns
 	// 0 for independent right columns
 	// 1 for independent left columns
 	// 2 for common columns
@@ -51,8 +55,8 @@ bool CNaturalJoin::Evaluate ( ) {
 	size_t commonColCnt = 0;
 	bool foundCommon = false;
 
-	for ( const string & i : columnsA )
-		for ( const string & j : columnsB )
+	for ( const string & i : colsA )
+		for ( const string & j : colsB )
 			if ( i == j ) {
 				newHeaderColumns.emplace_back( pair<string, int> { j, 2 } );
 				++ commonColCnt;
@@ -61,8 +65,7 @@ bool CNaturalJoin::Evaluate ( ) {
 		CLog::Msg( CLog::QP, CLog::QP_NO_COMMON_COL );
 		return false;
 	}
-
-	for ( const string & i : columnsA  ) {
+	for ( const string & i : colsA ) {
 		for ( const auto & j : newHeaderColumns ) {
 			if ( j.first == i ) {
 				foundCommon = true;
@@ -73,7 +76,7 @@ bool CNaturalJoin::Evaluate ( ) {
 			newHeaderColumns.emplace_back( pair<string, int> { i, 1 } );
 		foundCommon = false;
 	}
-	for ( const string & i : columnsB  ) {
+	for ( const string & i : colsB ) {
 		for ( const auto & j : newHeaderColumns ) {
 			if ( j.first == i ) {
 				foundCommon = true;
@@ -84,33 +87,54 @@ bool CNaturalJoin::Evaluate ( ) {
 			newHeaderColumns.emplace_back( pair<string, int> { i, 0 } );
 		foundCommon = false;
 	}
+	m_QueryResult = new CTable( newHeaderColumns );
 
-	for ( const auto & i : newHeaderColumns )
-		cout << i.first <<  " " << i.second << endl;
+	vector<vector<CCell *>> requiredColumns;
+	vector<CCell *> tmp;
+	for ( const auto & i : newHeaderColumns ) {
+		if ( i.second == 2 ) {
+			if ( ! A.m_TableRef->GetShallowCol( i.first, tmp ) )
+				return false;
+			requiredColumns.emplace_back( tmp );
+		}
+	}
 
-//	vector<string> newTableCols;
-//	pair<vector<string>, vector<string>> independentColumns;
-//	vector<string> commonColumns;
-//
-//	for ( const string & i : columnsA ) {
-//		for ( const string & j : columnsB ) {
-//			if ( i == j ) {
-//				newTableCols.push_back( i );
-//				break;
-//			}
-//		}
-//	}
-//
-//	bool commonFound = false;
-//	for ( const string & i : columnsA ) {
-//		for ( const string & j : newTableCols )
-//			commonFound = true;
-//
-//		if ( ! commonFound ) {
-//			independentColumns
-//		}
-//	}
+	tmp.clear( );
+	colsA.clear( );
+	colsB.clear( );
 
+	vector<pair<size_t, size_t>> tableIndexes = B.m_TableRef->FindOccurences( requiredColumns );
+	if ( tableIndexes.empty( ) ) {
+		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
+		return false;
+	}
+
+	for ( const auto & i : newHeaderColumns ) {
+		if ( i.second == 2 || i.second == 1 )
+			colsA.emplace_back( i.first );
+		else
+			colsB.emplace_back( i.first );
+	}
+
+	vector<CCell *> aPar, bPar;
+	for ( const auto & i : tableIndexes ) {
+		if ( colsB.empty( ) ) {
+			if ( ! A.m_TableRef->GetDeepRow( i.first, colsA, aPar ) ) {
+				for ( const auto & y : aPar ) delete y;
+				for ( const auto & y : bPar ) delete y;
+			}
+		} else {
+			if ( ! A.m_TableRef->GetDeepRow( i.first, colsA, aPar ) || ! B.m_TableRef->GetDeepRow( i.second, colsB, bPar ) ) {
+				for ( const auto & y : aPar ) delete y;
+				for ( const auto & y : bPar ) delete y;
+				return false;
+			}
+		}
+		tmp = CTable::MergeRows( aPar, bPar );
+		if ( ! m_QueryResult->InsertShallowRow( tmp ) )
+			return false;
+	}
+	cout << * m_QueryResult;
 	return true;
 }
 

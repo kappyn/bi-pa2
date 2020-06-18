@@ -29,6 +29,7 @@ namespace CLog {
 	const string FM_LOADING         = "Loading tables from the file into database..";
 	const string FM_IMPORT_OK       = string( APP_COLOR_GOOD ).append( " successfully imported!" ).append( APP_COLOR_RESET );
 	const string FM_IMPORT_FAIL     = string( APP_COLOR_BAD ).append(" is in incorrect format or doesn't exist." ).append( APP_COLOR_RESET );
+	const string FM_TABLE_PARSE_ERR = string( APP_COLOR_BAD ).append("Invalid formatting of the table files." ).append( APP_COLOR_RESET );
 
 	const string DP                 = "DATA PARSER";
 	const string DP_LINE_MISMATCH   = string( APP_COLOR_BAD ).append(" number of columns does not match at line " );

@@ -7,7 +7,7 @@ CApplication::CApplication ( const string & dbName, const string & srcName ) : m
 int CApplication::Run ( ) {
 	try {
 		if ( ! m_FileManager.LoadTables( ) )
-			throw logic_error( CLog::QP_CON_PARSE_ERROR );
+			throw logic_error( CLog::FM_TABLE_PARSE_ERR );
 		m_Database.PrintTables( );
 		return CConsole::Start( m_Database );
 	} catch ( const logic_error & ex ) {
