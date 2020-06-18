@@ -161,14 +161,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
 		userQuery = new CNaturalJoin { m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
-
-		if ( ! userQuery->Evaluate( ) ) {
-			delete userQuery;
-			return CConsole::INVALID_QUERY;
-		}
-
-		delete userQuery;
-		return CConsole::VALID_QUERY;
 	}
 
 	else {

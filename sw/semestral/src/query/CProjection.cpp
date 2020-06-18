@@ -38,10 +38,6 @@ CTable * CProjection::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-CTableQuery * CProjection::GetOrigin ( ) {
-	return m_Origin;
-}
-
 string CProjection::GetQueryName ( ) const {
 	return m_QuerySaveName;
 }

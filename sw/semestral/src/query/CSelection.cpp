@@ -40,10 +40,6 @@ CTable * CSelection::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-CTableQuery * CSelection::GetOrigin ( ) {
-	return m_Origin;
-}
-
 string CSelection::GetQueryName ( ) const {
 	return m_QuerySaveName;
 }

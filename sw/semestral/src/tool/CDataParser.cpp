@@ -244,12 +244,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 			delete parsedResult;
 			for ( const auto & i : newTypedRow )
 				delete i;
-
-			// if you wish to import only correct tables (more tolerant option)
-			// return false;
-
-			// one table wrong -> all tables wrong
-			 throw logic_error( CLog::FM_TABLE_PARSE_ERR );
+			 return false;
 		}
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )

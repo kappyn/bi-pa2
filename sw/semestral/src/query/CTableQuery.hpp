@@ -9,8 +9,6 @@ public:
 	virtual bool Evaluate ( ) = 0;
 
 	virtual CTable * GetQueryResult ( ) = 0;
-	virtual CTableQuery * GetOrigin ( ) = 0;
-
 	virtual string GetSQL ( ) const = 0;
 	virtual string GetQueryName ( ) const = 0;
 	virtual void ArchiveQueryName ( const string & name ) = 0;

@@ -1,7 +1,5 @@
 #include "CNaturalJoin.hpp"
 
-#include <utility>
-
 CNaturalJoin::CNaturalJoin ( CDatabase & ref, const pair<string, string> & tableNames )
 		: m_Database( ref ),
 		  m_QueryResult( nullptr ),
@@ -16,36 +14,34 @@ CNaturalJoin::~CNaturalJoin ( ) {
 bool CNaturalJoin::Evaluate ( ) {
 	// initialization + search process
 	vector<string> colsA;
-	CQueryOperand A;
-	if ( ( A.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
-	} else if ( ( A.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		A.m_Derived = true;
-		A.m_Origin = A.m_QueryRef;
-		A.m_TableRef = A.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.first.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
+	} else if ( ( m_Operands.first.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
+		m_Operands.first.m_Derived  = true;
+		m_Operands.first.m_Origin   = m_Operands.first.m_QueryRef;
+		m_Operands.first.m_TableRef = m_Operands.first.m_QueryRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( A.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.first.m_TableRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-	colsA = A.m_TableRef->GetColumnNames( );
+	colsA = m_Operands.first.m_TableRef->GetColumnNames( );
 
 	vector<string> colsB;
-	CQueryOperand B;
-	if ( ( B.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
-	} else if ( ( B.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		B.m_Derived = true;
-		B.m_Origin = B.m_QueryRef;
-		B.m_TableRef = B.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.second.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
+	} else if ( ( m_Operands.second.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
+		m_Operands.second.m_Derived  = true;
+		m_Operands.second.m_Origin   = m_Operands.second.m_QueryRef;
+		m_Operands.second.m_TableRef = m_Operands.second.m_QueryRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( B.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.second.m_TableRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-	colsB = B.m_TableRef->GetColumnNames( );
+	colsB = m_Operands.second.m_TableRef->GetColumnNames( );
 
 	// search for common columns
 	// 0 for independent right columns
@@ -93,7 +89,7 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<CCell *> tmp;
 	for ( const auto & i : newHeaderColumns ) {
 		if ( i.second == 2 ) {
-			if ( ! A.m_TableRef->GetShallowCol( i.first, tmp ) )
+			if ( ! m_Operands.first.m_TableRef->GetShallowCol( i.first, tmp ) )
 				return false;
 			requiredColumns.emplace_back( tmp );
 		}
@@ -103,7 +99,7 @@ bool CNaturalJoin::Evaluate ( ) {
 	colsA.clear( );
 	colsB.clear( );
 
-	vector<pair<size_t, size_t>> tableIndexes = B.m_TableRef->FindOccurences( requiredColumns );
+	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TableRef->FindOccurences( requiredColumns );
 	if ( tableIndexes.empty( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
 		return false;
@@ -119,12 +115,12 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<CCell *> aPar, bPar;
 	for ( const auto & i : tableIndexes ) {
 		if ( colsB.empty( ) ) {
-			if ( ! A.m_TableRef->GetDeepRow( i.first, colsA, aPar ) ) {
+			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 			}
 		} else {
-			if ( ! A.m_TableRef->GetDeepRow( i.first, colsA, aPar ) || ! B.m_TableRef->GetDeepRow( i.second, colsB, bPar ) ) {
+			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) || ! m_Operands.second.m_TableRef->GetDeepRow( i.second, colsB, bPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 				return false;
@@ -134,16 +130,13 @@ bool CNaturalJoin::Evaluate ( ) {
 		if ( ! m_QueryResult->InsertShallowRow( tmp ) )
 			return false;
 	}
-	cout << * m_QueryResult;
+
+	m_Resolved = true;
 	return true;
 }
 
 CTable * CNaturalJoin::GetQueryResult ( ) {
-	return nullptr;
-}
-
-CTableQuery * CNaturalJoin::GetOrigin ( ) {
-	return nullptr;
+	return m_QueryResult;
 }
 
 string CNaturalJoin::GetQueryName ( ) const {
@@ -156,7 +149,20 @@ void CNaturalJoin::ArchiveQueryName ( const string & name ) {
 }
 
 string CNaturalJoin::GetSQL ( ) const {
-	return "";
+	if ( ! m_Resolved )
+		return "";
+
+	CTableQuery * origin;
+
+	origin = m_Operands.first.m_Origin;
+	string output = "( SELECT * FROM ";
+	output += origin ? origin->GetSQL() : m_TableNames.first;
+	output += " NATURAL JOIN ";
+	origin = m_Operands.second.m_Origin;
+	output += origin ? origin->GetSQL() : m_TableNames.second;
+	output += " )";
+
+	return output;
 }
 
 void CNaturalJoin::SetQueryAsDerived ( ) {

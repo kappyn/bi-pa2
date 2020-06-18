@@ -27,7 +27,6 @@ public:
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
-	virtual CTableQuery * GetOrigin ( ) override;
 	virtual string GetQueryName ( ) const override;
 	virtual void ArchiveQueryName ( const string & name ) override;
 

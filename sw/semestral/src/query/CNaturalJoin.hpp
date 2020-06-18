@@ -18,9 +18,7 @@ private:
 	CTable * m_QueryResult;
 	string m_QuerySaveName;
 
-	CTableQuery * m_Origin = nullptr;
-	bool m_Derived         = false;
-
+	pair<CQueryOperand, CQueryOperand> m_Operands;
 	pair<string, string> m_TableNames;
 	bool m_Resolved;
 
@@ -31,7 +29,6 @@ public:
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
-	virtual CTableQuery * GetOrigin ( ) override;
 	virtual string GetQueryName ( ) const override;
 	virtual void ArchiveQueryName ( const string & name ) override;
 

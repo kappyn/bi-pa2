@@ -1,0 +1,6 @@
+TABLES;
+SEL[Username,Surname](a)~Test;
+PRO[Username=="Frank"](Test)~Franks;
+NJOIN(Test,b);
+NJOIN(a,Franks);
+QUIT;

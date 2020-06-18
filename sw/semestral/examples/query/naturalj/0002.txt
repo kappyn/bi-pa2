@@ -1,0 +1,2 @@
+NJOIN(a,b)~Save;
+QUIT;
