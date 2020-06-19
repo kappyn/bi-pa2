@@ -26,9 +26,7 @@ bool CString::Rename ( const string & str ) {
 	return true;
 }
 
-
 //
-
 
 CDouble * CDouble::Clone ( ) {
 	return new CDouble( * this );
@@ -56,10 +54,7 @@ bool CDouble::Rename ( const string & str ) {
 	return false;
 }
 
-
 //
-
-
 
 CInt * CInt::Clone ( ) {
 	return new CInt( * this );

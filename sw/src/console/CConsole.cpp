@@ -4,14 +4,12 @@ int CConsole::Start ( CDatabase & dbRef ) {
 	string buffer, query;
 	CQueryParser cqp { dbRef };
 	CLog::Msg( CLog::CON, CLog::CON_START );
-
 	bool quote = false;
+
 	while ( ! cin.eof( ) ) {
 		buffer.clear( );
 		query.clear( );
-
 		getline( std::cin, buffer, ';' );
-
 		if ( cin.eof( ) || cin.fail( ) )
 			break;
 
@@ -39,7 +37,6 @@ int CConsole::Start ( CDatabase & dbRef ) {
 		switch ( cqp.ProcessQuery( query ) ) {
 			case CConsole::VALID_QUERY:
 				continue;
-
 			case CConsole::INVALID_QUERY:
 				CLog::Msg( CLog::CON,
 				           string( "\"\u001b[1m" )
@@ -49,7 +46,6 @@ int CConsole::Start ( CDatabase & dbRef ) {
 						           .append( "\u001b[0m" )
 				);
 				continue;
-
 			case CConsole::EXIT_CONSOLE:
 				CLog::Msg( CLog::CON, CLog::CON_EXIT );
 				return 0;

@@ -7,7 +7,7 @@
  * @param[in, out] output the query save name
  * @return true if user wants to save the query and the name is not used and atleast a character long
  */
-bool CQueryParser::ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output ) {
+bool CQueryParser::ReadQSave ( const string & queryDetails, const char & saveDelimiter, string & output ) {
 	output.clear( );
 	bool readMode = false;
 
@@ -31,7 +31,7 @@ bool CQueryParser::ReadQuerySave ( const string & queryDetails, const char & sav
  * @param[in, out] output the query name.
  * @return true if name was found and is atleast a character long
  */
-bool CQueryParser::ReadQueryName ( const string & fullQuery, string & output ) {
+bool CQueryParser::ReadQName ( const string & fullQuery, string & output ) {
 	output.clear( );
 	for ( const char & i : fullQuery )
 		if ( ! isalpha( i ) )
@@ -50,8 +50,7 @@ bool CQueryParser::ReadQueryName ( const string & fullQuery, string & output ) {
  * @param[in, out] output the content of the parenthesis
  * @return true if any content exists and the parenthesis is correctly ended
  */
-bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd,
-                                          size_t & stringPos, string & output ) {
+bool CQueryParser::ReadQParenthesis ( const string & queryDetails, const char & delStart, const char & delEnd, size_t & stringPos, string & output ) {
 	output.clear( );
 	bool readMode = false;
 
@@ -82,55 +81,48 @@ bool CQueryParser::ReadQueryParenthesis ( const string & queryDetails, const cha
  * @param[in, out] queryDetails details of the query
  * @return enum value for corresponding application state
  */
-int CQueryParser::ProcessQuery ( const string & basicString ) {
+int CQueryParser::ProcessQuery ( const string & basicString ) const {
 	// basic query recognition
 	string queryName, queryDetails;
-	if ( ! ReadQueryName( basicString, queryName ) )
+	if ( ! ReadQName( basicString, queryName ) )
 		return CConsole::INVALID_QUERY;
 	queryDetails = basicString.substr( queryName.length( ) );
 
 	// interface commands
 	if ( queryDetails.empty( ) ) {
-
 		if ( queryName == CLog::TABLES ) {
 			m_Database.ListTables( );
 			return CConsole::VALID_QUERY;
 		}
-
 		if ( queryName == CLog::QUERIES ) {
 			m_Database.ListQueries( );
 			return CConsole::VALID_QUERY;
 		}
-
 		if ( queryName == CLog::QUIT )
 			return CConsole::EXIT_CONSOLE;
-
 		return CConsole::INVALID_QUERY;
 	}
 
+	// relational algebra inputs
 	size_t stringProgress = 0;
 	CTableQuery * userQuery;
 
-	// ra input
-
-	// SELECTION
 	if ( queryName == CLog::SELECTION ) {
 		string columns, table;
 		if (
-				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
-				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
+				! ReadQParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
+				! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
 			)
 			return CConsole::INVALID_QUERY;
 		userQuery = new CSelection ( m_Database, CDataParser::Split( columns, false, false, ',' ), table );
 	}
 
-	// PROJECTION
 	else if ( queryName == CLog::PROJECTION ) {
 		auto * conditionQuery = new CCondition;
 		string condition, table;
 		if (
-				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, condition ) ||
-				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) ||
+				! ReadQParenthesis( queryDetails, '[', ']', stringProgress, condition ) ||
+				! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table ) ||
 				! ValidateConditionSyntax( condition, conditionQuery )
 			) {
 			delete conditionQuery;
@@ -141,25 +133,21 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		userQuery = new CProjection ( m_Database, conditionQuery, table );
 	}
 
-	// NATURAL JOIN
 	else if ( queryName == CLog::NJOIN ) {
 		string tables;
-		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
+		if ( ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
 			return CConsole::INVALID_QUERY;
 
 		vector<string> tableNames = CDataParser::Split( tables, ',' );
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
+
 		userQuery = new CNaturalJoin ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
-	// JOIN
 	else if ( queryName == CLog::JOIN ) {
 		string tables, column;
-		if (
-				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, column ) ||
-				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables )
-		)
+		if ( ! ReadQParenthesis( queryDetails, '[', ']', stringProgress, column ) || ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
 			return CConsole::INVALID_QUERY;
 
 		vector<string> tableNames = CDataParser::Split( tables, ',' );
@@ -169,10 +157,9 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		userQuery = new CJoin ( m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
-	// UNION, INTERSECT, JOIN
 	else if ( queryName == CLog::UNION || queryName == CLog::INTERSECT || queryName == CLog::MINUS ) {
 		string tables;
-		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
+		if ( ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
 			return CConsole::INVALID_QUERY;
 
 		vector<string> tableNames = CDataParser::Split( tables, ',' );
@@ -185,6 +172,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		else if ( queryName == CLog::INTERSECT )
 			userQuery = new CIntersect ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 
+//		else if ( queryName == CLog::MINUS )
 		else
 			userQuery = new CMinus ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
@@ -193,23 +181,23 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		return CConsole::INVALID_QUERY;
 	}
 
-	// evaluation function for each query
+	// evaluation process (existing tables, columns, valid conditions, ..)
 	if ( ! userQuery->Evaluate( ) ) {
 		delete userQuery;
 		return CConsole::INVALID_QUERY;
 	}
 
-	// result to output
+	// generating the SQL equivalent
 	cout << * userQuery->GetQueryResult( );
 	CLog::Msg( CLog::QP, userQuery->GetSQL( ) );
 
-	// save query option ?
+	// query save option scan
 	string querySaveName;
 	if ( stringProgress == queryDetails.length( ) )
 		delete userQuery;
 	else {
-		// if user enters tilda (~) without any query save name, the program will ignore it
-		if ( ReadQuerySave( queryDetails.substr( stringProgress ), '~', querySaveName ) ) {
+		// tilda with empty name is ignored
+		if ( ReadQSave( queryDetails.substr( stringProgress ), '~', querySaveName ) ) {
 			if ( ! m_Database.InsertQuery( querySaveName, userQuery ) ) {
 				delete userQuery;
 				return CConsole::INVALID_QUERY;
@@ -230,9 +218,9 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
  * @param[in] query condition expression of the query
  * @return true if condition is correct (in syntax sense only)
  */
-bool CQueryParser::ValidateConditionSyntax ( const string & query, CCondition * output ) {
+bool CQueryParser::ValidateConditionSyntax ( const string & query, CCondition * output ) const {
 	string column, constant;
-	size_t found = 0;
+	size_t found;
 	for ( const string & i : m_Operators ) {
 		if ( ( found = query.find( i ) ) != string::npos ) {
 			column = query.substr( 0, found );

@@ -1,5 +1,4 @@
-#ifndef CTABLE_H
-#define CTABLE_H
+#pragma once
 
 #include "CCell.hpp"
 #include "CRenderSett.hpp"
@@ -41,11 +40,8 @@ public:
 			return false;
 		};
 	};
-
-	bool VerifyColumns ( const vector<string> & cols ) const;
 	bool VerifyColumn ( const string & col, size_t & index ) const;
 	void SortColumns ( );
-
 	static void SortRows ( vector<vector<CCell *>> & dataRef );
 	static bool CompareRows ( const vector<CCell *> & a, const vector<CCell *> & b );
 
@@ -70,14 +66,12 @@ public:
 
 	vector<pair<size_t, size_t>> FindOccurences ( vector<vector<CCell *>> & columnsRef ) const;
 	vector<pair<size_t, size_t>> FindOccurences ( vector<CCell *> & columnRef ) const;
+
 	size_t GetColumnCount ( ) const;
 	vector<string> GetColumnNames ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
 
 	void Render ( ostream & ost = cout ) const;
-	vector<CCell *> RenderCol ( const size_t & index, ostream & ost = cout ) const;
 	static void RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost = cout );
 	friend ostream & operator << ( ostream & ost, const CTable & table );
 };
-
-#endif

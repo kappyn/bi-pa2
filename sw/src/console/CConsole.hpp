@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CLog.hpp"
-#include "CQueryParser.hpp"
-#include "../tool/CDataParser.hpp"
-
 #include <iostream>
 #include <iomanip>
 #include <string>
+
+#include "CLog.hpp"
+#include "CQueryParser.hpp"
+#include "../tool/CDataParser.hpp"
 
 /**
  * This module provides command line interface for the user to enter queries in relational algebra syntax.

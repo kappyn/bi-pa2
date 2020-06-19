@@ -9,10 +9,8 @@ CFileManager::CFileManager ( const string & configFile, CDatabase & database ) :
 	m_ConfigStream.open( configFile, ios::in );
 	if ( ! m_ConfigStream )
 		throw std::logic_error( CLog::FM_CFG_NOT_FOUND );
-
 	if ( m_ConfigStream.peek( ) == ifstream::traits_type::eof( ) )
 		throw std::logic_error( CLog::FM_CFG_FAILED );
-
 	CLog::Msg( CLog::FM, CLog::FM_CFG_FOUND );
 }
 

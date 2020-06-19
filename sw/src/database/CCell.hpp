@@ -1,5 +1,4 @@
-#ifndef CCELL_H
-#define CCELL_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -15,8 +14,7 @@ using namespace std;
  * Each cell is polymorphic, since we only get to know the column data types during runtime.
  *
  * However, we still need to be able to implement comparisson operators.
- * This is done trough a template - the original idea is taken from a stack overflow user leemes
- * Source: https://stackoverflow.com/a/24249968
+ * This is done trough a template - the original idea inspired by SO's user leemes (https://stackoverflow.com/a/24249968)
  *
  * CString, CDouble, CInt are basically a primitive data type encapsulated objects.
  * There could also be any different (custom made) object with its own functionality.
@@ -193,5 +191,3 @@ public:
 		return m_Val < other.m_Val;
 	}
 };
-
-#endif

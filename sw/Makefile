@@ -15,7 +15,7 @@ DEPS    	      = Makefile.d
 
 # compiler settings
 CXX        		  = g++
-CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long
+CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0
 MKDIR      		  = mkdir -p
 
 # colors
@@ -52,6 +52,10 @@ fwatch:
 linecnt:
 	@echo "$(COLOR_MSG)Counting lines..$(COLOR_DEF)"
 	find "./src/" -type f -name "*.cpp" -o -name "*.hpp" | xargs wc -l
+
+lineheadercnt:
+	@echo "$(COLOR_MSG)Counting lines..$(COLOR_DEF)"
+	find "./src/" -type f -name "*.hpp" | xargs wc -l
 
 clean:
 	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o 2>/dev/null

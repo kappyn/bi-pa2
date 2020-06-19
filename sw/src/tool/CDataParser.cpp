@@ -79,7 +79,10 @@ CDataParser::Split ( string & s, const bool & allowQuotes, const bool & allowSpa
 	return tokenizedString;
 }
 
-
+/**
+ * Tokenizes given string based on given delimeter.
+ * @param[in,out] s string reference to be tokenized
+ */
 vector<string>
 CDataParser::Split ( string & s, const char & delim = ',' ) {
 	std::replace( s.begin( ), s.end( ), delim, ' ');
@@ -167,9 +170,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 	// second row - table column data types
 	size_t requiredColumns = columnTypes.size( );
-
 	getline( ifs, tmp );
-
 	if ( tmp.empty( ) || * ( tmp.end( ) - 1 ) == ',' )
 		return false;
 
@@ -196,18 +197,14 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 		// empty lines..
 		if ( tmp.empty( ) ) {
-			CLog::BoldMsg( CLog::DP, filePath,
-			               string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append(
-					               ".\u001b[0m" ) );
+			CLog::BoldMsg( CLog::DP, filePath, string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append( ".\u001b[0m" ) );
 			delete parsedResult;
 			return false;
 		}
 
 		// wrong formatting
 		if ( * ( tmp.end( ) - 1 ) == ',' ) {
-			CLog::BoldMsg( CLog::DP, filePath,
-			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
-					               ".\u001b[0m" ) );
+			CLog::BoldMsg( CLog::DP, filePath, string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append( ".\u001b[0m" ) );
 			delete parsedResult;
 			return false;
 		}
@@ -215,9 +212,7 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		// checks for number of columns to insert
 		vector<string> newRow = Split( tmp, false, true );
 		if ( newRow.size( ) != requiredColumns ) {
-			CLog::BoldMsg( CLog::DP, filePath,
-			               string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append(
-					               ".\u001b[0m" ) );
+			CLog::BoldMsg( CLog::DP, filePath, string( "" ).append( CLog::DP_LINE_MISMATCH ).append( to_string( lines ) ).append( ".\u001b[0m" ) );
 			delete parsedResult;
 			return false;
 		}
@@ -249,8 +244,8 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )
 			return false;
-		}
+	}
 
-		db.InsertTable( filePath, parsedResult );
-		return true;
+	db.InsertTable( filePath, parsedResult );
+	return true;
 }

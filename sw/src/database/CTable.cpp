@@ -1,50 +1,27 @@
 #include "CTable.hpp"
 
-/**
- * Constructor which initializes the component with pre-defined header. This header contains column names.
- */
 CTable::CTable ( const vector<CCell *> & header ) {
 	m_Data.reserve( header.size( ) );
-	for ( const auto & i : header ) {
+	for ( const auto & i : header )
 		m_Data.push_back( vector<CCell *> { i } );
-	}
 }
 
 CTable::CTable ( const vector<string> & header ) {
 	m_Data.reserve( header.size( ) );
-	for ( const string & i : header ) {
+	for ( const string & i : header )
 		m_Data.push_back( vector<CCell *> { new CString( i ) } );
-	}
 }
 
 CTable::CTable ( const vector<pair<string, int>> & header ) {
 	m_Data.reserve( header.size( ) );
-	for ( const auto & i : header ) {
+	for ( const auto & i : header )
 		m_Data.push_back( vector<CCell *> { new CString( i.first ) } );
-	}
 }
 
-/**
- * Destructor for each cell. Each cell also has its own destructor.
- */
 CTable::~CTable ( ) {
 	for ( auto & i : m_Data )
 		for ( auto & j : i )
 			delete j;
-}
-
-/**
- * Verifies if given columns are present in the table
- */
-bool CTable::VerifyColumns ( const vector<string> & cols ) const {
-	vector<string> correctColumns = GetColumnNames( );
-	for ( const auto & i : cols ) {
-		if ( find( correctColumns.begin( ), correctColumns.end( ), i ) == correctColumns.end( ) ) {
-			CLog::HighlightedMsg( CLog::QP, i, CLog::QP_NO_SUCH_COL );
-			return false;
-		}
-	}
-	return true;
 }
 
 /**
@@ -67,9 +44,7 @@ bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
  * This method will sort columns based on their header.
  */
 void CTable::SortColumns ( ) {
-	std::sort( m_Data.begin(), m_Data.end(), [ ] ( const vector<CCell *> & a, const std::vector<CCell *> & b) {
-	    return ( * a.at( 0 ) ) < ( * b.at( 0 ) );
-	});
+	std::sort( m_Data.begin(), m_Data.end(), [ ] ( const vector<CCell *> & a, const std::vector<CCell *> & b) { return ( * a.at( 0 ) ) < ( * b.at( 0 ) ); } );
 }
 
 /**
@@ -107,13 +82,12 @@ bool CTable::HasDuplicateColumns ( ) const {
 }
 
 /**
- * Verifies if table has any duplicate columns.
+ * Verifies if two tables have identical headers.
  * @param[in]: tableRef table to compare header with
  */
 bool CTable::HasIdenticalHeader ( const CTable * tableRef ) const {
 	if ( ! tableRef )
 		return false;
-
 	auto j = tableRef->m_Data.begin( );
 	for ( const auto & i : m_Data ) {
 		if ( (* i.at( 0 )) != ( * j->at( 0 )) )
@@ -123,7 +97,6 @@ bool CTable::HasIdenticalHeader ( const CTable * tableRef ) const {
 		else
 			break;
 	}
-
 	return true;
 }
 
@@ -154,16 +127,13 @@ bool CTable::InsertDeepCol ( const vector<CCell *> & col ) {
 	size_t elementCount = 0;
 	if ( ! m_Data.empty( ) ) {
 		elementCount = m_Data.at( 0 ).size( );
-
 		if ( elementCount != col.size( ) || * col.begin( ) == * m_Data.at( 0 ).begin( ) )
 			return false;
 	}
-
 	vector<CCell *> newColumn;
 	newColumn.reserve( elementCount );
 	for ( const auto & i : col )
 		newColumn.push_back( i->Clone( ) );
-
 	m_Data.push_back( std::move( newColumn ) );
 	return true;
 }
@@ -201,7 +171,7 @@ vector<CCell *> CTable::MergeRows ( const vector<CCell *> & rowA, const vector<C
 	for ( const auto & i : rowA )
 		output.push_back( i );
 	for ( const auto & i : rowB )
-		output.emplace_back( i );
+		output.push_back( i );
 	return output;
 }
 
@@ -249,10 +219,14 @@ bool CTable::GetDeepRow ( const size_t & index, vector<string> & selectedColumns
 	outRef.clear( );
 	for ( const size_t & i : columnSequence )
 		outRef.push_back( m_Data.at( i ).at( index )->Clone( ) );
-
 	return true;
 }
 
+/**
+ * Creates a deep copy of a provided row.
+ * @param[in, out] outRef row to copy from
+ * @return duplicated row with new cells.
+ */
 vector<CCell *> CTable::GetDeepRow ( const vector<CCell *> & outRef ) {
 	vector<CCell *> out;
 	for ( const auto & i : outRef )
@@ -264,7 +238,7 @@ vector<CCell *> CTable::GetDeepRow ( const vector<CCell *> & outRef ) {
  * Returns a table clone with origin data, but only with some columns.
  * @param[in] cols columns to create new table with
  * @param[in] outPtr pointer to a new table to save
- * @return true if columns provided were correct, and table was generated
+ * @return true if columns provided were correct, and subtable was generated
  */
 bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const {
 	if ( cols.size( ) == 1 && ( * cols.begin( ) == "*" ) ) {
@@ -274,7 +248,7 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
 		return true;
 	}
 
-	vector<int> columnIndexes;
+	vector<size_t> columnIndexes;
 	vector<string> correctColumns = GetColumnNames( );
 
 	// get the column indexes to copy them
@@ -289,13 +263,11 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
 	}
 
 	// create a deep copy of all those columns
-	for ( const int & i : columnIndexes )
+	for ( const size_t & i : columnIndexes )
 		if ( ! outPtr->InsertDeepCol( m_Data.at( i ) ) )
 			return false;
-
 	return true;
 }
-
 
 string CTable::GetColumnType ( const size_t & index ) const {
 	if ( m_Data.empty( ) || index >= m_Data.size( ) || m_Data.at( index ).empty( ) )
@@ -327,7 +299,6 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 			condition->IsStringConstant = true;
 		} else if ( colType == ( typeid( int ).name( ) ) )
 			criterionCell = new CInt( std::stoi( condition->m_Constant ) );
-
 		else {
 			char * c;
 			double output = std::strtod( condition->m_Constant.c_str( ), & c );
@@ -338,8 +309,7 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 				return false;
 			}
 		}
-	}
-	catch ( std::logic_error const & e ) {
+	} catch ( std::logic_error const & e ) {
 		CLog::BoldMsg( CLog::QP, condition->m_Constant, CLog::QP_CON_PARSE_ERROR );
 		return false;
 	};
@@ -349,12 +319,9 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 	size_t rows = m_Data.begin( )->size( );
 	size_t cols = m_Data.size( );
 	bool rowMatchFound = false;
-
 	for ( size_t i = 1; i < rows; ++ i ) {
 		for ( size_t j = 0; j < cols; ++ j ) {
 			if ( j == index ) {
-				// extra spaces for readability
-
 				if ( condition->m_Operator == "==" ) {
 					if ( ( * m_Data.at( j ).at( i ) == * criterionCell ) )
 						rowMatchFound = true;
@@ -377,9 +344,8 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
 					CLog::Msg( CLog::QP, CLog::QP_INVALID_OPER );
 					return false;
 				}
-
 				//
-
+				//
 				if ( rowMatchFound ) {
 					++ rcnt;
 					if ( ! InsertDeepRow( i, outPtr ) ) {
@@ -414,33 +380,29 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 	vector<size_t> columnIndexes;
 	size_t currentIndex = 0;
 	size_t cnt = 0;
-	for ( const auto & item : columnsRef ) {
+	for ( const auto & item : columnsRef )
 		if ( ! VerifyColumn( item.at( 0 )->RetrieveMVal( ), currentIndex ) )
 			return vector<pair<size_t, size_t>>( );
 		else {
 			columnIndexes.push_back( currentIndex );
 			++ cnt;
 		}
-	}
 
+	// scan for for occurrences
 	bool equal;
 	size_t columnCnt = columnsRef.size( );
 	size_t rowRefCount = columnsRef.at( 0 ).size( );
 	size_t rowDataCount = m_Data.at( 0 ).size( );
-
-	// scan for for occurrences
 	for ( size_t i = 1; i < rowRefCount; ++ i ) {
 		for ( size_t j = 1; j < rowDataCount; ++ j ) {
 			equal = true;
-			for ( size_t k = 0; k < columnCnt; ++ k ) {
+			for ( size_t k = 0; k < columnCnt; ++ k )
 				if ( * columnsRef.at( k ).at( i ) != * m_Data.at( columnIndexes.at( k ) ).at( j ) )
 					equal = false;
-			}
 			if ( equal )
 				matches.emplace_back( i, j );
 		}
 	}
-
 	return matches;
 }
 
@@ -459,13 +421,10 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<CCell *> & columnRe
 
 	// scan for for occurrences
 	vector<pair<size_t, size_t>> matches;
-	for ( size_t i = 1; i < rowRefCount; ++ i ) {
-		for ( size_t j = 1; j < rowDataCount; ++ j ) {
-			if ( * columnRef.at( i ) == * m_Data.at( tableColIndex ).at( j ) ) {
+	for ( size_t i = 1; i < rowRefCount; ++ i )
+		for ( size_t j = 1; j < rowDataCount; ++ j )
+			if ( * columnRef.at( i ) == * m_Data.at( tableColIndex ).at( j ) )
 				matches.emplace_back( i, j );
-			}
-		}
-	}
 
 	return matches;
 }
@@ -501,22 +460,19 @@ vector<vector<CCell *>> CTable::Transform ( ) const {
 vector<CCell *> CTable::GetDeepHeader ( ) const {
 	if ( m_Data.empty( ) )
 		return vector<CCell *> { };
-
 	vector<CCell *> out;
-	for ( const auto & i : m_Data ) {
+	for ( const auto & i : m_Data )
 		out.push_back( i.at( 0 )->Clone( ) );
-	}
 	return out;
 }
 
 /**
- * Returns all column names.
+ * Returns all column names. Copy is made.
  */
 vector<string> CTable::GetColumnNames ( ) const {
 	vector<string> res;
 	if ( m_Data.empty( ) )
 		throw logic_error( CLog::TAB_NO_DATA );
-
 	for ( const auto & i : m_Data )
 		res.push_back( i.at( 0 )->RetrieveMVal( ) );
 	return res;
@@ -528,7 +484,7 @@ vector<string> CTable::GetColumnNames ( ) const {
  */
 vector<size_t> CTable::GetCellPadding ( ) const {
 	vector<size_t> result( m_Data.size( ), 0 );
-	int counter = 0;
+	size_t counter = 0;
 	for ( const auto & j : m_Data ) {
 		for ( const CCell * k : j ) {
 			size_t k_len = k->GetLength( );
@@ -554,9 +510,8 @@ void CTable::Render ( ostream & ost ) const {
 		rowLen += i;
 	size_t tmp = rowLen;
 
-	RenderSeparator( rowLen, tmp );
-
 	// header
+	RenderSeparator( rowLen, tmp );
 	int currentColumn = 0;
 	ost << CRenderSett::m_SpacePad;
 	for ( const auto & columnName : m_Data ) {
@@ -565,9 +520,8 @@ void CTable::Render ( ostream & ost ) const {
 	}
 	ost << endl;
 
-	RenderSeparator( rowLen, tmp );
-
 	// body
+	RenderSeparator( rowLen, tmp );
 	currentColumn = 0;
 	size_t colSize = m_Data.begin( )->size( );
 	for ( size_t i = 1; i < colSize; ++ i ) {
@@ -593,18 +547,6 @@ void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & os
 		ost << CRenderSett::m_RowChar;
 	ost << endl;
 	tmp = 0;
-}
-
-/**
- * Renders a specified column of the table.
- * @param[in] index index of the column in the table
- * @param[in,out] ost output stream.
- * TODO: not fully functional yet.
- */
-vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const {
-	if ( index < 0 || index > m_Data.size( ) )
-		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
-	return m_Data.at( index );
 }
 
 ostream & operator << ( ostream & ost, const CTable & table ) {

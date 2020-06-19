@@ -1,5 +1,4 @@
-#ifndef CCONDITION_H
-#define CCONDITION_H
+#pragma once
 
 #include <string>
 
@@ -12,5 +11,3 @@ public:
 	string m_Constant;
 	bool IsStringConstant = false;
 };
-
-#endif
