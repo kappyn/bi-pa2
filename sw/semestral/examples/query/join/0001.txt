@@ -2,3 +2,4 @@ SEL[ Username, Surname, Age, Ratio ]( a ) ~ Pog;
 PRO[ Username >= "K" ]( Pog ) ~ Test;
 JOIN[ Username ]( Test, a ) ~ PogChamp;
 PRO[ Age > 25 ]( PogChamp );
+NJOIN( PogChamp, a ) ~ RealTest;

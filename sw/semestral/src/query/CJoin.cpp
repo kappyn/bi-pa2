@@ -90,20 +90,21 @@ bool CJoin::Evaluate ( ) {
 			return false;
 	}
 
-// renaming in case of a same column
-//	for ( const auto & i : newHeaderColumns ) {
-//		size_t colIndex;
-//		if ( i.second == 1 ) {
-//			m_QueryResult->VerifyColumn( i.first, colIndex );
-//			m_QueryResult->ChangeColumnName( colIndex, m_TableNames.first.append( "." ).append( i.first ) );
-//			continue;
-//		}
-//		if ( i.second == 0 ) {
-//			m_QueryResult->VerifyColumn( i.first, colIndex );
-//			m_QueryResult->ChangeColumnName( colIndex, m_TableNames.second.append( "." ).append( i.first ) );
-//			continue;
-//		}
-//	}
+	size_t ex;
+	for ( const auto & i : newHeaderColumns ) {
+		if ( i.second == 1 || i.second == 2 ) {
+			for ( const auto & j : newHeaderColumns ) {
+				if ( j.second == 0 && i.first == j.first ) {
+					m_QueryResult->VerifyColumn( i.first, ex );
+					m_QueryResult->ChangeColumnName( ex, string( m_TableNames.first ).append( "." ).append( i.first ) );
+					m_QueryResult->VerifyColumn( j.first, ex );
+					m_QueryResult->ChangeColumnName( ex, string( m_TableNames.second ).append( "." ).append( i.first ) );
+				}
+			}
+		} else {
+			break;
+		}
+	}
 
 	m_Resolved = true;
 	return true;
