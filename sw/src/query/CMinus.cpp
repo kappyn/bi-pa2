@@ -1,17 +1,18 @@
-#include "CUnion.hpp"
+#include "CMinus.hpp"
 
-CUnion::CUnion ( CDatabase & ref, const pair<string, string> & tableNames )
+CMinus::CMinus ( CDatabase & ref, const pair<string, string> & tableNames )
 		: m_Database( ref ),
 		  m_QueryResult( nullptr ),
 		  m_QuerySaveName( "" ),
 		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ),
 		  m_Resolved( false ) { }
 
-CUnion::~CUnion ( ) {
+CMinus::~CMinus ( ) {
 	delete m_QueryResult;
 }
 
-bool CUnion::Evaluate ( ) {
+bool CMinus::Evaluate ( ) {
+	// query/table search
 	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) { }
 	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
 		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
@@ -23,6 +24,7 @@ bool CUnion::Evaluate ( ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
+
 	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
 	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
 		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
@@ -57,46 +59,51 @@ bool CUnion::Evaluate ( ) {
 	vector<vector<CCell *>> tA, tB;
 	CTable::SortRows( ( tA = m_Operands.first.m_TRef->Transform( ) ) );
 	CTable::SortRows( ( tB = m_Operands.second.m_TRef->Transform( ) ) );
-
 	vector<vector<CCell *>> res ( tA.size( ) + tB.size( ) );
-	set_union( tA.begin( ), tA.end( ), tB.begin( ), tB.end( ), res.begin( ), CTable::RowComparator( ) );
+	set_difference( tA.begin( ), tA.end( ), tB.begin( ), tB.end( ), res.begin( ), CTable::RowComparator( ) );
 
+	tmp = 0;
 	for ( const auto & i : res ) {
 		if ( i.empty( ) )
 			continue;
 		if ( ! m_QueryResult->InsertShallowRow( CTable::GetDeepRow( i ) ) )
 			return false;
+		++ tmp;
+	}
+	if ( tmp == 0 ) {
+		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
+		return false;
 	}
 
 	m_Resolved = true;
 	return true;
 }
 
-CTable * CUnion::GetQueryResult ( ) {
+CTable * CMinus::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-void CUnion::ArchiveQueryName ( const string & name ) {
+void CMinus::ArchiveQueryName ( const string & name ) {
 	if ( m_QuerySaveName != name )
 		m_QuerySaveName = name;
 }
 
-string CUnion::GetSQL ( ) const {
+string CMinus::GetSQL ( ) const {
 	if ( ! m_Resolved )
 		return "";
 	CTableQuery * origin;
 	string output;
-	string tmp = "SELECT * FROM ";
+	string tmp = string( "( SELECT " ).append( CLog::APP_COLOR_RESULT ).append( "*" ).append( CLog::APP_COLOR_RESET ).append( " FROM ");
 	origin = m_Operands.first.m_Origin;
-	output += string( "( " );
-	output += origin ? origin->GetSQL( ) : string( tmp ).append( CLog::APP_COLOR_RESULT ).append( m_TableNames.first ).append( CLog::APP_COLOR_RESET );
-	output += " UNION ";
+	output += "( ";
+	output += origin ? origin->GetSQL( ) : string( tmp ).append( CLog::APP_COLOR_RESULT ).append( m_TableNames.first ).append( CLog::APP_COLOR_RESET ).append( " )");
+	output += " MINUS ";
 	origin = m_Operands.second.m_Origin;
-	output += origin ? origin->GetSQL( ) : string( tmp ).append( CLog::APP_COLOR_RESULT ).append( m_TableNames.second ).append( CLog::APP_COLOR_RESET );
+	output += origin ? origin->GetSQL( ) : string( tmp ).append( CLog::APP_COLOR_RESULT ).append( m_TableNames.second ).append( CLog::APP_COLOR_RESET ).append( " )");
 	output += " )";
 	return output;
 }
 
-bool CUnion::IsDerived ( ) const {
+bool CMinus::IsDerived ( ) const {
 	return false;
 }

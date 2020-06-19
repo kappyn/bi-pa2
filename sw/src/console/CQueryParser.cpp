@@ -169,8 +169,8 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		userQuery = new CJoin ( m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
-	// UNION
-	else if ( queryName == CLog::UNION ) {
+	// UNION, INTERSECT, JOIN
+	else if ( queryName == CLog::UNION || queryName == CLog::INTERSECT || queryName == CLog::MINUS ) {
 		string tables;
 		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
 			return CConsole::INVALID_QUERY;
@@ -178,7 +178,15 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		vector<string> tableNames = CDataParser::Split( tables, ',' );
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
-		userQuery = new CUnion ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
+
+		if ( queryName == CLog::UNION )
+			userQuery = new CUnion ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
+
+		else if ( queryName == CLog::INTERSECT )
+			userQuery = new CIntersect ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
+
+		else
+			userQuery = new CMinus ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
 	else {

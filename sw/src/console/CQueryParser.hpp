@@ -16,6 +16,8 @@
 #include "../query/CNaturalJoin.hpp"
 #include "../query/CJoin.hpp"
 #include "../query/CUnion.hpp"
+#include "../query/CIntersect.hpp"
+#include "../query/CMinus.hpp"
 
 using namespace std;
 

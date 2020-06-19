@@ -1,0 +1,5 @@
+NJOIN( a, b ) ~ Users;
+PRO[ Username == "Petr" ]( Users ) ~ Petrs;
+INTERSECT( Users, Petrs ) ~ OnlyPetrs;
+SEL[ * ]( OnlyPetrs );
+QUIT;

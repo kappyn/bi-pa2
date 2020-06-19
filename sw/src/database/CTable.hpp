@@ -4,7 +4,7 @@
 #include "CCell.hpp"
 #include "CRenderSett.hpp"
 #include "../console/CLog.hpp"
-#include "../database/CCondition.hpp"
+#include "CCondition.hpp"
 
 #include <iostream>
 #include <algorithm>

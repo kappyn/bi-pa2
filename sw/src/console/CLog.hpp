@@ -21,6 +21,8 @@ namespace CLog {
 	const string NJOIN              = "NJOIN";
 	const string JOIN               = "JOIN";
 	const string UNION              = "UNION";
+	const string INTERSECT          = "INTERSECT";
+	const string MINUS              = "MINUS";
 
 	const string APP_LINE_HEIGHT    = "\n";
 	const string APP_COLOR_GOOD     = "\033[0;32m";

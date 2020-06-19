@@ -1,0 +1,4 @@
+int, string, string, int, double
+ID, Username, Surname, Age, Ratio
+0, Jan, T, 20, 0.52
+1, Kevin, Z, 20, 1.23

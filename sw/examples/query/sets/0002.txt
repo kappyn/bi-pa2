@@ -1,0 +1,3 @@
+UNION( a, b );
+INTERSECT( a, b )~Test;
+QUIT;
