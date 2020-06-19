@@ -26,7 +26,6 @@ public:
 	explicit CTable ( const vector<string> & header );
 	explicit CTable ( const vector<pair<string, int>> & header );
 	explicit CTable ( ) = default;
-
 	~CTable ( );
 
 	struct RowComparator {

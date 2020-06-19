@@ -1,5 +1,4 @@
-#ifndef CSELECTION_H
-#define CSELECTION_H
+#pragma once
 
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
@@ -7,18 +6,16 @@
 class CSelection : public CTableQuery {
 private:
 	CDatabase & m_Database;
-	CTable * m_QueryResult;
-	string m_QuerySaveName;
-
 	vector<string> m_SelectedCols;
 	string m_TableName;
 
-	CTableQuery * m_Origin;
-	bool m_Derived;
+	CTable * m_QueryResult = nullptr;
+	CTableQuery * m_Origin = nullptr;
+	string m_QuerySaveName;
+	bool m_Derived = false;
 
 public:
 	explicit CSelection ( CDatabase & ref, vector<string> cols, string tableName );
-
 	virtual ~CSelection ( ) override;
 
 	virtual bool Evaluate ( ) override;
@@ -27,5 +24,3 @@ public:
 	virtual string GetSQL ( ) const override;
 	virtual bool IsDerived ( ) const override;
 };
-
-#endif

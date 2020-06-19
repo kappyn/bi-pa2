@@ -1,13 +1,7 @@
 #include "CSelection.hpp"
 
 CSelection::CSelection ( CDatabase & ref, vector<string> cols, string tableName )
-		: m_Database( ref ),
-		  m_QueryResult( nullptr ),
-		  m_QuerySaveName( "" ),
-		  m_SelectedCols( std::move( cols ) ),
-		  m_TableName( std::move( tableName ) ),
-		  m_Origin( nullptr ),
-		  m_Derived( false ) { }
+: m_Database( ref ), m_SelectedCols( std::move( cols ) ), m_TableName( std::move( tableName ) ) { }
 
 CSelection::~CSelection ( ) {
 	delete m_QueryResult;
@@ -18,13 +12,10 @@ CSelection::~CSelection ( ) {
  * @return true if all query prerequisities were fulfilled and this object holds the query result.
  */
 bool CSelection::Evaluate ( ) {
-	// first, search trough all the tables
 	CTable * tableRef;
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
 		return tableRef->GetSubTable( m_SelectedCols, ( m_QueryResult = new CTable { } ) );
 	}
-
-	// if table wasn't found, search trough the queries
 	CTableQuery * queryRef;
 	if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
@@ -46,6 +37,9 @@ void CSelection::ArchiveQueryName ( const string & name ) {
 }
 
 string CSelection::GetSQL ( ) const {
+	if ( ! m_QueryResult )
+		return "";
+
 	CTableQuery * origin = m_Origin;
 	string output = "( SELECT ";
 	vector<string> header = m_QueryResult->GetColumnNames( );
@@ -60,13 +54,10 @@ string CSelection::GetSQL ( ) const {
 
 	if ( origin )
 		output += origin->GetSQL( );
-
 	output += " )";
-
 	return output;
 }
 
 bool CSelection::IsDerived ( ) const {
 	return m_Derived;
 }
-

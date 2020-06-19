@@ -1,5 +1,4 @@
-#ifndef CPROJECTION_H
-#define CPROJECTION_H
+#pragma once
 
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
@@ -8,21 +7,18 @@
 class CProjection : public CTableQuery {
 private:
 	CDatabase & m_Database;
-	CTable * m_QueryResult;
-	string m_QuerySaveName;
-
 	CCondition * m_QueryCondition;
 	string m_TableName;
 
-	CTableQuery * m_Origin;
-	bool m_Derived;
-	bool m_Resolved;
+	CTable * m_QueryResult = nullptr;
+	CTableQuery * m_Origin = nullptr;
+	string m_QuerySaveName;
+	bool m_Derived = false;
 
 	string AppendWhereClause ( ) const;
 
 public:
 	explicit CProjection ( CDatabase & ref, CCondition * conditionRef, string tableName );
-
 	virtual ~CProjection ( ) override;
 
 	virtual bool Evaluate ( ) override;
@@ -31,5 +27,3 @@ public:
 	virtual string GetSQL ( ) const override;
 	virtual bool IsDerived ( ) const override;
 };
-
-#endif

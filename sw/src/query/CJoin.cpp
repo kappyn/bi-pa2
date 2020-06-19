@@ -1,14 +1,7 @@
 #include "CJoin.hpp"
 
-#include <utility>
-
 CJoin::CJoin ( CDatabase & ref, string column, const pair<string, string> & tableNames )
-		: m_Database( ref ),
-		  m_QueryResult( nullptr ),
-		  m_QuerySaveName( "" ),
-		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ),
-		  m_CommonCol( std::move( column ) ),
-		  m_Resolved( false ) { }
+: m_Database( ref ), m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ), m_CommonCol( std::move( column ) ) { }
 
 CJoin::~CJoin ( ) {
 	delete m_QueryResult;
@@ -19,20 +12,21 @@ bool CJoin::Evaluate ( ) {
 	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
 		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
 		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
-	} else {
+	} else
 		return false;
-	}
+
 	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
+
 	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
 	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
 		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
 		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
-	} else {
+	} else
 		return false;
-	}
+
 	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
@@ -43,14 +37,14 @@ bool CJoin::Evaluate ( ) {
 		return false;
 
 	vector<pair<string, int>> newHeaderColumns { };
-	newHeaderColumns.emplace_back( pair<string, int> { m_CommonCol, 2 } );
+	newHeaderColumns.emplace_back( m_CommonCol, 2 );
 	for ( const auto & i : m_Operands.first.m_TRef->GetColumnNames( ) )
 		if ( i != m_CommonCol )
-			newHeaderColumns.emplace_back( pair<string, int> { i, 1 } );
+			newHeaderColumns.emplace_back( i, 1 );
 
 	for ( const auto & i : m_Operands.second.m_TRef->GetColumnNames( ) )
 		if ( i != m_CommonCol )
-			newHeaderColumns.emplace_back( pair<string, int> { i, 0 } );
+			newHeaderColumns.emplace_back( i, 0 );
 
 	vector<CCell *> tmpColumn;
 	if ( ! m_Operands.first.m_TRef->GetShallowCol( newHeaderColumns.at( 0 ).first, tmpColumn ) )
@@ -106,7 +100,6 @@ bool CJoin::Evaluate ( ) {
 		}
 	}
 
-	m_Resolved = true;
 	return true;
 }
 
@@ -120,8 +113,9 @@ void CJoin::ArchiveQueryName ( const string & name ) {
 }
 
 string CJoin::GetSQL ( ) const {
-	if ( ! m_Resolved )
+	if ( ! m_QueryResult )
 		return "";
+
 	CTableQuery * origin;
 	string output;
 

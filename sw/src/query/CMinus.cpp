@@ -2,10 +2,7 @@
 
 CMinus::CMinus ( CDatabase & ref, const pair<string, string> & tableNames )
 		: m_Database( ref ),
-		  m_QueryResult( nullptr ),
-		  m_QuerySaveName( "" ),
-		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ),
-		  m_Resolved( false ) { }
+		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CMinus::~CMinus ( ) {
 	delete m_QueryResult;
@@ -75,7 +72,6 @@ bool CMinus::Evaluate ( ) {
 		return false;
 	}
 
-	m_Resolved = true;
 	return true;
 }
 
@@ -89,8 +85,9 @@ void CMinus::ArchiveQueryName ( const string & name ) {
 }
 
 string CMinus::GetSQL ( ) const {
-	if ( ! m_Resolved )
+	if ( ! m_QueryResult )
 		return "";
+
 	CTableQuery * origin;
 	string output;
 	string tmp = string( "( SELECT " ).append( CLog::APP_COLOR_RESULT ).append( "*" ).append( CLog::APP_COLOR_RESET ).append( " FROM ");

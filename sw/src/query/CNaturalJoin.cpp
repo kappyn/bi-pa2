@@ -1,18 +1,13 @@
 #include "CNaturalJoin.hpp"
 
 CNaturalJoin::CNaturalJoin ( CDatabase & ref, const pair<string, string> & tableNames )
-		: m_Database( ref ),
-		  m_QueryResult( nullptr ),
-		  m_QuerySaveName( "" ),
-		  m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ),
-		  m_Resolved( false ) { }
+: m_Database( ref ), m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CNaturalJoin::~CNaturalJoin ( ) {
 	delete m_QueryResult;
 }
 
 bool CNaturalJoin::Evaluate ( ) {
-	// initialization + search process
 	vector<string> colsA;
 	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
 	} else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
@@ -129,7 +124,6 @@ bool CNaturalJoin::Evaluate ( ) {
 			return false;
 	}
 
-	m_Resolved = true;
 	return true;
 }
 
@@ -143,8 +137,9 @@ void CNaturalJoin::ArchiveQueryName ( const string & name ) {
 }
 
 string CNaturalJoin::GetSQL ( ) const {
-	if ( ! m_Resolved )
+	if ( ! m_QueryResult )
 		return "";
+
 	CTableQuery * origin;
 	string output;
 
@@ -155,7 +150,6 @@ string CNaturalJoin::GetSQL ( ) const {
 	origin = m_Operands.second.m_Origin;
 	output += origin ? origin->GetSQL() : string( CLog::APP_COLOR_RESULT ).append( m_TableNames.second ).append( CLog::APP_COLOR_RESET );
 	output += " )";
-
 	return output;
 }
 

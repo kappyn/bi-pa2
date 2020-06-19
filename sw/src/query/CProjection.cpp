@@ -1,14 +1,7 @@
 #include "CProjection.hpp"
 
 CProjection::CProjection ( CDatabase & ref, CCondition * conditionRef, string tableName )
-		: m_Database( ref ),
-		  m_QueryResult( nullptr ),
-		  m_QuerySaveName( "" ),
-		  m_QueryCondition( conditionRef ),
-		  m_TableName( std::move( tableName ) ),
-		  m_Origin( nullptr ),
-		  m_Derived( false ),
-		  m_Resolved( false ) { }
+: m_Database( ref ), m_QueryCondition( conditionRef ), m_TableName( std::move( tableName ) ) { }
 
 CProjection::~CProjection ( ) {
 	delete m_QueryResult;
@@ -18,16 +11,15 @@ CProjection::~CProjection ( ) {
 bool CProjection::Evaluate ( ) {
 	CTable * tableRef;
 	CTableQuery * queryRef;
-
 	if ( ( tableRef = m_Database.GetTable( m_TableName ) ) != nullptr ) {
 		m_QueryResult = new CTable { tableRef->GetDeepHeader( ) };
-		return ( m_Resolved = tableRef->GetDeepTable( m_QueryCondition, m_QueryResult ) );
+		return tableRef->GetDeepTable( m_QueryCondition, m_QueryResult );
 	}
 	else if ( ( queryRef = m_Database.GetTableQ( m_TableName ) ) != nullptr ) {
 		m_Derived = true;
 		m_Origin = queryRef;
 		m_QueryResult = new CTable { queryRef->GetQueryResult( )->GetDeepHeader( ) };
-		return ( m_Resolved = queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, m_QueryResult ) );
+		return queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, m_QueryResult );
 	}
 	else {
 		return false;
@@ -44,7 +36,7 @@ void CProjection::ArchiveQueryName ( const string & name ) {
 }
 
 string CProjection::GetSQL ( ) const {
-	if ( ! m_Resolved )
+	if ( ! m_QueryResult )
 		return "";
 
 	CTableQuery * origin = m_Origin;
@@ -56,7 +48,6 @@ string CProjection::GetSQL ( ) const {
 	if ( origin )
 		output += origin->GetSQL( );
 	output += AppendWhereClause( );
-
 	return output;
 }
 
