@@ -1,8 +1,4 @@
 string, string, int, string, double
 Username, Surname, Age, Address, Ratio
-Frank, Z, 21, Husinecka, 1.322
-Jan, T, 20, Dejvice, 0.52
-Kevin, Z, 20, Hlubocepy, 1.23
-Petr, J, 21, Prazskeho povstani, 1.2
-Frank, K, 21, Husinecka, 1.32
-Peter, D, 26, Hlubocepy, 22
+Peter, F, 26, Hlubocepy, 2.3
+Peter, Y, 26, Hlubocepy, 2.3

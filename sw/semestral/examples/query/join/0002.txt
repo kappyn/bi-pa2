@@ -1,0 +1,5 @@
+PRO[ Age > 20 ]( a ) ~ Test;
+SEL[ Username, Surname, Address ]( Test ) ~ Users;
+JOIN[ Surname ]( Users, a ) ~ Filter;
+SEL[ a.Username, Age ]( Filter );
+QUIT;

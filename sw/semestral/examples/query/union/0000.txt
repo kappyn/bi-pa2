@@ -1,0 +1,7 @@
+UNION( a, b );
+PRO[ Username == "Frank" ]( a )~Franks;
+PRO[ Username == "Kevin" ]( a )~Kevins;
+UNION( Franks, Kevins ) ~ Union;
+UNION( Union, Kevins ) ~ Onion;
+QUERIES;
+QUIT;

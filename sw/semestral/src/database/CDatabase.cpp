@@ -103,7 +103,7 @@ void CDatabase::ListQueries ( ) const {
 	size_t queryCounter = 0;
 
 	for ( const auto & i : m_QueryData ) {
-		CLog::BoldMsg( m_Name, to_string( ++ queryCounter ).append( ". " ).append( i.first ).append( to_string( i.second->IsDerived( ) ) ), "" );
+		CLog::BoldMsg( m_Name, to_string( ++ queryCounter ).append( ". " ).append( i.first ), "" );
 	}
 }
 

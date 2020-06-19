@@ -1,15 +1,5 @@
 #include "CQueryParser.hpp"
 
-// command queries
-const string CQueryParser::TABLES  = "TABLES";
-const string CQueryParser::QUERIES = "QUERIES";
-const string CQueryParser::QUIT    = "QUIT";
-
-const string CQueryParser::SELECTION  = "SEL";
-const string CQueryParser::PROJECTION = "PRO";
-const string CQueryParser::NJOIN      = "NJOIN";
-const string CQueryParser::JOIN       = "JOIN";
-
 /**
  * Reads and determines if a user wants the query to be saved into memory.
  * @param[in] queryDetails query substring
@@ -102,17 +92,17 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	// interface commands
 	if ( queryDetails.empty( ) ) {
 
-		if ( queryName == CQueryParser::TABLES ) {
+		if ( queryName == CLog::TABLES ) {
 			m_Database.ListTables( );
 			return CConsole::VALID_QUERY;
 		}
 
-		if ( queryName == CQueryParser::QUERIES ) {
+		if ( queryName == CLog::QUERIES ) {
 			m_Database.ListQueries( );
 			return CConsole::VALID_QUERY;
 		}
 
-		if ( queryName == CQueryParser::QUIT )
+		if ( queryName == CLog::QUIT )
 			return CConsole::EXIT_CONSOLE;
 
 		return CConsole::INVALID_QUERY;
@@ -121,21 +111,21 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 	size_t stringProgress = 0;
 	CTableQuery * userQuery;
 
-	// relational algebra operations
+	// ra input
 
 	// SELECTION
-	if ( queryName == CQueryParser::SELECTION ) {
+	if ( queryName == CLog::SELECTION ) {
 		string columns, table;
 		if (
 				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, columns ) ||
 				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
 			)
 			return CConsole::INVALID_QUERY;
-		userQuery = new CSelection { m_Database, CDataParser::Split( columns, false, false, ',' ), table };
+		userQuery = new CSelection ( m_Database, CDataParser::Split( columns, false, false, ',' ), table );
 	}
 
 	// PROJECTION
-	else if ( queryName == CQueryParser::PROJECTION ) {
+	else if ( queryName == CLog::PROJECTION ) {
 		auto * conditionQuery = new CCondition;
 		string condition, table;
 		if (
@@ -148,11 +138,11 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		}
 		CDataParser::TrimAllSpaces( conditionQuery->m_Column, '"' );
 		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
-		userQuery = new CProjection { m_Database, conditionQuery, table };
+		userQuery = new CProjection ( m_Database, conditionQuery, table );
 	}
 
 	// NATURAL JOIN
-	else if ( queryName == CQueryParser::NJOIN ) {
+	else if ( queryName == CLog::NJOIN ) {
 		string tables;
 		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
 			return CConsole::INVALID_QUERY;
@@ -160,11 +150,11 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		vector<string> tableNames = CDataParser::Split( tables, ',' );
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
-		userQuery = new CNaturalJoin { m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
+		userQuery = new CNaturalJoin ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
 	// JOIN
-	else if ( queryName == CQueryParser::JOIN ) {
+	else if ( queryName == CLog::JOIN ) {
 		string tables, column;
 		if (
 				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, column ) ||
@@ -176,7 +166,19 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
 
-		userQuery = new CJoin { m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
+		userQuery = new CJoin ( m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
+	}
+
+	// UNION
+	else if ( queryName == CLog::UNION ) {
+		string tables;
+		if ( ! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
+			return CConsole::INVALID_QUERY;
+
+		vector<string> tableNames = CDataParser::Split( tables, ',' );
+		if ( tableNames.size( ) != 2 )
+			return CConsole::INVALID_QUERY;
+		userQuery = new CUnion ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
 
 	else {

@@ -15,49 +15,49 @@ CJoin::~CJoin ( ) {
 }
 
 bool CJoin::Evaluate ( ) {
-	if ( ( m_Operands.first.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) { }
-	else if ( ( m_Operands.first.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		m_Operands.first.m_Origin   = m_Operands.first.m_QueryRef;
-		m_Operands.first.m_TableRef = m_Operands.first.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) { }
+	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
+		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
+		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( m_Operands.first.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-	if ( ( m_Operands.second.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
-	else if ( ( m_Operands.second.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		m_Operands.second.m_Origin   = m_Operands.second.m_QueryRef;
-		m_Operands.second.m_TableRef = m_Operands.second.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
+	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
+		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
+		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( m_Operands.second.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
 
 	size_t tmp;
-	if ( ! m_Operands.first.m_TableRef->VerifyColumn( m_CommonCol, tmp ) || ! m_Operands.second.m_TableRef->VerifyColumn( m_CommonCol, tmp ) )
+	if ( ! m_Operands.first.m_TRef->VerifyColumn( m_CommonCol, tmp ) || ! m_Operands.second.m_TRef->VerifyColumn( m_CommonCol, tmp ) )
 		return false;
 
 	vector<pair<string, int>> newHeaderColumns { };
 	newHeaderColumns.emplace_back( pair<string, int> { m_CommonCol, 2 } );
-	for ( const auto & i : m_Operands.first.m_TableRef->GetColumnNames( ) )
+	for ( const auto & i : m_Operands.first.m_TRef->GetColumnNames( ) )
 		if ( i != m_CommonCol )
 			newHeaderColumns.emplace_back( pair<string, int> { i, 1 } );
 
-	for ( const auto & i : m_Operands.second.m_TableRef->GetColumnNames( ) )
+	for ( const auto & i : m_Operands.second.m_TRef->GetColumnNames( ) )
 		if ( i != m_CommonCol )
 			newHeaderColumns.emplace_back( pair<string, int> { i, 0 } );
 
 	vector<CCell *> tmpColumn;
-	if ( ! m_Operands.first.m_TableRef->GetShallowCol( newHeaderColumns.at( 0 ).first, tmpColumn ) )
+	if ( ! m_Operands.first.m_TRef->GetShallowCol( newHeaderColumns.at( 0 ).first, tmpColumn ) )
 		return false;
 	m_QueryResult = new CTable ( newHeaderColumns );
 
-	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TableRef->FindOccurences( tmpColumn );
+	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TRef->FindOccurences( tmpColumn );
 	if ( tableIndexes.empty( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
 		return false;
@@ -74,12 +74,12 @@ bool CJoin::Evaluate ( ) {
 	vector<CCell *> aPar, bPar;
 	for ( const auto & i : tableIndexes ) {
 		if ( colsB.empty( ) ) {
-			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) ) {
+			if ( ! m_Operands.first.m_TRef->GetDeepRow( i.first, colsA, aPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 			}
 		} else {
-			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) || ! m_Operands.second.m_TableRef->GetDeepRow( i.second, colsB, bPar ) ) {
+			if ( ! m_Operands.first.m_TRef->GetDeepRow( i.first, colsA, aPar ) || ! m_Operands.second.m_TRef->GetDeepRow( i.second, colsB, bPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 				return false;
@@ -90,15 +90,15 @@ bool CJoin::Evaluate ( ) {
 			return false;
 	}
 
-	size_t ex;
+	tmp = 0;
 	for ( const auto & i : newHeaderColumns ) {
 		if ( i.second == 1 || i.second == 2 ) {
 			for ( const auto & j : newHeaderColumns ) {
 				if ( j.second == 0 && i.first == j.first ) {
-					m_QueryResult->VerifyColumn( i.first, ex );
-					m_QueryResult->ChangeColumnName( ex, string( m_TableNames.first ).append( "." ).append( i.first ) );
-					m_QueryResult->VerifyColumn( j.first, ex );
-					m_QueryResult->ChangeColumnName( ex, string( m_TableNames.second ).append( "." ).append( i.first ) );
+					m_QueryResult->VerifyColumn( i.first, tmp );
+					m_QueryResult->ChangeColumnName( tmp, string( m_TableNames.first ).append( "." ).append( i.first ) );
+					m_QueryResult->VerifyColumn( j.first, tmp );
+					m_QueryResult->ChangeColumnName( tmp, string( m_TableNames.second ).append( "." ).append( i.first ) );
 				}
 			}
 		} else {

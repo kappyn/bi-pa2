@@ -12,7 +12,16 @@ namespace CLog {
 
 	static constexpr int APP_PADDING ( )
 	{ return 14; }
-	
+
+	const string TABLES             = "TABLES";
+	const string QUERIES            = "QUERIES";
+	const string QUIT               = "QUIT";
+	const string SELECTION          = "SEL";
+	const string PROJECTION         = "PRO";
+	const string NJOIN              = "NJOIN";
+	const string JOIN               = "JOIN";
+	const string UNION              = "UNION";
+
 	const string APP_LINE_HEIGHT    = "\n";
 	const string APP_COLOR_GOOD     = "\033[0;32m";
 	const string APP_COLOR_RESULT   = "\033[1;36m";
@@ -60,7 +69,8 @@ namespace CLog {
 	const string QP_EMPTY_RESULTS   =  string( APP_COLOR_BAD ).append( "The resulting query is empty." ).append( APP_COLOR_RESET );
 	const string QP_DUP_COL         = string( APP_COLOR_BAD ).append( "Unable to perform operation - the table has column duplicates." ).append( APP_COLOR_RESET );
 	const string QP_NO_COMMON_COL   =  string( APP_COLOR_BAD ).append( "The tables do not share any columns." ).append( APP_COLOR_RESET );
-
+	const string QP_DIFF_HEADER     =  string( APP_COLOR_BAD ).append( "Unable to perform operation - the tables must have identical column names." ).append( APP_COLOR_RESET );
+	const string QP_DIFF_TYPE       =  string( APP_COLOR_BAD ).append( "Unable to perform operation - the tables must have identical data types." ).append( APP_COLOR_RESET );
 
 	/**
 	 * Standart message.

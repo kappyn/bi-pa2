@@ -64,6 +64,36 @@ bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
 }
 
 /**
+ * This method will sort columns based on their header.
+ */
+void CTable::SortColumns ( ) {
+	std::sort( m_Data.begin(), m_Data.end(), [ ] ( const vector<CCell *> & a, const std::vector<CCell *> & b) {
+	    return ( * a.at( 0 ) ) < ( * b.at( 0 ) );
+	});
+}
+
+/**
+ * Row sorting. Works only on transformed tables (they're normally stored by columns).
+ * @param[in, out] dataRef reference to transformed table rows
+ */
+void CTable::SortRows ( vector<vector<CCell *>> & dataRef ) {
+	sort( dataRef.begin(), dataRef.end(), RowComparator( ) );
+}
+
+/**
+ * This method will compare two rows. If all cells are equal, true is returned.
+ */
+bool CTable::CompareRows ( const vector<CCell *> & a, const vector<CCell *> & b ) {
+	if ( a.empty( ) || b.empty( ) || a.size( ) != b.size( ) )
+		return false;
+	size_t rowLen = a.size( );
+	for ( size_t i = 0; i < rowLen; ++i )
+		if ( * a[ i ] != * b[ i ] )
+			return false;
+	return true;
+}
+
+/**
  * Verifies if table has any duplicate columns.
  */
 bool CTable::HasDuplicateColumns ( ) const {
@@ -74,6 +104,27 @@ bool CTable::HasDuplicateColumns ( ) const {
 			return true;
 	}
 	return false;
+}
+
+/**
+ * Verifies if table has any duplicate columns.
+ * @param[in]: tableRef table to compare header with
+ */
+bool CTable::HasIdenticalHeader ( const CTable * tableRef ) const {
+	if ( ! tableRef )
+		return false;
+
+	auto j = tableRef->m_Data.begin( );
+	for ( const auto & i : m_Data ) {
+		if ( (* i.at( 0 )) != ( * j->at( 0 )) )
+			return false;
+		if ( j != tableRef->m_Data.end( ) )
+			++j;
+		else
+			break;
+	}
+
+	return true;
 }
 
 /**
@@ -154,10 +205,10 @@ vector<CCell *> CTable::MergeRows ( const vector<CCell *> & rowA, const vector<C
 	return output;
 }
 
-bool CTable::GetShallowCol ( const string & name, vector<CCell *> & outPtr ) const {
+bool CTable::GetShallowCol ( const string & name, vector<CCell *> & outRef ) const {
 	for ( const auto & i : m_Data ) {
 		if ( i.at( 0 )->RetrieveMVal( ) == name )
-			outPtr = i;
+			outRef = i;
 	}
 	return true;
 }
@@ -165,14 +216,14 @@ bool CTable::GetShallowCol ( const string & name, vector<CCell *> & outPtr ) con
 /**
  * Creates a deep copy of a table row.
  * @param[in] index index of a row
- * @param[in, out] outPtr out row save pointer
+ * @param[in, out] outRef out row save pointer
  * @return true if the row was exported without errors
  */
-bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const {
-	if ( ! outPtr.empty( ) )
-		outPtr.clear( );
+bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outRef ) const {
+	if ( ! outRef.empty( ) )
+		outRef.clear( );
 	for ( const auto & i : m_Data )
-		outPtr.push_back( i.at( index )->Clone( ) );
+		outRef.push_back( i.at( index )->Clone( ) );
 	return true;
 }
 
@@ -180,10 +231,10 @@ bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outPtr ) const
  * Creates a deep copy of a table row with specified columns.
  * @param[in] index index of a row
  * @param[in] selectedColumns sequence of colums to include
- * @param[in, out] outPtr out row save pointer
+ * @param[in, out] outRef out row save pointer
  * @return true if the row was exported without errors
  */
-bool CTable::GetDeepRow ( const size_t & index, vector<string> & selectedColumns, vector<CCell *> & outPtr ) const {
+bool CTable::GetDeepRow ( const size_t & index, vector<string> & selectedColumns, vector<CCell *> & outRef ) const {
 	if ( selectedColumns.empty( ) )
 		return false;
 
@@ -195,11 +246,18 @@ bool CTable::GetDeepRow ( const size_t & index, vector<string> & selectedColumns
 		columnSequence.push_back( tmp );
 	}
 
-	outPtr.clear( );
+	outRef.clear( );
 	for ( const size_t & i : columnSequence )
-		outPtr.push_back( m_Data.at( i ).at( index )->Clone( ) );
+		outRef.push_back( m_Data.at( i ).at( index )->Clone( ) );
 
 	return true;
+}
+
+vector<CCell *> CTable::GetDeepRow ( const vector<CCell *> & outRef ) {
+	vector<CCell *> out;
+	for ( const auto & i : outRef )
+		out.push_back( i->Clone( ) );
+	return out;
 }
 
 /**
@@ -236,6 +294,13 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
 			return false;
 
 	return true;
+}
+
+
+string CTable::GetColumnType ( const size_t & index ) const {
+	if ( m_Data.empty( ) || index >= m_Data.size( ) || m_Data.at( index ).empty( ) )
+		return "";
+	return m_Data.at( index ).at( 1 )->GetType( );
 }
 
 /**
@@ -339,17 +404,17 @@ bool CTable::GetDeepTable ( CCondition * condition, CTable * outPtr ) const {
  * This method will find occurrences of given rows in given columns.
  * It will scan trough all rows in the table, searching for a match.
  * If it succeeds, corresponding row indexes of each objects are copied to the output.
- * @param[in] columns source for data filtering
+ * @param[in] columnsRef source for data filtering
  * @return vector of matched row indexes (source + current table)
  */
-vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & columns ) const {
+vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & columnsRef ) const {
 	vector<pair<size_t, size_t>> matches;
 
 	// find equivalent indexes of the columns in current table
 	vector<size_t> columnIndexes;
 	size_t currentIndex = 0;
 	size_t cnt = 0;
-	for ( const auto & item : columns ) {
+	for ( const auto & item : columnsRef ) {
 		if ( ! VerifyColumn( item.at( 0 )->RetrieveMVal( ), currentIndex ) )
 			return vector<pair<size_t, size_t>>( );
 		else {
@@ -359,8 +424,8 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 	}
 
 	bool equal;
-	size_t columnCnt = columns.size( );
-	size_t rowRefCount = columns.at( 0 ).size( );
+	size_t columnCnt = columnsRef.size( );
+	size_t rowRefCount = columnsRef.at( 0 ).size( );
 	size_t rowDataCount = m_Data.at( 0 ).size( );
 
 	// scan for for occurrences
@@ -368,7 +433,7 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 		for ( size_t j = 1; j < rowDataCount; ++ j ) {
 			equal = true;
 			for ( size_t k = 0; k < columnCnt; ++ k ) {
-				if ( * columns.at( k ).at( i ) != * m_Data.at( columnIndexes.at( k ) ).at( j ) )
+				if ( * columnsRef.at( k ).at( i ) != * m_Data.at( columnIndexes.at( k ) ).at( j ) )
 					equal = false;
 			}
 			if ( equal )
@@ -381,22 +446,22 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 
 /**
  * Small alternative for occurence searching. Forked from identical method but accepts single column.
- * @param[in] column source for data filtering
+ * @param[in] columnRef source for data filtering
  * @return vector of matched row indexes (source + current table)
  */
-vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<CCell *> & column ) const {
+vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<CCell *> & columnRef ) const {
 	// find equivalent index of the column in current table
 	size_t tableColIndex = 0;
-	if ( ! VerifyColumn( column.at( 0 )->RetrieveMVal( ), tableColIndex ) )
+	if ( ! VerifyColumn( columnRef.at( 0 )->RetrieveMVal( ), tableColIndex ) )
 		return vector<pair<size_t, size_t>>( );
-	size_t rowRefCount  = column.size( );
+	size_t rowRefCount  = columnRef.size( );
 	size_t rowDataCount = m_Data.at( 0 ).size( );
 
 	// scan for for occurrences
 	vector<pair<size_t, size_t>> matches;
 	for ( size_t i = 1; i < rowRefCount; ++ i ) {
 		for ( size_t j = 1; j < rowDataCount; ++ j ) {
-			if ( * column.at( i ) == * m_Data.at( tableColIndex ).at( j ) ) {
+			if ( * columnRef.at( i ) == * m_Data.at( tableColIndex ).at( j ) ) {
 				matches.emplace_back( i, j );
 			}
 		}
@@ -413,12 +478,21 @@ size_t CTable::GetColumnCount ( ) const {
 }
 
 /**
- * Row count getter.
+ * This method will transform existing data into row format.
+ * Note: Only pointers are copied.
+ * @return vector of rows
  */
-size_t CTable::GetRowCount ( ) const {
-	if ( m_Data.empty( ) )
-		return 0;
-	return m_Data.begin( )->size( );
+vector<vector<CCell *>> CTable::Transform ( ) const {
+	vector<vector<CCell *>> out;
+	size_t rowCnt = m_Data.at( 0 ).size( );
+	size_t colCnt = m_Data.size( );
+	vector<CCell *> tmp;
+	for ( size_t i = 1; i < rowCnt; ++i ) {
+		for ( size_t j = 0; j < colCnt; ++j )
+			tmp.push_back( m_Data.at( j ).at( i ) );
+		out.push_back( std::move( tmp ) );
+	}
+	return out;
 }
 
 /**
@@ -440,7 +514,6 @@ vector<CCell *> CTable::GetDeepHeader ( ) const {
  */
 vector<string> CTable::GetColumnNames ( ) const {
 	vector<string> res;
-
 	if ( m_Data.empty( ) )
 		throw logic_error( CLog::TAB_NO_DATA );
 
@@ -533,6 +606,7 @@ vector<CCell *> CTable::RenderCol ( const size_t & index, ostream & ost ) const 
 		throw std::out_of_range( CLog::TAB_INVALID_INDEX );
 	return m_Data.at( index );
 }
+
 ostream & operator << ( ostream & ost, const CTable & table ) {
 	table.Render( ost );
 	return ost;

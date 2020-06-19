@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CQUERYPARSER_H
+#define CQUERYPARSER_H
 
 #include <string>
 #include <map>
@@ -14,6 +15,7 @@
 #include "../query/CProjection.hpp"
 #include "../query/CNaturalJoin.hpp"
 #include "../query/CJoin.hpp"
+#include "../query/CUnion.hpp"
 
 using namespace std;
 
@@ -28,15 +30,6 @@ private:
 public:
 	explicit CQueryParser( CDatabase & ref );
 
-	static const string TABLES;
-	static const string QUERIES;
-	static const string QUIT;
-
-	static const string SELECTION;
-	static const string PROJECTION;
-	static const string NJOIN;
-	static const string JOIN;
-
 	static bool ReadQuerySave ( const string & queryDetails, const char & saveDelimiter, string & output );
 	static bool ReadQueryName ( const string & fullQuery, string & output );
 
@@ -44,3 +37,5 @@ public:
 	int ProcessQuery ( const string & basicString);
 	bool ValidateConditionSyntax ( const string & query, CCondition * output );
 };
+
+#endif

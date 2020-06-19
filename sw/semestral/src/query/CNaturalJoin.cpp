@@ -14,32 +14,32 @@ CNaturalJoin::~CNaturalJoin ( ) {
 bool CNaturalJoin::Evaluate ( ) {
 	// initialization + search process
 	vector<string> colsA;
-	if ( ( m_Operands.first.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
-	} else if ( ( m_Operands.first.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		m_Operands.first.m_Origin   = m_Operands.first.m_QueryRef;
-		m_Operands.first.m_TableRef = m_Operands.first.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
+	} else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
+		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
+		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( m_Operands.first.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-	colsA = m_Operands.first.m_TableRef->GetColumnNames( );
+	colsA = m_Operands.first.m_TRef->GetColumnNames( );
 
 	vector<string> colsB;
-	if ( ( m_Operands.second.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
-	} else if ( ( m_Operands.second.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		m_Operands.second.m_Origin   = m_Operands.second.m_QueryRef;
-		m_Operands.second.m_TableRef = m_Operands.second.m_QueryRef->GetQueryResult( );
+	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
+	} else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
+		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
+		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
 	} else {
 		return false;
 	}
-	if ( m_Operands.second.m_TableRef->HasDuplicateColumns( ) ) {
+	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-	colsB = m_Operands.second.m_TableRef->GetColumnNames( );
+	colsB = m_Operands.second.m_TRef->GetColumnNames( );
 
 	// search for common columns
 	// 0 for independent right columns
@@ -87,7 +87,7 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<CCell *> tmp;
 	for ( const auto & i : newHeaderColumns ) {
 		if ( i.second == 2 ) {
-			if ( ! m_Operands.first.m_TableRef->GetShallowCol( i.first, tmp ) )
+			if ( ! m_Operands.first.m_TRef->GetShallowCol( i.first, tmp ) )
 				return false;
 			requiredColumns.emplace_back( tmp );
 		}
@@ -97,7 +97,7 @@ bool CNaturalJoin::Evaluate ( ) {
 	colsA.clear( );
 	colsB.clear( );
 
-	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TableRef->FindOccurences( requiredColumns );
+	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TRef->FindOccurences( requiredColumns );
 	if ( tableIndexes.empty( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
 		return false;
@@ -113,12 +113,12 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<CCell *> aPar, bPar;
 	for ( const auto & i : tableIndexes ) {
 		if ( colsB.empty( ) ) {
-			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) ) {
+			if ( ! m_Operands.first.m_TRef->GetDeepRow( i.first, colsA, aPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 			}
 		} else {
-			if ( ! m_Operands.first.m_TableRef->GetDeepRow( i.first, colsA, aPar ) || ! m_Operands.second.m_TableRef->GetDeepRow( i.second, colsB, bPar ) ) {
+			if ( ! m_Operands.first.m_TRef->GetDeepRow( i.first, colsA, aPar ) || ! m_Operands.second.m_TRef->GetDeepRow( i.second, colsB, bPar ) ) {
 				for ( const auto & y : aPar ) delete y;
 				for ( const auto & y : bPar ) delete y;
 				return false;
