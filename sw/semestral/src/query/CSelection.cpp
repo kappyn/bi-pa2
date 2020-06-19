@@ -40,10 +40,6 @@ CTable * CSelection::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-string CSelection::GetQueryName ( ) const {
-	return m_QuerySaveName;
-}
-
 void CSelection::ArchiveQueryName ( const string & name ) {
 	if ( m_QuerySaveName != name )
 		m_QuerySaveName = name;
@@ -70,9 +66,6 @@ string CSelection::GetSQL ( ) const {
 	return output;
 }
 
-void CSelection::SetQueryAsDerived ( ) {
-	m_Derived = true;
-}
 bool CSelection::IsDerived ( ) const {
 	return m_Derived;
 }

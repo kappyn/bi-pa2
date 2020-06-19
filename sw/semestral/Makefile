@@ -15,7 +15,7 @@ DEPS    	      = Makefile.d
 
 # compiler settings
 CXX        		  = g++
-CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0 -g
+CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long
 MKDIR      		  = mkdir -p
 
 # colors

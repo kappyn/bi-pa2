@@ -16,7 +16,6 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<string> colsA;
 	if ( ( m_Operands.first.m_TableRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
 	} else if ( ( m_Operands.first.m_QueryRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		m_Operands.first.m_Derived  = true;
 		m_Operands.first.m_Origin   = m_Operands.first.m_QueryRef;
 		m_Operands.first.m_TableRef = m_Operands.first.m_QueryRef->GetQueryResult( );
 	} else {
@@ -31,7 +30,6 @@ bool CNaturalJoin::Evaluate ( ) {
 	vector<string> colsB;
 	if ( ( m_Operands.second.m_TableRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
 	} else if ( ( m_Operands.second.m_QueryRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		m_Operands.second.m_Derived  = true;
 		m_Operands.second.m_Origin   = m_Operands.second.m_QueryRef;
 		m_Operands.second.m_TableRef = m_Operands.second.m_QueryRef->GetQueryResult( );
 	} else {
@@ -139,10 +137,6 @@ CTable * CNaturalJoin::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-string CNaturalJoin::GetQueryName ( ) const {
-	return m_QuerySaveName;
-}
-
 void CNaturalJoin::ArchiveQueryName ( const string & name ) {
 	if ( m_QuerySaveName != name )
 		m_QuerySaveName = name;
@@ -151,21 +145,18 @@ void CNaturalJoin::ArchiveQueryName ( const string & name ) {
 string CNaturalJoin::GetSQL ( ) const {
 	if ( ! m_Resolved )
 		return "";
-
 	CTableQuery * origin;
+	string output;
 
 	origin = m_Operands.first.m_Origin;
-	string output = "( SELECT * FROM ";
-	output += origin ? origin->GetSQL() : m_TableNames.first;
+	output += string( "( SELECT " ).append( CLog::APP_COLOR_RESULT ).append( "*" ).append( CLog::APP_COLOR_RESET ).append( " FROM ");
+	output += origin ? origin->GetSQL() : string( CLog::APP_COLOR_RESULT ).append( m_TableNames.first ).append( CLog::APP_COLOR_RESET );
 	output += " NATURAL JOIN ";
 	origin = m_Operands.second.m_Origin;
-	output += origin ? origin->GetSQL() : m_TableNames.second;
+	output += origin ? origin->GetSQL() : string( CLog::APP_COLOR_RESULT ).append( m_TableNames.second ).append( CLog::APP_COLOR_RESET );
 	output += " )";
 
 	return output;
-}
-
-void CNaturalJoin::SetQueryAsDerived ( ) {
 }
 
 bool CNaturalJoin::IsDerived ( ) const {

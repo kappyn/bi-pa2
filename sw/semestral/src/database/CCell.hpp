@@ -28,6 +28,7 @@ public:
 	virtual ostream & Print ( ostream & ost = cout ) const = 0;
 	virtual string RetrieveMVal ( ) const = 0;
 	virtual string GetType ( ) const = 0;
+	virtual bool Rename ( const string & str ) = 0;
 	virtual ~CCell ( ) = default;
 
 	virtual bool operator == ( const CCell & other ) const = 0;
@@ -95,6 +96,7 @@ public:
 	virtual size_t GetLength ( ) const override;
 	virtual string RetrieveMVal ( ) const override;
 	virtual string GetType ( ) const override;
+	virtual bool Rename ( const string & str ) override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 
 	bool operator == ( const CString & other ) const {
@@ -137,6 +139,7 @@ public:
 	virtual size_t GetLength ( ) const override;
 	virtual string RetrieveMVal ( ) const override;
 	virtual string GetType ( ) const override;
+	virtual bool Rename ( const string & str ) override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 
 	bool operator == ( const CDouble & other ) const {
@@ -168,6 +171,7 @@ public:
 	virtual size_t GetLength ( ) const override;
 	virtual string RetrieveMVal ( ) const override;
 	virtual string GetType ( ) const override;
+	virtual bool Rename ( const string & str ) override;
 	virtual ostream & Print ( ostream & ost = cout ) const override;
 
 	bool operator == ( const CInt & other ) const {

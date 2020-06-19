@@ -10,6 +10,7 @@
 #include "CTable.hpp"
 #include "../console/CLog.hpp"
 #include "../query/CTableQuery.hpp"
+#include "../query/CQueryOperand.hpp"
 
 /**
  * This module is the upper layer of data storage, containing all the loaded data.

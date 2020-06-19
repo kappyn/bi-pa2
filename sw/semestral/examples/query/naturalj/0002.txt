@@ -1,2 +1,4 @@
 NJOIN(a,b)~Save;
+NJOIN(Save,b)~Seyf;
+PRO[Username=="Frank"](Seyf);
 QUIT;

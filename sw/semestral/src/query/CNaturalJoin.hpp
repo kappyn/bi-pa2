@@ -4,14 +4,6 @@
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CQueryOperand {
-public:
-	CTable * m_TableRef      = nullptr;
-	CTableQuery * m_QueryRef = nullptr;
-	CTableQuery * m_Origin   = nullptr;
-	bool m_Derived           = false;
-};
-
 class CNaturalJoin : public CTableQuery {
 private:
 	CDatabase & m_Database;
@@ -29,12 +21,8 @@ public:
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;
-	virtual string GetQueryName ( ) const override;
 	virtual void ArchiveQueryName ( const string & name ) override;
-
 	virtual string GetSQL ( ) const override;
-
-	virtual void SetQueryAsDerived ( ) override;
 	virtual bool IsDerived ( ) const override;
 };
 

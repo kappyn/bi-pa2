@@ -8,7 +8,7 @@ const string CQueryParser::QUIT    = "QUIT";
 const string CQueryParser::SELECTION  = "SEL";
 const string CQueryParser::PROJECTION = "PRO";
 const string CQueryParser::NJOIN      = "NJOIN";
-
+const string CQueryParser::JOIN       = "JOIN";
 
 /**
  * Reads and determines if a user wants the query to be saved into memory.
@@ -161,6 +161,22 @@ int CQueryParser::ProcessQuery ( const string & basicString ) {
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
 		userQuery = new CNaturalJoin { m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
+	}
+
+	// JOIN
+	else if ( queryName == CQueryParser::JOIN ) {
+		string tables, column;
+		if (
+				! ReadQueryParenthesis( queryDetails, '[', ']', stringProgress, column ) ||
+				! ReadQueryParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables )
+		)
+			return CConsole::INVALID_QUERY;
+
+		vector<string> tableNames = CDataParser::Split( tables, ',' );
+		if ( tableNames.size( ) != 2 )
+			return CConsole::INVALID_QUERY;
+
+		userQuery = new CJoin { m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) };
 	}
 
 	else {

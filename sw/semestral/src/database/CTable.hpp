@@ -36,6 +36,7 @@ public:
 	bool InsertShallowRow ( const vector<CCell *> & row );
 	bool InsertDeepCol ( const vector<CCell *> & col );
 	bool InsertDeepRow ( const size_t & index, CTable * outPtr ) const;
+	bool ChangeColumnName ( const size_t & index, const string & s ) const;
 	static vector<CCell *> MergeRows ( const vector<CCell *> & rowA, const vector<CCell *> & rowB );
 
 	vector<CCell *> GetDeepHeader ( ) const;
@@ -46,6 +47,7 @@ public:
 	bool GetSubTable ( const vector<string> & row, CTable * outPtr ) const;
 
 	vector<pair<size_t, size_t>> FindOccurences ( vector<vector<CCell *>> & columns ) const;
+	vector<pair<size_t, size_t>> FindOccurences ( vector<CCell *> & column ) const;
 	size_t GetColumnCount ( ) const;
 	size_t GetRowCount ( ) const;
 	vector<string> GetColumnNames ( ) const;

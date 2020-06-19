@@ -133,6 +133,15 @@ bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr ) const {
 }
 
 /**
+ * Changes column header element's name.
+ * @param[in] index index of a column to be edited
+ * @param[in] str new name.
+ */
+bool CTable::ChangeColumnName ( const size_t & index, const string & s ) const {
+	return ( index < m_Data.size( ) && ! s.empty( ) && ( ! m_Data.at( index ).at( 0 )->Rename( s ) ) );
+}
+
+/**
  * Merges two rows together. Shallow copy is made.
  */
 vector<CCell *> CTable::MergeRows ( const vector<CCell *> & rowA, const vector<CCell *> & rowB ) {
@@ -341,9 +350,12 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 	size_t currentIndex = 0;
 	size_t cnt = 0;
 	for ( const auto & item : columns ) {
-		VerifyColumn( item.at( 0 )->RetrieveMVal( ), currentIndex );
-		columnIndexes.push_back( currentIndex );
-		++ cnt;
+		if ( ! VerifyColumn( item.at( 0 )->RetrieveMVal( ), currentIndex ) )
+			return vector<pair<size_t, size_t>>( );
+		else {
+			columnIndexes.push_back( currentIndex );
+			++ cnt;
+		}
 	}
 
 	bool equal;
@@ -361,6 +373,32 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<vector<CCell *>> & 
 			}
 			if ( equal )
 				matches.emplace_back( i, j );
+		}
+	}
+
+	return matches;
+}
+
+/**
+ * Small alternative for occurence searching. Forked from identical method but accepts single column.
+ * @param[in] column source for data filtering
+ * @return vector of matched row indexes (source + current table)
+ */
+vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<CCell *> & column ) const {
+	// find equivalent index of the column in current table
+	size_t tableColIndex = 0;
+	if ( ! VerifyColumn( column.at( 0 )->RetrieveMVal( ), tableColIndex ) )
+		return vector<pair<size_t, size_t>>( );
+	size_t rowRefCount  = column.size( );
+	size_t rowDataCount = m_Data.at( 0 ).size( );
+
+	// scan for for occurrences
+	vector<pair<size_t, size_t>> matches;
+	for ( size_t i = 1; i < rowRefCount; ++ i ) {
+		for ( size_t j = 1; j < rowDataCount; ++ j ) {
+			if ( * column.at( i ) == * m_Data.at( tableColIndex ).at( j ) ) {
+				matches.emplace_back( i, j );
+			}
 		}
 	}
 

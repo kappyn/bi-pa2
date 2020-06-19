@@ -1,25 +1,24 @@
-#ifndef CSELECTION_H
-#define CSELECTION_H
+#ifndef CJOIN_H
+#define CJOIN_H
 
 #include "CTableQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CSelection : public CTableQuery {
+class CJoin : public CTableQuery {
 private:
 	CDatabase & m_Database;
 	CTable * m_QueryResult;
 	string m_QuerySaveName;
 
-	vector<string> m_SelectedCols;
-	string m_TableName;
-
-	CTableQuery * m_Origin;
-	bool m_Derived;
+	pair<CQueryOperand, CQueryOperand> m_Operands;
+	pair<string, string> m_TableNames;
+	string m_CommonCol;
+	bool m_Resolved;
 
 public:
-	explicit CSelection ( CDatabase & ref, vector<string> cols, string tableName );
+	explicit CJoin ( CDatabase & ref, string  column, const pair<string, string> & tableNames );
 
-	virtual ~CSelection ( ) override;
+	virtual ~CJoin ( ) override;
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;

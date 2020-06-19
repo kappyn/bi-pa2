@@ -38,10 +38,6 @@ CTable * CProjection::GetQueryResult ( ) {
 	return m_QueryResult;
 }
 
-string CProjection::GetQueryName ( ) const {
-	return m_QuerySaveName;
-}
-
 void CProjection::ArchiveQueryName ( const string & name ) {
 	if ( m_QuerySaveName != name )
 		m_QuerySaveName = name;
@@ -62,10 +58,6 @@ string CProjection::GetSQL ( ) const {
 	output += AppendWhereClause( );
 
 	return output;
-}
-
-void CProjection::SetQueryAsDerived ( ) {
-	m_Derived = true;
 }
 
 bool CProjection::IsDerived ( ) const {

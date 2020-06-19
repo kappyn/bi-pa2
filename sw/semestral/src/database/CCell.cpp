@@ -21,6 +21,11 @@ string CString::GetType ( ) const {
 	return typeid( m_Val ).name( );
 }
 
+bool CString::Rename ( const string & str ) {
+	m_Val = str;
+	return true;
+}
+
 
 //
 
@@ -47,6 +52,10 @@ string CDouble::GetType ( ) const {
 	return typeid( m_Val ).name( );
 }
 
+bool CDouble::Rename ( const string & str ) {
+	return false;
+}
+
 
 //
 
@@ -71,4 +80,8 @@ string CInt::RetrieveMVal ( ) const {
 
 string CInt::GetType ( ) const {
 	return typeid( m_Val ).name( );
+}
+
+bool CInt::Rename ( const string & str ) {
+	return false;
 }
