@@ -1,6 +1,6 @@
 #include "CUnion.hpp"
 
-CUnion::CUnion ( CDatabase & ref, const pair<string, string> & tableNames ) : CSetQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
+CUnion::CUnion ( CDatabase & ref, const pair<string, string> & tableNames ) : CBinaryQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CUnion::~CUnion ( ) {
 	delete m_QueryResult;

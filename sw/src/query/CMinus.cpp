@@ -1,6 +1,6 @@
 #include "CMinus.hpp"
 
-CMinus::CMinus ( CDatabase & ref, const pair<string, string> & tableNames ) : CSetQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
+CMinus::CMinus ( CDatabase & ref, const pair<string, string> & tableNames ) : CBinaryQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CMinus::~CMinus ( ) {
 	delete m_QueryResult;

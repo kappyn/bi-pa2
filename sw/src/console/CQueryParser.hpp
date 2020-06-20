@@ -11,6 +11,7 @@
 #include "../database/CDatabase.hpp"
 //
 #include "../query/CSelection.hpp"
+#include "../query/CAlias.hpp"
 #include "../query/CProjection.hpp"
 #include "../query/CNaturalJoin.hpp"
 #include "../query/CJoin.hpp"

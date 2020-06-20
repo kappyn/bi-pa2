@@ -1,9 +1,12 @@
 #pragma once
 
-#include "CSetQuery.hpp"
+#include "CBinaryQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CMinus : public CSetQuery, public CTableQuery {
+/*
+ * This query will subtract all rows from the table A which are also contained in table B.
+ */
+class CMinus : public CBinaryQuery, public CTableQuery {
 private:
 	CTable * m_QueryResult = nullptr;
 	string m_QuerySaveName;

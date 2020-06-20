@@ -20,7 +20,7 @@ build/CConsole.o: src/console/CConsole.cpp src/console/CConsole.hpp \
  src/console/../tool/../database/../query/CQueryOperand.hpp \
  src/console/../query/CSelection.hpp src/console/../query/CProjection.hpp \
  src/console/../query/CNaturalJoin.hpp src/console/../query/CJoin.hpp \
- src/console/../query/CUnion.hpp src/console/../query/CSetQuery.hpp \
+ src/console/../query/CUnion.hpp src/query/CBinaryQuery.hpp \
  src/console/../query/CIntersect.hpp src/console/../query/CMinus.hpp
 build/CApplication.o: src/console/CApplication.cpp src/console/CApplication.hpp \
  src/console/../database/CDatabase.hpp src/console/../database/CTable.hpp \
@@ -34,7 +34,7 @@ build/CApplication.o: src/console/CApplication.cpp src/console/CApplication.hpp 
  src/console/CConsole.hpp src/console/CQueryParser.hpp \
  src/console/../query/CSelection.hpp src/console/../query/CProjection.hpp \
  src/console/../query/CNaturalJoin.hpp src/console/../query/CJoin.hpp \
- src/console/../query/CUnion.hpp src/console/../query/CSetQuery.hpp \
+ src/console/../query/CUnion.hpp src/query/CBinaryQuery.hpp \
  src/console/../query/CIntersect.hpp src/console/../query/CMinus.hpp
 build/CQueryParser.o: src/console/CQueryParser.cpp src/console/CQueryParser.hpp \
  src/console/CLog.hpp src/console/CConsole.hpp \
@@ -48,10 +48,10 @@ build/CQueryParser.o: src/console/CQueryParser.cpp src/console/CQueryParser.hpp 
  src/console/../tool/../database/../query/CQueryOperand.hpp \
  src/console/../query/CSelection.hpp src/console/../query/CProjection.hpp \
  src/console/../query/CNaturalJoin.hpp src/console/../query/CJoin.hpp \
- src/console/../query/CUnion.hpp src/console/../query/CSetQuery.hpp \
+ src/console/../query/CUnion.hpp src/query/CBinaryQuery.hpp \
  src/console/../query/CIntersect.hpp src/console/../query/CMinus.hpp
 build/CUnion.o: src/query/CUnion.cpp src/query/CUnion.hpp \
- src/query/CSetQuery.hpp src/query/../database/CDatabase.hpp \
+ src/query/CBinaryQuery.hpp src/query/../database/CDatabase.hpp \
  src/query/../database/CTable.hpp src/query/../database/CCell.hpp \
  src/query/../database/CRenderSett.hpp \
  src/query/../database/../console/CLog.hpp \
@@ -65,14 +65,14 @@ build/CJoin.o: src/query/CJoin.cpp src/query/CJoin.hpp \
  src/query/../database/CCondition.hpp src/query/../database/CDatabase.hpp \
  src/query/../database/../query/CQueryOperand.hpp
 build/CIntersect.o: src/query/CIntersect.cpp src/query/CIntersect.hpp \
- src/query/CSetQuery.hpp src/query/../database/CDatabase.hpp \
+ src/query/CBinaryQuery.hpp src/query/../database/CDatabase.hpp \
  src/query/../database/CTable.hpp src/query/../database/CCell.hpp \
  src/query/../database/CRenderSett.hpp \
  src/query/../database/../console/CLog.hpp \
  src/query/../database/CCondition.hpp \
  src/query/../database/../query/CTableQuery.hpp \
  src/query/../database/../query/CQueryOperand.hpp
-build/CSetQuery.o: src/query/CSetQuery.cpp src/query/CSetQuery.hpp \
+build/CSetQuery.o: src/query/CBinaryQuery.cpp src/query/CBinaryQuery.hpp \
  src/query/../database/CDatabase.hpp src/query/../database/CTable.hpp \
  src/query/../database/CCell.hpp src/query/../database/CRenderSett.hpp \
  src/query/../database/../console/CLog.hpp \
@@ -92,7 +92,7 @@ build/CProjection.o: src/query/CProjection.cpp src/query/CProjection.hpp \
  src/query/../database/CCondition.hpp src/query/../database/CDatabase.hpp \
  src/query/../database/../query/CQueryOperand.hpp
 build/CMinus.o: src/query/CMinus.cpp src/query/CMinus.hpp \
- src/query/CSetQuery.hpp src/query/../database/CDatabase.hpp \
+ src/query/CBinaryQuery.hpp src/query/../database/CDatabase.hpp \
  src/query/../database/CTable.hpp src/query/../database/CCell.hpp \
  src/query/../database/CRenderSett.hpp \
  src/query/../database/../console/CLog.hpp \
@@ -117,7 +117,7 @@ build/main.o: src/main.cpp src/console/CApplication.hpp \
  src/console/CConsole.hpp src/console/CQueryParser.hpp \
  src/console/../query/CSelection.hpp src/console/../query/CProjection.hpp \
  src/console/../query/CNaturalJoin.hpp src/console/../query/CJoin.hpp \
- src/console/../query/CUnion.hpp src/console/../query/CSetQuery.hpp \
+ src/console/../query/CUnion.hpp src/query/CBinaryQuery.hpp \
  src/console/../query/CIntersect.hpp src/console/../query/CMinus.hpp
 build/CDataParser.o: src/tool/CDataParser.cpp src/tool/CDataParser.hpp \
  src/tool/../database/CDatabase.hpp src/tool/../database/CTable.hpp \

@@ -40,7 +40,7 @@ public:
 		};
 	};
 
-	bool VerifyColumn ( const string & col, size_t & index ) const;
+	bool VerifyColumn ( const string & col, size_t & index, const bool & msg = false ) const;
 	void SortColumns ( );
 	void SortColumns ( vector<pair<size_t, size_t>> & columnOrders );
 

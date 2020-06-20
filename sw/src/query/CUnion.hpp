@@ -1,9 +1,12 @@
 #pragma once
 
-#include "CSetQuery.hpp"
+#include "CBinaryQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CUnion : public CSetQuery, public CTableQuery {
+/*
+ * This query merges all rows between table A, B (with same columns).
+ */
+class CUnion : public CBinaryQuery, public CTableQuery {
 private:
 	CTable * m_QueryResult = nullptr;
 	string m_QuerySaveName;

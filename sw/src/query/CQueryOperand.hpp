@@ -1,6 +1,9 @@
 #include "../database/CTable.hpp"
 #include "CTableQuery.hpp"
 
+/*
+ * Encapsulates binary operator queries.
+ */
 class CQueryOperand {
 public:
 	CTable * m_TRef          = nullptr;

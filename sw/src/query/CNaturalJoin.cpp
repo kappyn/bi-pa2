@@ -1,40 +1,18 @@
 #include "CNaturalJoin.hpp"
 
 CNaturalJoin::CNaturalJoin ( CDatabase & ref, const pair<string, string> & tableNames )
-: m_Database( ref ), m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ) { }
+: CBinaryQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CNaturalJoin::~CNaturalJoin ( ) {
 	delete m_QueryResult;
 }
 
 bool CNaturalJoin::Evaluate ( ) {
-	vector<string> colsA;
-	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) {
-	} else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
-		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
-	} else {
+	if ( ! SaveTableReferences( ) )
 		return false;
-	}
-	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
-		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-		return false;
-	}
-	colsA = m_Operands.first.m_TRef->GetColumnNames( );
 
-	vector<string> colsB;
-	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) {
-	} else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
-		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
-	} else {
-		return false;
-	}
-	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
-		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-		return false;
-	}
-	colsB = m_Operands.second.m_TRef->GetColumnNames( );
+	vector<string> colsA = m_Operands.first.m_TRef->GetColumnNames( );
+	vector<string> colsB = m_Operands.second.m_TRef->GetColumnNames( );
 
 	// search for common columns
 	// 0 for independent right columns

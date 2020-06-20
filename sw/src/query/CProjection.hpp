@@ -4,6 +4,9 @@
 #include "../database/CDatabase.hpp"
 #include "../database/CCondition.hpp"
 
+/*
+ * This query will filter rows of a table based on given condition.
+ */
 class CProjection : public CTableQuery {
 private:
 	CDatabase & m_Database;

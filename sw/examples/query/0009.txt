@@ -1,0 +1,7 @@
+JOIN[ country ]( a, b );
+ALIAS[ id ~ Test ]( d );
+JOIN[ country ]( a, b ) ~ ToRename;
+ALIAS[ a.id ~ HEY ]( ToRename );
+ALIAS[ a.car x a.car ]( ToRename );
+ALIAS[ xx ~ oy ]( ToRename );
+ALIAS[ a.car ~ a.car ]( ToRename );

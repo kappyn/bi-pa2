@@ -29,11 +29,12 @@ CTable::~CTable ( ) {
  * @param[in] col name of the column
  * @param[in, out] index index of the column in the table
  */
-bool CTable::VerifyColumn ( const string & col, size_t & index ) const {
+bool CTable::VerifyColumn ( const string & col, size_t & index, const bool & msg ) const {
 	vector<string> correctColumns = GetColumnNames( );
 	vector<string>::iterator i;
 	if ( ( i = find( correctColumns.begin( ), correctColumns.end( ), col ) ) == correctColumns.end( ) ) {
-		CLog::HighlightedMsg( CLog::QP, col, CLog::QP_NO_SUCH_COL );
+		if ( msg )
+			CLog::HighlightedMsg( CLog::QP, col, CLog::QP_NO_SUCH_COL );
 		return false;
 	}
 	index = i - correctColumns.begin( );
@@ -179,7 +180,7 @@ bool CTable::InsertDeepRow ( const size_t & index, CTable * outPtr ) const {
  * @param[in] str new name.
  */
 bool CTable::ChangeColumnName ( const size_t & index, const string & s ) const {
-	return ( index < m_Data.size( ) && ! s.empty( ) && ( ! m_Data.at( index ).at( 0 )->Rename( s ) ) );
+	return ( index < m_Data.size( ) && ! s.empty( ) && m_Data.at( index ).at( 0 )->Rename( s ) );
 }
 
 /**

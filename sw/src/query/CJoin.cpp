@@ -1,36 +1,17 @@
 #include "CJoin.hpp"
 
+#include <utility>
+
 CJoin::CJoin ( CDatabase & ref, string column, const pair<string, string> & tableNames )
-: m_Database( ref ), m_TableNames( std::make_pair( tableNames.first, tableNames.second ) ), m_CommonCol( std::move( column ) ) { }
+: CBinaryQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ), m_CommonCol( std::move( column ) ) { }
 
 CJoin::~CJoin ( ) {
 	delete m_QueryResult;
 }
 
 bool CJoin::Evaluate ( ) {
-	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) { }
-	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
-		m_Operands.first.m_Origin   = m_Operands.first.m_QRef;
-		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
-	} else
+	if ( ! SaveTableReferences( ) )
 		return false;
-
-	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
-		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-		return false;
-	}
-
-	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
-	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
-		m_Operands.second.m_Origin   = m_Operands.second.m_QRef;
-		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
-	} else
-		return false;
-
-	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
-		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
-		return false;
-	}
 
 	size_t tmp;
 	if ( ! m_Operands.first.m_TRef->VerifyColumn( m_CommonCol, tmp ) || ! m_Operands.second.m_TRef->VerifyColumn( m_CommonCol, tmp ) )

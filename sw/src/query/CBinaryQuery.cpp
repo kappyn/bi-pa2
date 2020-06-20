@@ -1,10 +1,10 @@
-#include "CSetQuery.hpp"
+#include "CBinaryQuery.hpp"
 
 /*
  * Searches trough the database and saves the table references.
  * If any error occurs (table not found, invalid columns, data types), false is returned.
  */
-bool CSetQuery::SaveTableReferences ( ) {
+bool CBinaryQuery::SaveTableReferences ( ) {
 	if ( ( m_Operands.first.m_TRef = m_Database.GetTable( m_TableNames.first ) ) != nullptr ) { }
 	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
 		m_Operands.first.m_Origin = m_Operands.first.m_QRef;
@@ -36,7 +36,7 @@ bool CSetQuery::SaveTableReferences ( ) {
  * Validates individual columns types of two operands.
  * Method returns true if all columns have same data types.
  */
-bool CSetQuery::ValidateColumnTypes ( ) const {
+bool CBinaryQuery::ValidateColumnTypes ( ) const {
 	if ( ! m_Operands.first.m_TRef || ! m_Operands.second.m_TRef )
 		return false;
 

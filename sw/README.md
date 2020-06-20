@@ -64,6 +64,8 @@ Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definov
 
 ``QUERIES;`` vypíše dotazy, které jsou momentálně uloženy v databázi.
 
+``EXPORT;`` vyexportuje výsledky všech uložených dotazů do CSV.
+
 ``QUIT;`` ukončí aplikaci.
 
 ---
@@ -72,6 +74,13 @@ Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definov
 Popis operace: Vybere konkrétní sloupce z tabulky.
 
 Použití: ``SEL[ jmeno_sloupce_1, jmeno_sloupce_2, .. ]( jmeno_tabulky );`` 
+
+---
+
+#### Přejmenování
+Popis operace: Vybere sloupec z tabulky a přejmenuje ho.
+
+Použití: ``ALIAS[ jmeno_sloupce, novy_nazev ]( jmeno_tabulky );`` 
 
 ---
 
@@ -129,9 +138,17 @@ Použití: ``CP( jmeno_tabulky, jmeno_tabulky );``
 ---
 
 #### Ukládání dotazu do proměnné
-Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné.
+Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné. Proměnná lze poté použít na místě pro "jmeno_tabulky" v definicích dotazů výše. 
 
-Příkladné použití: ``SEL[ vek >= 18 ]( uzivatele ) ~ dospeli``
+Příkladné použití: 
+
+``PRO[ vek >= 18 ]( uzivatele ) ~ dospeli``
+
+``PRO[ auto == "BMW" ]( uzivatele ) ~ dospeliBMW``
+
+``// Výsledkem budou dospělí lidé s BMW.``
+
+``INTERSECT( dospeli, dospeliBMW )``
 
 ---
 

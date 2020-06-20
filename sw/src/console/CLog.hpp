@@ -23,6 +23,7 @@ namespace CLog {
 	const string UNION              = "UNION";
 	const string INTERSECT          = "INTERSECT";
 	const string MINUS              = "MINUS";
+	const string ALIAS              = "ALIAS";
 
 	const string APP_LINE_HEIGHT    = "\n";
 	const string APP_COLOR_GOOD     = "\033[0;32m";
@@ -62,6 +63,7 @@ namespace CLog {
 	const string QP                 = "QUERY PARSER";
 	const string QP_NO_SUCH_TABLE   =  string( APP_COLOR_BAD ).append(" table was not found." ).append( APP_COLOR_RESET );
 	const string QP_NO_SUCH_COL     =  string( APP_COLOR_BAD ).append(" column was not found." ).append( APP_COLOR_RESET );
+	const string QP_COL_EXISTS      =  string( APP_COLOR_BAD ).append(" column already exists." ).append( APP_COLOR_RESET );
 	const string QP_QUERY_ADDED     =  string( APP_COLOR_GOOD ).append(" query was added!" ).append( APP_COLOR_RESET );
 	const string QP_TABLE_EXISTS    =  string( APP_COLOR_BAD ).append(" name already taken (please use TABLES or QUERIES to prevent this)." ).append( APP_COLOR_RESET );
 	const string QP_INVALID_CON     =  string( APP_COLOR_BAD ).append(" the condition clause is missing an operand." ).append( APP_COLOR_RESET );

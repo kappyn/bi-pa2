@@ -1,14 +1,13 @@
 #pragma once
 
-#include "CTableQuery.hpp"
+#include "CBinaryQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CNaturalJoin : public CTableQuery {
+/*
+ * This query connects two tables A, B based on all columns, that A and B share together (values must match as well).
+ */
+class CNaturalJoin : public CBinaryQuery, public CTableQuery {
 private:
-	CDatabase & m_Database;
-	pair<CQueryOperand, CQueryOperand> m_Operands;
-	pair<string, string> m_TableNames;
-
 	CTable * m_QueryResult = nullptr;
 	string m_QuerySaveName;
 

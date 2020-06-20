@@ -117,6 +117,26 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 		userQuery = new CSelection ( m_Database, CDataParser::Split( columns, false, false, ',' ), table );
 	}
 
+	else if ( queryName == CLog::ALIAS ) {
+		string table, colNames;
+		if (
+				! ReadQParenthesis( queryDetails, '[', ']', stringProgress, colNames ) ||
+				! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
+			)
+			return CConsole::INVALID_QUERY;
+		vector<string> tableNames = CDataParser::Split( colNames, '~' );
+		if ( tableNames.size( ) != 2 )
+			return CConsole::INVALID_QUERY;
+
+		userQuery = new CAlias ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ), table );
+		if ( ! userQuery->Evaluate( ) ) {
+			delete userQuery;
+			return CConsole::INVALID_QUERY;
+		}
+		delete userQuery;
+		return CConsole::VALID_QUERY;
+	}
+
 	else if ( queryName == CLog::PROJECTION ) {
 		auto * conditionQuery = new CCondition;
 		string condition, table;

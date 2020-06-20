@@ -2,9 +2,12 @@
 
 #include "../database/CDatabase.hpp"
 
-class CSetQuery {
+/*
+ * Stores binary query operand data, and provides methods to validate them.
+ */
+class CBinaryQuery {
 public:
-	CSetQuery( CDatabase & ref, const pair<string, string> & tableNames ) : m_Database( ref ), m_TableNames( tableNames ) { }
+	CBinaryQuery( CDatabase & ref, const pair<string, string> & tableNames ) : m_Database( ref ), m_TableNames( tableNames ) { }
 
 protected:
 	CDatabase & m_Database;

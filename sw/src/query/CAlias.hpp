@@ -1,19 +1,22 @@
 #pragma once
 
+#include <utility>
+
 #include "CBinaryQuery.hpp"
 #include "../database/CDatabase.hpp"
 
 /*
- * This query will create an intersection between all rows from table A with all rows from table B.
+ * This query will rename a single column of a given table.
  */
-class CIntersect : public CBinaryQuery, public CTableQuery {
+class CAlias : public CTableQuery {
 private:
-	CTable * m_QueryResult = nullptr;
-	string m_QuerySaveName;
+	CDatabase & m_Database;
+	pair<string, string> m_Columns;
+	string m_TableName;
 
 public:
-	explicit CIntersect ( CDatabase & ref, const pair<string, string> & tableNames );
-	virtual ~CIntersect ( ) override;
+	explicit CAlias ( CDatabase & ref, const pair<string, string> & colNames, string tableName );
+	virtual ~CAlias ( ) override = default;
 
 	virtual bool Evaluate ( ) override;
 	virtual CTable * GetQueryResult ( ) override;

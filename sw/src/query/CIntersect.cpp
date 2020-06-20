@@ -1,6 +1,6 @@
 #include "CIntersect.hpp"
 
-CIntersect::CIntersect ( CDatabase & ref, const pair<string, string> & tableNames ) : CSetQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
+CIntersect::CIntersect ( CDatabase & ref, const pair<string, string> & tableNames ) : CBinaryQuery( ref, std::make_pair( tableNames.first, tableNames.second ) ) { }
 
 CIntersect::~CIntersect ( ) {
 	delete m_QueryResult;

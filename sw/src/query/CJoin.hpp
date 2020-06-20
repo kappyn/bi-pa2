@@ -2,21 +2,21 @@
 
 #include <utility>
 
-#include "CTableQuery.hpp"
+#include "CBinaryQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CJoin : public CTableQuery {
+/*
+ * This query connect two tables A, B based on matching values in the column C.
+ * Each table must have column C.
+ */
+class CJoin : public CBinaryQuery, public CTableQuery {
 private:
-	CDatabase & m_Database;
-	pair<CQueryOperand, CQueryOperand> m_Operands;
-	pair<string, string> m_TableNames;
-	string m_CommonCol;
-
 	CTable * m_QueryResult = nullptr;
 	string m_QuerySaveName;
+	string m_CommonCol;
 
 public:
-	explicit CJoin ( CDatabase & ref, string  column, const pair<string, string> & tableNames );
+	explicit CJoin ( CDatabase & ref, string column, const pair<string, string> & tableNames );
 	virtual ~CJoin ( ) override;
 
 	virtual bool Evaluate ( ) override;
