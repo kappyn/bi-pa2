@@ -10,8 +10,8 @@ DOC_DIR			  	= doc
 SOURCES 		  	= $(wildcard $(SOURCE_DIR)/*.cpp $(SOURCE_DIR)/*/*.cpp)
 HEADERS 		  	= $(wildcard $(SOURCE_DIR)/*.hpp $(SOURCE_DIR)/*/*.hpp)
 OB_TMP    		  	= $(notdir $(SOURCES:$(SOURCE_DIR)/%.cpp=%.o))
-OBJECTS    	      	= $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
-DEPS    	      	= Makefile.d
+OBJECTS				= $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
+DEPS				= Makefile.d
 
 # compiler settings
 CXX        		  	= g++
@@ -24,7 +24,7 @@ COLOR_MSG = \033[1;36m
 
 # memory management settings
 CHECK      		  	= valgrind
-CHECK_FLAGS 	  	= --leak-check=full --show-leak-kinds=all --track-origins=yes
+CHECK_FLAGS			= --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # tasks
 all: clean dep compile doc
