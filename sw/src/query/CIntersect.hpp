@@ -1,14 +1,10 @@
 #pragma once
 
-#include "CTableQuery.hpp"
+#include "CSetQuery.hpp"
 #include "../database/CDatabase.hpp"
 
-class CIntersect : public CTableQuery {
+class CIntersect : public CSetQuery, public CTableQuery {
 private:
-	CDatabase & m_Database;
-	pair<CQueryOperand, CQueryOperand> m_Operands;
-	pair<string, string> m_TableNames;
-
 	CTable * m_QueryResult = nullptr;
 	string m_QuerySaveName;
 

@@ -173,6 +173,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 			userQuery = new CIntersect ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 
 //		else if ( queryName == CLog::MINUS )
+
 		else
 			userQuery = new CMinus ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}

@@ -48,6 +48,19 @@ void CTable::SortColumns ( ) {
 }
 
 /**
+ * This method will sort its columns based on the pairs provided.
+ * First of the two represents which index, second the position in the new order.
+ * The columns must have equal number of rows, if not, exception is thrown.
+ */
+void CTable::SortColumns ( vector<pair<size_t, size_t>> & columnOrders ) {
+	vector<vector<CCell *>> newColumnOrder ( m_Data.size( ), vector<CCell *>( m_Data.at( 0 ).size( ) ) );
+	for ( const auto & i : columnOrders )
+		newColumnOrder.at( i.first ) = std::move( m_Data.at( i.second ) );
+	m_Data.clear( );
+	m_Data = std::move( newColumnOrder );
+}
+
+/**
  * Row sorting. Works only on transformed tables (they're normally stored by columns).
  * @param[in, out] dataRef reference to transformed table rows
  */
@@ -65,6 +78,13 @@ bool CTable::CompareRows ( const vector<CCell *> & a, const vector<CCell *> & b 
 	for ( size_t i = 0; i < rowLen; ++i )
 		if ( * a[ i ] != * b[ i ] )
 			return false;
+	return true;
+}
+
+bool CTable::SwapColumns ( const size_t & a, const size_t & b ) {
+	if ( a >= m_Data.size( ) || b >= m_Data.size( ) || a == b )
+		return false;
+	std::swap( m_Data.at( a ), m_Data.at( b ) );
 	return true;
 }
 
@@ -269,6 +289,9 @@ bool CTable::GetSubTable ( const vector<string> & cols, CTable * outPtr ) const 
 	return true;
 }
 
+/*
+ * Returns the data type of a column for a given index.
+ */
 string CTable::GetColumnType ( const size_t & index ) const {
 	if ( m_Data.empty( ) || index >= m_Data.size( ) || m_Data.at( index ).empty( ) )
 		return "";

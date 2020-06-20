@@ -1,3 +1,4 @@
-UNION( a, b );
-INTERSECT( a, b )~Test;
+UNION( a, d );
+INTERSECT( a, d );
+MINUS( a, d );
 QUIT;
