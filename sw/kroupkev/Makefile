@@ -1,5 +1,5 @@
 .PHONY      			= all compile run memcheck fwatch clean dev linecnt
-.DEFAULT_GOAL			= dev
+.DEFAULT_GOAL			= all
 
 # sources
 TARGET     		  	= kroupkev
@@ -58,7 +58,7 @@ lineheadercnt:
 	find "./src/" -type f -name "*.hpp" | xargs wc -l
 
 clean:
-	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o 2>/dev/null
+	rm -rf $(TARGET) $(BUILD_DIR)/ $(DOC_DIR)/ src/*.o  src/*/*.o 2>/dev/null *.csv Makefile.d
 	@echo "$(COLOR_MSG)Previous builds and object files have been cleaned.$(COLOR_DEF)"
 
 dep:
@@ -74,7 +74,7 @@ doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
 
 $(TARGET): $(OBJECTS)
 	$(CXX) $(CXX_FLAGS) $^ -o $@
-	@echo "$(COLOR_MSG)Object files linked successfully.$(COLOR_DEF)"
+	@echo "$(COLOR_MSG)Object files were linked successfully.$(COLOR_DEF)"
 
 $(BUILD_DIR)/%.o: $(SOURCE_DIR)/%.cpp
 	@$(MKDIR) $(BUILD_DIR)

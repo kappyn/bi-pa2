@@ -132,13 +132,20 @@ void CDatabase::PrintQueryContents ( ) const {
 	}
 }
 
+/**
+ * Writes the saved query tables to individual files.
+ * @return true if export was successfull
+ */
 bool CDatabase::ExportQueries ( ) const {
+	if ( m_QueryData.empty( ) )
+		return false;
+
 	ofstream ofs;
 	vector<string> output;
 	string filePath;
 	for ( const auto & i : m_QueryData ) {
 		i.second->GetQueryResult( )->Render( output );
-		filePath = CLog::APP_OUT_PATH + i.first + ".csv";
+		filePath = i.first + ".csv";
 		ofs.open( filePath, std::ios::out | std::ios::trunc );
 		if ( ! ofs.good( ) || ofs.fail( ) ) {
 			CLog::HighlightedMsg( CLog::QP, string( i.first ).append( " (").append( filePath ).append( ")"), CLog::FM_EXPORT_FAIL );

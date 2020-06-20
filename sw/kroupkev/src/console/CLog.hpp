@@ -12,10 +12,8 @@ namespace CLog {
 
 	// app settings
 	static constexpr int APP_PADDING ( ) { return 14; }
-
 	const string APP_DB_NAME        = "DATABASE";
 	const string APP_CFG_PATH       = "examples/sources.cfg";
-	const string APP_OUT_PATH       = "";
 
 	// console commands
 	const string TABLES             = "TABLES";

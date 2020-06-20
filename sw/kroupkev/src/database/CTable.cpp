@@ -571,7 +571,7 @@ void CTable::Render ( ostream & ost ) const {
 
 /**
  * Prepares the table for file export.
- * @return all table rows in text form.
+ * @return All table rows in text form
  */
 void CTable::Render ( vector<string> & out ) const {
 	out.clear( );
