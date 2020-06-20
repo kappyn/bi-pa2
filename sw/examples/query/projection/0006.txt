@@ -1,3 +1,0 @@
-SEL[ Username, Surname, Age ]( scratch ) ~ Guys;
-PRO[ Username == "Peter" ]( Guys ) ~ Transitive;
-QUIT;

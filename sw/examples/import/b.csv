@@ -1,8 +1,6 @@
-int, string, double
-ID, Address, GPA
-0, Dejvice, 0.52
-1, Hlubocepy, 1.23
-2, Prazskeho povstani, 1.2
-2, Preslova, 1.2
-4, Husinecka, 2.4
-5, Hlubocepy, 2.3
+int,string,string,string,string,double
+id,first_name,last_name,country,car,points
+1,Avivah,Elner,NG,Porsche,93.339
+2,Katheryn,Allnatt,GR,Chevrolet,53.582
+10,Kevin,Kroupa,CZ,Chevrolet,53.582
+33,Frank,Zappa,CZ,Chevrolet,53.582

@@ -1,8 +1,17 @@
-int, string, string, int, double
-ID, Username, Surname, Age, Ratio
-0, Jan, T, 20, 0.52
-1, Kevin, Z, 20, 1.23
-2, Petr, J, 21, 1.2
-2, Xaverius, J, 21, 1.2
-4, Frank, L, 26, 2.4
-5, Peter, D, 26, 2.3
+int, string, string, string, string, double
+id,first_name,last_name,country,car,points
+1,Avivah,Elner,NG,Porsche,93.339
+2,Katheryn,Allnatt,GR,Chevrolet,53.582
+3,Belita,Nicklin,FI,Volkswagen,50.556
+4,Devlin,Spurden,PT,Cadillac,98.471
+5,Dannie,Canceller,BR,GMC,60.559
+6,Justen,Rowat,CN,Audi,81.788
+7,Ilse,Hankey,PT,Honda,84.183
+8,Hilda,Mimmack,CO,Lotus,58.868
+9,Zorina,Laroux,KZ,Jaguar,57.338
+10,Joseito,Cuddehay,BR,Ford,81.777
+11,Kelsey,Houseago,JP,Oldsmobile,83.162
+12,Orland,Gillan,ID,Mitsubishi,87.925
+13,Clem,Iddons,US,Honda,97.397
+14,Brina,Redmond,BR,BMW,56.93
+15,Timi,Segrott,AR,Jeep,77.555

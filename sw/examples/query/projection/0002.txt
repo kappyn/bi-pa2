@@ -1,5 +1,0 @@
-PRO[ Username == Kevin ]( scratch );
-PRO[ Age > 20 ]( scratch );
-PRO[ Ratio > 1.3 ]( scratch );
-PRO[ Address == "Prazskeho povstani" ]( scratch );
-QUIT;

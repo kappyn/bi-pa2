@@ -1,7 +1,0 @@
-PRO[ Age > 0 ]( scratch ) ~ Baby;
-SEL[ Username, Surname, Age, Ratio ]( Baby ) ~ Kiddo;
-SEL[ * ]( Kiddo ) ~ Man;
-PRO[ Username == Peter ]( Man ) ~ Dude;
-PRO[ Age > 2 ]( Kiddo );
-SEL[ * ]( Man );
-QUIT;

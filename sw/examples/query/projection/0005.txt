@@ -1,7 +1,0 @@
-SEL[ Username, Surname, Age ]( scratch ) ~ Guys;
-SEL[ Username, Age ]( Guys ) ~ Ages;
-PRO[ Age >= 20 ]( Ages ) ~ Projection;
-PRO[ Age == 21 ]( Projection ) ~ Finally;
-SEL[ * ]( Finally ) ~ Its;
-PRO[ Username == "Petr" ]( Its ) ~ Transitive;
-QUIT;

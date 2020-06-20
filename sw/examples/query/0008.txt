@@ -1,0 +1,9 @@
+UNION( );
+UNION(;
+UNION( a, b );
+PRO[ car == "Chevrolet" ]( a ) ~ ChevroletsA;
+PRO[ car == "Chevrolet" ]( b ) ~ ChevroletsB;
+INTERSECT( ChevroletsA, ChevroletsB );
+MINUS( ChevroletsB, ChevroletsA );
+MINUS( ChevroletsA, ChevroletsB );
+MINUS( a, ChevroletsB );

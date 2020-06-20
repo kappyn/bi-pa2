@@ -1,0 +1,4 @@
+PRO[ country == "BR" ]( a ) ~ Brasilians;
+PRO[ country == "CZ" ]( b ) ~ Czechs;
+PRO[ points > 60 ]( Brasilians ) ~ TopStudents;
+PRO[ car == "BMW"  ]( Brasilians ) ~ TopStudentsWithBMWS;

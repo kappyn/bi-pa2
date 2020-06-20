@@ -1,5 +1,4 @@
 SEL;
 PRO;
 SEL;
-PRO;
-QUIT;
+PRO

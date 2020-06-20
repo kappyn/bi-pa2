@@ -1,6 +1,0 @@
-SEL[ * ]( scratch ) ~ Test;
-PRO[ Ratio >= 30 ]( Test );
-PRO[ Username == "Frank" ]( Test );
-PRO[ Age > 20 ]( scratch );
-PRO[ Ratio == 244.40 ]( scratch );
-QUIT;

@@ -1,9 +1,0 @@
-SEL[ "jmeno_sloupce", "jmeno_sloupce", ... ]( "jmeno_tabulky" );
-PRO[ podminka ]( "jmeno_tabulky" );
-JOIN[ "jmeno_sloupce" ]( "jmeno_tabulky", "jmeno_tabulky" );
-NJOIN( "jmeno_tabulky", "jmeno_tabulky" );
-UNION( "jmeno_tabulky", "jmeno_tabulky" );
-INTERSECT( "jmeno_tabulky", "jmeno_tabulky" );
-MINUS( "jmeno_tabulky", "jmeno_tabulky" );
-CP( "jmeno_tabulky", "jmeno_tabulky" );
-SEL[ vek >= 18 ]( uzivatele ) === dospeli;

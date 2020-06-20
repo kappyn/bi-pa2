@@ -1,2 +1,0 @@
-PRO[ Username == "Frank" ]( a ) ~ Test;
-JOIN[ Username ]( b, Test );

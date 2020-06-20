@@ -1,0 +1,4 @@
+PRO[ country == "BR" ]( a ) ~ Brasilians;
+NJOIN( Brasilians, c ) ~ BrasilianGrades;
+SEL[ id, facility ]( BrasilianGrades ) ~ idSchool;
+NJOIN( idSchool, a );

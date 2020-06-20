@@ -1,4 +1,0 @@
-UNION( a, c );
-INTERSECT( a, c );
-MINUS( a, c );
-QUIT;

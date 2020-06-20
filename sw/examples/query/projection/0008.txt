@@ -1,6 +1,0 @@
-PRO[Age>24](scratch)~Test;
-SEL[*](Test);
-PRO[Ratio>=30.2](Test)~Hoho;
-SEL[ * ]( Hoho )~LMAO;
-PRO[Username=="Peter"](LMAO);
-QUIT;

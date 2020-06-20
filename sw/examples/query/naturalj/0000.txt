@@ -1,3 +1,0 @@
-TABLES;
-NJOIN(a,b);
-QUIT;

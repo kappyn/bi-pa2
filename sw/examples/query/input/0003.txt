@@ -1,4 +1,0 @@
-SEL[;
-SEL[[[
-SEL[;
-QUIT;

@@ -1,2 +1,0 @@
-UNION( a, c );
-SEL[ * ]( a );

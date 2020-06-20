@@ -1,30 +1,30 @@
-.PHONY            = all compile run memcheck fwatch clean dev linecnt
-.DEFAULT_GOAL     = dev
+.PHONY            	= all compile run memcheck fwatch clean dev linecnt
+.DEFAULT_GOAL     	= dev
 
 # sources
-TARGET     		  = kroupkev
-BUILD_DIR  		  = build
-SOURCE_DIR 		  = src
-DOC_DIR			  = doc
+TARGET     		  	= kroupkev
+BUILD_DIR  		  	= build
+SOURCE_DIR 		  	= src
+DOC_DIR			  	= doc
 
-SOURCES 		  = $(wildcard $(SOURCE_DIR)/*.cpp $(SOURCE_DIR)/*/*.cpp)
-HEADERS 		  = $(wildcard $(SOURCE_DIR)/*.hpp $(SOURCE_DIR)/*/*.hpp)
-OB_TMP    	      = $(notdir $(SOURCES:$(SOURCE_DIR)/%.cpp=%.o))
-OBJECTS    	      = $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
-DEPS    	      = Makefile.d
+SOURCES 		  	= $(wildcard $(SOURCE_DIR)/*.cpp $(SOURCE_DIR)/*/*.cpp)
+HEADERS 		  	= $(wildcard $(SOURCE_DIR)/*.hpp $(SOURCE_DIR)/*/*.hpp)
+OB_TMP    		  	= $(notdir $(SOURCES:$(SOURCE_DIR)/%.cpp=%.o))
+OBJECTS    	      	= $(OB_TMP:%.o=$(BUILD_DIR)/%.o)
+DEPS    	      	= Makefile.d
 
 # compiler settings
-CXX        		  = g++
-CXX_FLAGS  		  = -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0
-MKDIR      		  = mkdir -p
+CXX        		  	= g++
+CXX_FLAGS  		  	= -std=c++11 -Werror -Wall -pedantic -Wno-long-long -O0
+MKDIR      		  	= mkdir -p
 
 # colors
 COLOR_DEF = \033[0m
 COLOR_MSG = \033[1;36m
 
 # memory management settings
-CHECK      		  = valgrind
-CHECK_FLAGS 	  = --leak-check=full --show-leak-kinds=all --track-origins=yes
+CHECK      		  	= valgrind
+CHECK_FLAGS 	  	= --leak-check=full --show-leak-kinds=all --track-origins=yes
 
 # tasks
 all: clean dep compile doc
