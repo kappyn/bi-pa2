@@ -2,3 +2,6 @@ int, string, string, int, double
 ID, Username, Surname, Age, Ratio
 0, Jan, YT, 20, 0.52
 1, Kevin, SZ, 20, 1.23
+2, Xaverius, J, 21, 1.2
+4, Frank, L, 26, 2.4
+5, Peter, D, 26, 2.3

@@ -193,8 +193,6 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 	// table rows
 	while ( getline( ifs, tmp ) ) {
-		++ lines;
-
 		// empty lines..
 		if ( tmp.empty( ) ) {
 			CLog::BoldMsg( CLog::DP, filePath, string( "" ).append( CLog::DP_EMPTY_LINE ).append( to_string( lines ) ).append( ".\u001b[0m" ) );
@@ -244,7 +242,12 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )
 			return false;
+
+		++ lines;
 	}
+
+	if ( lines == 2 )
+		return false;
 
 	db.InsertTable( filePath, parsedResult );
 	return true;

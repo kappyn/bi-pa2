@@ -1,4 +1,4 @@
-UNION( a, d );
-INTERSECT( a, d );
-MINUS( a, d );
+UNION( a, c );
+INTERSECT( a, c );
+MINUS( a, c );
 QUIT;
