@@ -54,7 +54,7 @@ bool CNaturalJoin::Evaluate ( ) {
 			newHeaderColumns.emplace_back( pair<string, int> { i, 0 } );
 		foundCommon = false;
 	}
-	m_QueryResult = new CTable( newHeaderColumns );
+	m_QueryResult = new CTable ( newHeaderColumns );
 
 	vector<vector<CCell *>> requiredColumns;
 	vector<CCell *> tmp;

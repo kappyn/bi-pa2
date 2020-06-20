@@ -71,6 +71,7 @@ public:
 	vector<pair<size_t, size_t>> FindOccurences ( vector<CCell *> & columnRef ) const;
 
 	size_t GetColumnCount ( ) const;
+	size_t GetRowCount( ) const;
 	vector<string> GetColumnNames ( ) const;
 	vector<size_t> GetCellPadding ( ) const;
 

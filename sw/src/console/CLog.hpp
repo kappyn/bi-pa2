@@ -20,13 +20,14 @@ namespace CLog {
 
 	const string QUIT               = "QUIT";
 	const string SELECTION          = "SEL";
+	const string ALIAS              = "ALIAS";
 	const string PROJECTION         = "PRO";
 	const string NJOIN              = "NJOIN";
 	const string JOIN               = "JOIN";
 	const string UNION              = "UNION";
 	const string INTERSECT          = "INTERSECT";
 	const string MINUS              = "MINUS";
-	const string ALIAS              = "ALIAS";
+	const string CARTESIAN          = "CP";
 
 	const string APP_LINE_HEIGHT    = "\n";
 	const string APP_COLOR_GOOD     = "\033[0;32m";

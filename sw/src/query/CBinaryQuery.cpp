@@ -11,24 +11,20 @@ bool CBinaryQuery::SaveTableReferences ( ) {
 		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
 	} else
 		return false;
-
 	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-
 	if ( ( m_Operands.second.m_TRef = m_Database.GetTable( m_TableNames.second ) ) != nullptr ) { }
 	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
 		m_Operands.second.m_Origin = m_Operands.second.m_QRef;
 		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
 	} else
 		return false;
-
 	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
 	}
-
 	return true;
 }
 

@@ -35,7 +35,7 @@ Pro správné fungování např. projekce bude nutné specifikovat i datové typ
 
 Druhý řádek tabulky bude považován jako hlavička a definice sloupců. Tabulka musí mít alespoň jeden záznam.
 
-#### Ukázka
+##### Ukázka
 
 **`sources.cfg`** obsahuje **`data/uzivatele.csv`**
 
@@ -58,7 +58,7 @@ Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definov
 
 ---
 
-#### Rozhraní (není součástí původního zadání):
+#### Rozhraní:
 
 ``TABLES;`` vypíše tabulky, které jsou momentálně v databázi.
 
@@ -144,7 +144,7 @@ Použití: ``CP( jmeno_tabulky, jmeno_tabulky );``
 #### Ukládání dotazu do proměnné
 Popis operace: Vytvoří dočasnou kopii dotazu a uloží jej do paměti pod názvem proměnné. Proměnná lze poté použít na místě pro "jmeno_tabulky" v definicích dotazů výše. 
 
-Příkladné použití: 
+Použití:
 
 ``PRO[ vek >= 18 ]( uzivatele ) ~ dospeli``
 
@@ -182,7 +182,7 @@ Pro spuštění testu stačí konkrétní test přidat do **sources.cfg**.
 
 ``make doc`` vygeneruje dokumentaci.
 
-#### vlastní dodatečné nástroje
+#### vlastní nástroje
 ``make memcheck`` kontrola správy dynamické paměti ve spuštěné aplikaci (valgrind).
 
 ``make dev`` spustí skript, který sleduje změnu souborů (live filewatch).

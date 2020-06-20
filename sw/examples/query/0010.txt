@@ -1,0 +1,3 @@
+PRO[ country == "US" ]( a ) ~ USCitizens;
+CP( USCitizens, c );
+CP( a, b );

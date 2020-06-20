@@ -211,8 +211,7 @@ bool CTable::GetShallowCol ( const string & name, vector<CCell *> & outRef ) con
  * @return true if the row was exported without errors
  */
 bool CTable::GetDeepRow ( const size_t & index, vector<CCell *> & outRef ) const {
-	if ( ! outRef.empty( ) )
-		outRef.clear( );
+	outRef.clear( );
 	for ( const auto & i : m_Data )
 		outRef.push_back( i.at( index )->Clone( ) );
 	return true;
@@ -458,6 +457,15 @@ vector<pair<size_t, size_t>> CTable::FindOccurences ( vector<CCell *> & columnRe
  */
 size_t CTable::GetColumnCount ( ) const {
 	return m_Data.size( );
+}
+
+/**
+ * Row count getter.
+ */
+size_t CTable::GetRowCount ( ) const {
+	if ( m_Data.empty( ) || m_Data.at( 0 ).empty( ) )
+		return 0;
+	return m_Data.at( 0 ).size( );
 }
 
 /**

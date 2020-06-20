@@ -18,6 +18,7 @@
 #include "../query/CUnion.hpp"
 #include "../query/CIntersect.hpp"
 #include "../query/CMinus.hpp"
+#include "../query/CCartesian.hpp"
 
 using namespace std;
 
