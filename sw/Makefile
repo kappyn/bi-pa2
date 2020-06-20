@@ -1,5 +1,5 @@
-.PHONY            	= all compile run memcheck fwatch clean dev linecnt
-.DEFAULT_GOAL     	= dev
+.PHONY      			= all compile run memcheck fwatch clean dev linecnt
+.DEFAULT_GOAL			= dev
 
 # sources
 TARGET     		  	= kroupkev
