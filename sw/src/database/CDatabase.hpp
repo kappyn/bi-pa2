@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 
@@ -30,10 +31,11 @@ public:
 	bool TableExists ( const string & tableName ) const;
 	bool QueryExists ( const string & tableName ) const;
 	bool InsertTable ( const string & tableName, CTable * tableRef );
-
 	bool InsertQuery ( const string & queryName, CTableQuery * ctqRef );
+
 	void ListTables ( ) const;
 	void ListQueries ( ) const;
 	void PrintTables ( ) const;
 	void PrintQueryContents ( ) const;
+	bool ExportQueries( ) const;
 };

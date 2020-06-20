@@ -106,8 +106,14 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 			m_Database.PrintTables( );
 			return CConsole::VALID_QUERY;
 		}
-		if ( queryName == CLog::QUIT )
+		if ( queryName == CLog::EXPORT ) {
+			if ( ! m_Database.ExportQueries( ) )
+				return false;
+			return CConsole::VALID_QUERY;
+		}
+		if ( queryName == CLog::QUIT ) {
 			return CConsole::EXIT_CONSOLE;
+		}
 		return CConsole::INVALID_QUERY;
 	}
 
@@ -124,7 +130,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 			return CConsole::INVALID_QUERY;
 		userQuery = new CSelection ( m_Database, CDataParser::Split( columns, false, false, ',' ), table );
 	}
-
 	else if ( queryName == CLog::ALIAS ) {
 		string table, colNames;
 		if (
@@ -132,6 +137,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 				! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, table )
 			)
 			return CConsole::INVALID_QUERY;
+
 		vector<string> tableNames = CDataParser::Split( colNames, '~' );
 		if ( tableNames.size( ) != 2 )
 			return CConsole::INVALID_QUERY;
@@ -144,7 +150,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 		delete userQuery;
 		return CConsole::VALID_QUERY;
 	}
-
 	else if ( queryName == CLog::PROJECTION ) {
 		auto * conditionQuery = new CCondition;
 		string condition, table;
@@ -160,7 +165,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 		CDataParser::TrimAllSpaces( conditionQuery->m_Constant, '"' );
 		userQuery = new CProjection ( m_Database, conditionQuery, table );
 	}
-
 	else if ( queryName == CLog::NJOIN ) {
 		string tables;
 		if ( ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
@@ -172,7 +176,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 
 		userQuery = new CNaturalJoin ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
-
 	else if ( queryName == CLog::JOIN ) {
 		string tables, column;
 		if ( ! ReadQParenthesis( queryDetails, '[', ']', stringProgress, column ) || ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
@@ -184,7 +187,6 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 
 		userQuery = new CJoin ( m_Database, column, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
-
 	else if ( queryName == CLog::UNION || queryName == CLog::INTERSECT || queryName == CLog::MINUS || queryName == CLog::CARTESIAN ) {
 		string tables;
 		if ( ! ReadQParenthesis( queryDetails.substr( stringProgress ), '(', ')', stringProgress, tables ) )
@@ -196,17 +198,13 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 
 		if ( queryName == CLog::UNION )
 			userQuery = new CUnion ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
-
 		else if ( queryName == CLog::INTERSECT )
 			userQuery = new CIntersect ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
-
-		else if ( queryName == CLog::MINUS ) {
+		else if ( queryName == CLog::MINUS )
 			userQuery = new CMinus ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
-		}
 		else
 			userQuery = new CCartesian ( m_Database, std::make_pair( tableNames.at( 0 ), tableNames.at( 1 ) ) );
 	}
-
 	else {
 		return CConsole::INVALID_QUERY;
 	}

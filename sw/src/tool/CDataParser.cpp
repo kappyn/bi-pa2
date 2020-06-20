@@ -1,18 +1,11 @@
 #include "CDataParser.hpp"
 
-const string CDataParser::TYPE_STRING = "string";
-const string CDataParser::TYPE_DOUBLE = "double";
-const string CDataParser::TYPE_INT    = "int";
-
-/**
+/*
  * Trims whitespaces to the left of the text.
  * @param[in, out] s string that is to be trimmed
  */
 string & CDataParser::TrimSpaceLeft ( string & s ) {
-	auto it = std::find_if( s.begin( ), s.end( ),
-	                        [ ] ( char c ) {
-		                        return ! std::isspace<char>( c, std::locale::classic( ) );
-	                        } );
+	auto it = std::find_if( s.begin( ), s.end( ), [ ] ( char c ) { return ! std::isspace<char>( c, std::locale::classic( ) ); } );
 	s.erase( s.begin( ), it );
 	return s;
 }
@@ -22,10 +15,7 @@ string & CDataParser::TrimSpaceLeft ( string & s ) {
  * @param[in, out] s string that is to be trimmed
  */
 string & CDataParser::TrimSpaceRight ( string & s ) {
-	auto it = std::find_if( s.rbegin( ), s.rend( ),
-	                        [ ] ( char c ) {
-		                        return ! std::isspace<char>( c, std::locale::classic( ) );
-	                        } );
+	auto it = std::find_if( s.rbegin( ), s.rend( ), [ ] ( char c ) { return ! std::isspace<char>( c, std::locale::classic( ) ); } );
 	s.erase( it.base( ), s.end( ) );
 	return s;
 }
@@ -133,12 +123,11 @@ bool CDataParser::ParseTable ( CDatabase & db, ifstream & ifs, string & filePath
 	string extension = GetFileExtension( filePath );
 	if ( extension == "csv" || extension == "CSV" )
 		return ParseCSV( db, ifs, filePath );
-//	else if -- new table formats to be added in the future
 	return false;
 }
 
 /**
- * CSV conversion.
+ * CSV import.
  * Parameters are same as CDataParser::ParseTable, since they are delegated directly here.
  * @return true, if table was parsed and added to the database
  */
@@ -158,9 +147,8 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 	for ( const string & i : columnTypes ) {
 		if ( i.empty( ) )
 			return false;
-		if ( i != TYPE_STRING && i != TYPE_INT && i != TYPE_DOUBLE ) {
-			CLog::HighlightedMsg( CLog::DP, filePath,
-			                      string( "" ).append( CLog::DP_NO_DATATYPES ).append( "\u001b[0m" ) );
+		if ( i != CLog::TYPE_STRING && i != CLog::TYPE_INT && i != CLog::TYPE_DOUBLE ) {
+			CLog::HighlightedMsg( CLog::DP, filePath, string( "" ).append( CLog::DP_NO_DATATYPES ).append( "\u001b[0m" ) );
 			return false;
 		}
 	}
@@ -187,7 +175,6 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 	header.reserve( requiredColumns );
 	for ( string & i : columnNames )
 		header.push_back( new CString( std::move( i ) ) );
-
 	auto * parsedResult = new CTable { header };
 	int lines = 2;
 
@@ -220,10 +207,10 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 		vector<CCell *> newTypedRow;
 		try {
 			for ( const string & i : newRow ) {
-				if ( columnTypes[ cnt ] == TYPE_STRING ) {
+				if ( columnTypes[ cnt ] == CLog::TYPE_STRING ) {
 					newTypedRow.push_back( new CString( i ) );
 				}
-				else if ( columnTypes[ cnt ] == TYPE_INT ) {
+				else if ( columnTypes[ cnt ] == CLog::TYPE_INT ) {
 					int x = stoi( i );
 					newTypedRow.push_back( new CInt( x ) );
 				}
@@ -239,16 +226,13 @@ bool CDataParser::ParseCSV ( CDatabase & db, ifstream & ifs, string & filePath )
 				delete i;
 			 return false;
 		}
-
 		if ( ! parsedResult->InsertShallowRow( newTypedRow ) )
 			return false;
-
 		++ lines;
 	}
 
 	if ( lines == 2 )
 		return false;
-
 	db.InsertTable( filePath, parsedResult );
 	return true;
 }

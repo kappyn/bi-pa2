@@ -15,13 +15,10 @@ using namespace std;
 /**
  * This module parses raw text from the sources into logical cells which are then saved tables (and then to the database).
  * It mostly contains static members, because they might be useful for outter modules.
+ * The module also provides an interface for data importing/exporting.
  */
 class CDataParser {
 public:
-	static const string TYPE_STRING;
-	static const string TYPE_DOUBLE;
-	static const string TYPE_INT;
-
 	static string & TrimSpaceLeft ( string & s );
 	static string & TrimSpaceRight ( string & s );
 	static string & TrimSurroundingSpace ( string & s );

@@ -160,7 +160,7 @@ public:
 	}
 };
 
-class CInt    : public ComparableCCell<CCell, CInt> {
+class CInt : public ComparableCCell<CCell, CInt> {
 public:
 	int m_Val;
 	virtual CInt * Clone ( ) override;

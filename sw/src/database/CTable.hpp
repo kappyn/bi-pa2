@@ -76,6 +76,7 @@ public:
 	vector<size_t> GetCellPadding ( ) const;
 
 	void Render ( ostream & ost = cout ) const;
+	void Render ( vector<string> & out ) const;
 	static void RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost = cout );
 	friend ostream & operator << ( ostream & ost, const CTable & table );
 };

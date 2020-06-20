@@ -22,7 +22,6 @@ bool CSelection::Evaluate ( ) {
 		m_Origin = queryRef;
 		return queryRef->GetQueryResult( )->GetSubTable( m_SelectedCols, ( m_QueryResult = new CTable { } ) );
 	}
-
 	CLog::HighlightedMsg( CLog::QP, m_TableName, CLog::QP_NO_SUCH_TABLE );
 	return false;
 }

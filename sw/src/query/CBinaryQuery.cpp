@@ -9,8 +9,10 @@ bool CBinaryQuery::SaveTableReferences ( ) {
 	else if ( ( m_Operands.first.m_QRef = m_Database.GetTableQ( m_TableNames.first ) ) != nullptr ) {
 		m_Operands.first.m_Origin = m_Operands.first.m_QRef;
 		m_Operands.first.m_TRef = m_Operands.first.m_QRef->GetQueryResult( );
-	} else
+	} else {
+		CLog::HighlightedMsg( CLog::QP, m_TableNames.first, CLog::QP_NO_SUCH_TABLE );
 		return false;
+	}
 	if ( m_Operands.first.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;
@@ -19,8 +21,10 @@ bool CBinaryQuery::SaveTableReferences ( ) {
 	else if ( ( m_Operands.second.m_QRef = m_Database.GetTableQ( m_TableNames.second ) ) != nullptr ) {
 		m_Operands.second.m_Origin = m_Operands.second.m_QRef;
 		m_Operands.second.m_TRef = m_Operands.second.m_QRef->GetQueryResult( );
-	} else
+	} else {
+		CLog::HighlightedMsg( CLog::QP, m_TableNames.first, CLog::QP_NO_SUCH_TABLE );
 		return false;
+	}
 	if ( m_Operands.second.m_TRef->HasDuplicateColumns( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_DUP_COL );
 		return false;

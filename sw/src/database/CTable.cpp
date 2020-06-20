@@ -570,6 +570,40 @@ void CTable::Render ( ostream & ost ) const {
 }
 
 /**
+ * Prepares the table for file export.
+ * @return all table rows in text form.
+ */
+void CTable::Render ( vector<string> & out ) const {
+	out.clear( );
+	if ( m_Data.empty( ) || m_Data.at( 0 ).empty( ) )
+		return;
+	string line;
+	size_t rows = m_Data.at( 0 ).size( );
+	size_t cols = m_Data.size( );
+	for ( size_t j = 0; j < rows; ++j ) {
+		if ( j == 0 ) {
+			string type;
+			for ( size_t i = 0; i < cols; ++i ) {
+				type = m_Data.at( i ).at( 1 )->GetType( );
+				if ( type == typeid( string ).name( ) )
+					type = CLog::TYPE_STRING;
+				else if ( type == typeid( int ).name( ) )
+					type = CLog::TYPE_INT;
+				else
+					type = CLog::TYPE_DOUBLE;
+				line += string( type ).append( ( i != ( cols - 1 ) ) ? ", " : "" );
+			}
+			line += "\n";
+		}
+		for ( size_t i = 0; i < cols; ++i )
+			line += string( m_Data.at( i ).at( j )->RetrieveMVal( ) ).append( ( i != ( cols - 1 ) ) ? ", " : "" );
+		line += "\n";
+		out.emplace_back( std::move( line ) );
+		line.clear( );
+	}
+}
+
+/**
  * Creates character separators for the table rendering.
  */
 void CTable::RenderSeparator ( const size_t & length, size_t & tmp, ostream & ost ) {

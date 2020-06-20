@@ -131,3 +131,23 @@ void CDatabase::PrintQueryContents ( ) const {
 		cout << * i.second->GetQueryResult( ) << endl;
 	}
 }
+
+bool CDatabase::ExportQueries ( ) const {
+	ofstream ofs;
+	vector<string> output;
+	string filePath;
+	for ( const auto & i : m_QueryData ) {
+		i.second->GetQueryResult( )->Render( output );
+		filePath = CLog::APP_OUT_PATH + i.first + ".csv";
+		ofs.open( filePath, std::ios::out | std::ios::trunc );
+		if ( ! ofs.good( ) || ofs.fail( ) ) {
+			CLog::HighlightedMsg( CLog::QP, string( i.first ).append( " (").append( filePath ).append( ")"), CLog::FM_EXPORT_FAIL );
+			return false;
+		}
+		for ( const string & j : output )
+			if ( ! ( ofs << j ) )
+				return false;
+		CLog::HighlightedMsg( CLog::QP, string( i.first ).append( " (").append( filePath ).append( ")"), CLog::FM_EXPORT_OK );
+	}
+    return true;
+}

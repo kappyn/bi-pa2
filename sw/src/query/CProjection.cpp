@@ -22,6 +22,7 @@ bool CProjection::Evaluate ( ) {
 		return queryRef->GetQueryResult( )->GetDeepTable( m_QueryCondition, m_QueryResult );
 	}
 	else {
+		CLog::HighlightedMsg( CLog::QP, m_TableName, CLog::QP_NO_SUCH_TABLE );
 		return false;
 	}
 }
