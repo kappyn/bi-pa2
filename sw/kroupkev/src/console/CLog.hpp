@@ -31,6 +31,7 @@ namespace CLog {
 	const string MINUS              = "MINUS";
 	const string CARTESIAN          = "CP";
 	const string EXPORT             = "EXPORT";
+	const string HELP               = "HELP";
 
 	// import types
 	const string TYPE_STRING        = "string";

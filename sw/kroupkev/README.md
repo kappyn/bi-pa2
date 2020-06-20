@@ -58,7 +58,7 @@ Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definov
 
 ---
 
-#### Rozhraní:
+#### Základní rozhraní:
 
 ``TABLES;`` vypíše tabulky, které jsou momentálně v databázi.
 
