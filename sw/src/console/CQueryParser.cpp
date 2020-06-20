@@ -98,6 +98,14 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 			m_Database.ListQueries( );
 			return CConsole::VALID_QUERY;
 		}
+		if ( queryName == CLog::SAVED ) {
+			m_Database.PrintQueryContents( );
+			return CConsole::VALID_QUERY;
+		}
+		if ( queryName == CLog::IMPORTED ) {
+			m_Database.PrintTables( );
+			return CConsole::VALID_QUERY;
+		}
 		if ( queryName == CLog::QUIT )
 			return CConsole::EXIT_CONSOLE;
 		return CConsole::INVALID_QUERY;

@@ -58,11 +58,15 @@ Na mezerách v dotazech nezáleží, pokud to není v operaci přesněji definov
 
 ---
 
-#### Základní rozhraní (vlastní feature):
+#### Rozhraní (není součástí původního zadání):
 
 ``TABLES;`` vypíše tabulky, které jsou momentálně v databázi.
 
 ``QUERIES;`` vypíše dotazy, které jsou momentálně uloženy v databázi.
+
+``IMPORTED;`` vypíše záznamy tabulek, které byly importovány.
+
+``SAVED;`` vypíše záznamy tabulek, které byly uloženy jako poddotaz.
 
 ``EXPORT;`` vyexportuje výsledky všech uložených dotazů do CSV.
 

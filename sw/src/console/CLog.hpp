@@ -15,6 +15,9 @@ namespace CLog {
 
 	const string TABLES             = "TABLES";
 	const string QUERIES            = "QUERIES";
+	const string IMPORTED           = "IMPORTED";
+	const string SAVED              = "SAVED";
+
 	const string QUIT               = "QUIT";
 	const string SELECTION          = "SEL";
 	const string PROJECTION         = "PRO";
@@ -53,12 +56,19 @@ namespace CLog {
 	const string CON_INVALID_QUERY  = string( APP_COLOR_BAD ).append(" invalid command." ).append( APP_COLOR_RESET );
 	const string CON_EOF_DETECTED   = "EOF detected. Exiting application.";
 	const string CON_EXIT           = "Exiting application.";
-	const string CON_LISTING_T      = "Listing existing tables..";
-	const string CON_LISTING_Q      = "Listing saved queries..";
 
 	const string TAB_NO_BODY        = string( APP_COLOR_BAD ).append( "Unable to render - table body is missing." ).append( APP_COLOR_RESET );
 	const string TAB_NO_DATA        = "The table doesn't have any columns.";
 	const string TAB_INVALID_INDEX  = "Invalid index.";
+
+	const string CON_PRINTING       = "Printing imported tables...";
+	const string CON_PRINTING_SAVED = "Printing saved queries...";
+	const string CON_LIST_EMPTY     = "The list is empty.";
+	const string CON_PRINTING_CONT  = "Printing contents..";
+
+	const string CON_LISTING_T      = "Listing existing tables..";
+	const string CON_LISTING_Q      = "Listing saved queries..";
+
 
 	const string QP                 = "QUERY PARSER";
 	const string QP_NO_SUCH_TABLE   =  string( APP_COLOR_BAD ).append(" table was not found." ).append( APP_COLOR_RESET );

@@ -68,7 +68,12 @@ CTableQuery * CDatabase::GetTableQ ( const string & tableName ) const {
 }
 
 void CDatabase::ListTables ( ) const {
-	CLog::Msg( m_Name, CLog::CON_LISTING_T );
+	if ( ! m_TableData.empty( ) )
+		CLog::Msg( m_Name, CLog::CON_LISTING_T, "\n" );
+	else {
+		CLog::Msg( m_Name, CLog::CON_LIST_EMPTY, "\n" );
+		return;
+	}
 	vector<string> tableColumns;
 	string output;
 	size_t columnCounter = 0, tableCounter = 0;
@@ -88,7 +93,12 @@ void CDatabase::ListTables ( ) const {
 }
 
 void CDatabase::ListQueries ( ) const {
-	CLog::Msg( m_Name, CLog::CON_LISTING_Q );
+	if ( ! m_QueryData.empty( ) )
+		CLog::Msg( m_Name, CLog::CON_LISTING_Q, "\n" );
+	else {
+		CLog::Msg( m_Name, CLog::CON_LIST_EMPTY, "\n" );
+		return;
+	}
 	vector<string> tableColumns;
 	string output;
 	size_t queryCounter = 0;
@@ -97,9 +107,27 @@ void CDatabase::ListQueries ( ) const {
 }
 
 void CDatabase::PrintTables ( ) const {
-	CLog::Msg( m_Name, "Printing tables...", "\n" );
+	if ( ! m_TableData.empty( ) )
+		CLog::Msg( m_Name, CLog::CON_PRINTING, "\n" );
+	else {
+		CLog::Msg( m_Name, CLog::CON_LIST_EMPTY, "\n" );
+		return;
+	}
 	for ( const auto & i : m_TableData ) {
-		CLog::Msg( i.first, "Listing contents..", "" );
+		CLog::Msg( i.first, CLog::CON_PRINTING_CONT, "" );
 		cout << * i.second << endl;
+	}
+}
+
+void CDatabase::PrintQueryContents ( ) const {
+	if ( ! m_QueryData.empty( ) )
+		CLog::Msg( m_Name, CLog::CON_PRINTING_SAVED, "\n" );
+	else {
+		CLog::Msg( m_Name, CLog::CON_LIST_EMPTY, "\n" );
+		return;
+	}
+	for ( const auto & i : m_QueryData ) {
+		CLog::Msg( i.first, "Listing contents..", "" );
+		cout << * i.second->GetQueryResult( ) << endl;
 	}
 }

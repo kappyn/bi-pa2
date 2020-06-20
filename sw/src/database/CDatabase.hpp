@@ -35,4 +35,5 @@ public:
 	void ListTables ( ) const;
 	void ListQueries ( ) const;
 	void PrintTables ( ) const;
+	void PrintQueryContents ( ) const;
 };
