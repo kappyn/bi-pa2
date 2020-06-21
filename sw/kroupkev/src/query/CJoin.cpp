@@ -33,6 +33,7 @@ bool CJoin::Evaluate ( ) {
 	m_QueryResult = new CTable ( newHeaderColumns );
 
 	vector<pair<size_t, size_t>> tableIndexes = m_Operands.second.m_TRef->FindOccurences( tmpColumn );
+
 	if ( tableIndexes.empty( ) ) {
 		CLog::Msg( CLog::QP, CLog::QP_EMPTY_RESULTS );
 		return false;

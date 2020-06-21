@@ -84,7 +84,7 @@ namespace CLog {
 	const string QP_INVALID_REL     =  string( APP_COLOR_BAD ).append(" the condition clause is missing a relation operator." ).append( APP_COLOR_RESET );
 	const string QP_CON_PARSE_ERROR =  string( APP_COLOR_BAD ).append(" was unable to convert constant to a correct type." ).append( APP_COLOR_RESET );
 	const string QP_INVALID_OPER    =  string( APP_COLOR_BAD ).append(" invalid comparison operator was entered." ).append( APP_COLOR_RESET );
-	const string QP_EMPTY_RESULTS   =  string( APP_COLOR_BAD ).append( "The resulting query is empty." ).append( APP_COLOR_RESET );
+	const string QP_EMPTY_RESULTS   =  string( APP_COLOR_BAD ).append( "The result is empty (column data types may vary)." ).append( APP_COLOR_RESET );
 	const string QP_DUP_COL         =  string( APP_COLOR_BAD ).append( "Unable to perform operation - the table has column duplicates." ).append( APP_COLOR_RESET );
 	const string QP_NO_COMMON_COL   =  string( APP_COLOR_BAD ).append( "The tables do not share any columns." ).append( APP_COLOR_RESET );
 	const string QP_DIFF_HEADER     =  string( APP_COLOR_BAD ).append( "Unable to perform operation - the tables must have identical column names." ).append( APP_COLOR_RESET );

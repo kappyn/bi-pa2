@@ -32,6 +32,7 @@ bool CNaturalJoin::Evaluate ( ) {
 		CLog::Msg( CLog::QP, CLog::QP_NO_COMMON_COL );
 		return false;
 	}
+
 	for ( const string & i : colsA ) {
 		for ( const auto & j : newHeaderColumns ) {
 			if ( j.first == i ) {

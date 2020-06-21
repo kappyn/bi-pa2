@@ -3,3 +3,4 @@ SEL[ id, country, car ]( a );
 SEL[ id ]( a );
 SEL[ id, country ]( a ) ~ ids;
 SEL[ country ]( ids );
+SEL[ * ]( ids );

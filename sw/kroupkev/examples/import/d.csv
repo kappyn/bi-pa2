@@ -1,4 +1,4 @@
-string,string
+int, int
 id,grade
 0, 2
 3, 1

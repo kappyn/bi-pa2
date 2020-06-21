@@ -1,0 +1,4 @@
+IMPORTED;
+PRO[ grade == 1 ]( d ) ~ TopStudents;
+NJOIN( TopStudents, a ) ~ Alfa;
+JOIN[ country ]( Alfa, c );
