@@ -41,6 +41,8 @@ public:
 	};
 
 	bool VerifyColumn ( const string & col, size_t & index, const bool & msg = false ) const;
+	static bool VerifyColumn ( const string & col, size_t & index, vector<string> & columnSet );
+
 	void SortColumns ( );
 	void SortColumns ( vector<pair<size_t, size_t>> & columnOrders );
 

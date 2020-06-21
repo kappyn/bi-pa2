@@ -1,2 +1,3 @@
 SEL[ * ]( a ) ~ Users;
+JOIN[ id ]( a , b );
 EXPORT;

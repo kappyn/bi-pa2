@@ -107,8 +107,7 @@ int CQueryParser::ProcessQuery ( const string & basicString ) const {
 			return CConsole::VALID_QUERY;
 		}
 		if ( queryName == CLog::EXPORT ) {
-			if ( ! m_Database.ExportQueries( ) )
-				return CConsole::INVALID_QUERY;
+			m_Database.ExportQueries( );
 			return CConsole::VALID_QUERY;
 		}
 		if ( queryName == CLog::QUIT ) {

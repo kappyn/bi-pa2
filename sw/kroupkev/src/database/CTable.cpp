@@ -25,9 +25,10 @@ CTable::~CTable ( ) {
 }
 
 /**
- * Verifies if given column is present in the table
+ * Verifies if given column is present in the table.
  * @param[in] col name of the column
  * @param[in, out] index index of the column in the table
+ * @return true, if column is present in the column set
  */
 bool CTable::VerifyColumn ( const string & col, size_t & index, const bool & msg ) const {
 	vector<string> correctColumns = GetColumnNames( );
@@ -67,26 +68,6 @@ void CTable::SortColumns ( vector<pair<size_t, size_t>> & columnOrders ) {
  */
 void CTable::SortRows ( vector<vector<CCell *>> & dataRef ) {
 	sort( dataRef.begin(), dataRef.end(), RowComparator( ) );
-}
-
-/**
- * This method will compare two rows. If all cells are equal, true is returned.
- */
-bool CTable::CompareRows ( const vector<CCell *> & a, const vector<CCell *> & b ) {
-	if ( a.empty( ) || b.empty( ) || a.size( ) != b.size( ) )
-		return false;
-	size_t rowLen = a.size( );
-	for ( size_t i = 0; i < rowLen; ++i )
-		if ( * a[ i ] != * b[ i ] )
-			return false;
-	return true;
-}
-
-bool CTable::SwapColumns ( const size_t & a, const size_t & b ) {
-	if ( a >= m_Data.size( ) || b >= m_Data.size( ) || a == b )
-		return false;
-	std::swap( m_Data.at( a ), m_Data.at( b ) );
-	return true;
 }
 
 /**

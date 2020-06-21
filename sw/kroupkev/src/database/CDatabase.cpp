@@ -154,6 +154,7 @@ bool CDatabase::ExportQueries ( ) const {
 		for ( const string & j : output )
 			if ( ! ( ofs << j ) )
 				return false;
+		ofs.close( );
 		CLog::HighlightedMsg( CLog::QP, string( i.first ).append( " (").append( filePath ).append( ")"), CLog::FM_EXPORT_OK );
 	}
     return true;
