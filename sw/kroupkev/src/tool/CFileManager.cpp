@@ -6,12 +6,17 @@
  * @param[in, out] database reference to the database we're going to load to
  */
 CFileManager::CFileManager ( const string & configFile, CDatabase & database ) : m_Database( database ) {
-	m_ConfigStream.open( configFile, ios::in );
-	if ( ! m_ConfigStream )
-		throw std::logic_error( CLog::FM_CFG_NOT_FOUND );
-	if ( m_ConfigStream.peek( ) == ifstream::traits_type::eof( ) )
-		throw std::logic_error( CLog::FM_CFG_FAILED );
-	CLog::Msg( CLog::FM, CLog::FM_CFG_FOUND );
+	try {
+		m_ConfigStream.open( configFile, ios::in );
+		if ( ! m_ConfigStream )
+			throw logic_error( CLog::FM_CFG_NOT_FOUND );
+		if ( m_ConfigStream.peek( ) == ifstream::traits_type::eof( ) ) {
+			throw logic_error( CLog::FM_CFG_FAILED );
+		}
+		CLog::Msg( CLog::FM, CLog::FM_CFG_FOUND );
+	} catch ( const logic_error & er ) {
+		return;
+	}
 }
 
 /**

@@ -66,7 +66,7 @@ dep:
 	sed -i -E 's/^.*.o:/$(BUILD_DIR)\/&/g' $(DEPS)
 	@echo "$(COLOR_MSG)Source dependencies have been updated.$(COLOR_DEF)"
 
-doc: $(SOURCE_DIR)/main.cpp $(wildcard **/*.hpp)
+doc:
 	rm -rf $(DOC_DIR)
 	@$(MKDIR) $(DOC_DIR)
 	doxygen Doxyfile

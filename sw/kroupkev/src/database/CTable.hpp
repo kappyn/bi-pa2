@@ -41,15 +41,11 @@ public:
 	};
 
 	bool VerifyColumn ( const string & col, size_t & index, const bool & msg = false ) const;
-	static bool VerifyColumn ( const string & col, size_t & index, vector<string> & columnSet );
 
 	void SortColumns ( );
 	void SortColumns ( vector<pair<size_t, size_t>> & columnOrders );
 
 	static void SortRows ( vector<vector<CCell *>> & dataRef );
-	static bool CompareRows ( const vector<CCell *> & a, const vector<CCell *> & b );
-	bool SwapColumns ( const size_t & a, const size_t & b );
-
 	bool HasDuplicateColumns ( ) const;
 	bool HasIdenticalHeader ( const CTable * tableRef ) const;
 
