@@ -18,4 +18,4 @@ The syllabus of this course was focused on the following:
 - **stream library, serialization of objects.**
 - **event-driven program, QT library.**
 
-Each week of the semester we received a new homework to work on. This homework would then be uploaded to "Progtest" server, that did all sorts of tests focusing on space/memory complexity, invalid inputs, edge-case inputs, proper memory management - all of which would sum up for the final grade.
+Every other week of the semester the students would receive a new homework to work on. The homework solutions were then uploaded to "Progtest" evaluation system  that did all kinds of tests focusing on space/memory complexity, invalid and edge-case input validation, proper memory management - all of which would determine the final grade.
