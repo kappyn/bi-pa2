@@ -1,5 +1,6 @@
 # BI-PA2
 *Programming and Algorithmics 2* (summer semester 2018/2019)
+
 ------------
 
 This repository contains some of my code for assignments, exam preparation and other stuff.
